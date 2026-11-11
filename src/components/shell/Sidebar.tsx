@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,8 +22,8 @@ export type SidebarMode = {
 };
 
 /**
- * Dark teal sidebar: logo tile + "Partner", nav with a coral active pill, live count badges,
- * partner card at the bottom. ≥ 1024px full width (collapsible to a rail); 640–1023px icon rail
+ * Dark teal sidebar: logo tile + "Partner" with the collapse toggle beside it (under the logo on
+ * the icon rail), nav with a coral active pill, live count badges, partner card at the bottom. ≥ 1024px full width (collapsible to a rail); 640–1023px icon rail
  * that expands as an overlay; hidden below 640px (bottom tab bar instead).
  */
 export function Sidebar({
@@ -57,13 +57,13 @@ export function Sidebar({
         mode.expanded && "shadow-sheet",
       )}
     >
-      {/* Brand */}
-      <div className="flex h-[var(--topbar-h)] shrink-0 items-center gap-3 px-4">
+      {/* Brand + collapse (full sidebar: the toggle sits at the end of the logo row) */}
+      <div className="flex h-[var(--topbar-h)] shrink-0 items-center gap-2 px-4">
         <Link
           href={localizedHref(locale, "/overview")}
           onClick={onNavigate}
           aria-label={t("homeLink")}
-          className="flex min-w-0 items-center gap-3 rounded-tile"
+          className="flex min-w-0 items-center gap-2.5 rounded-tile"
         >
           <span aria-hidden="true" className="inline-flex size-11 shrink-0 items-center justify-center rounded-tile bg-surface shadow-thumb">
             <PawMark size={28} />
@@ -73,6 +73,19 @@ export function Sidebar({
             <span className="rounded-chip bg-accent px-2 py-0.5 text-caption font-bold text-fg">{t("partnerLabel")}</span>
           </span>
         </Link>
+        {/* Two buttons instead of one, so each has a name that matches what it does at this width. */}
+        <SidebarToggle
+          label={t("sidebar.collapse")}
+          icon={PanelLeftClose}
+          onClick={onToggle}
+          expanded={mode.expanded || undefined}
+          className={cn("-mr-1.5 ml-auto", fullOnly)}
+        />
+      </div>
+
+      {/* Icon rail: the expand toggle sits right under the logo */}
+      <div className={cn("shrink-0 justify-center px-3 pb-1", railOnly)}>
+        <SidebarToggle label={t("sidebar.expand")} icon={PanelLeftOpen} onClick={onToggle} />
       </div>
 
       {/* Nav */}
@@ -117,8 +130,8 @@ export function Sidebar({
         </ul>
       </nav>
 
-      {/* Partner + collapse */}
-      <div className="shrink-0 space-y-2 p-3">
+      {/* Partner */}
+      <div className="shrink-0 p-3">
         <div className={fullOnly}>
           <div className="w-full">
             <PartnerCard />
@@ -129,23 +142,38 @@ export function Sidebar({
             <PartnerCard compact labelClass="sr-only" />
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={mode.expanded || undefined}
-          className="flex min-h-11 w-full items-center gap-3 rounded-chip px-3.5 text-body-sm font-semibold text-on-primary-muted hover:bg-primary-dark-raised hover:text-on-primary"
-        >
-          {/* Full sidebar → "Collapse menu"; icon rail → "Expand menu". Hidden spans don't count for the name. */}
-          <span className={cn(mode.expanded ? "flex" : mode.collapsed ? "hidden" : "hidden lg:flex", "items-center gap-3")}>
-            <PanelLeftClose aria-hidden="true" size={20} />
-            <span>{t("sidebar.collapse")}</span>
-          </span>
-          <span className={cn(mode.expanded ? "hidden" : mode.collapsed ? "flex" : "flex lg:hidden", "items-center")}>
-            <PanelLeftOpen aria-hidden="true" size={20} />
-            <span className="sr-only">{t("sidebar.expand")}</span>
-          </span>
-        </button>
       </div>
     </aside>
+  );
+}
+
+/** 44px icon-only sidebar toggle with a tooltip; its name is the action it performs. */
+function SidebarToggle({
+  label,
+  icon: Icon,
+  onClick,
+  expanded,
+  className,
+}: {
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+  expanded?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      aria-expanded={expanded}
+      title={label}
+      className={cn(
+        "size-11 shrink-0 items-center justify-center rounded-chip text-on-primary-muted transition-colors duration-200 hover:bg-primary-dark-raised hover:text-on-primary",
+        className,
+      )}
+    >
+      <Icon aria-hidden="true" size={20} />
+    </button>
   );
 }
