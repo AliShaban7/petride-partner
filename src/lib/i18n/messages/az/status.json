@@ -1,0 +1,79 @@
+{
+  "appointment": {
+    "requested": "Yeni sorğu",
+    "confirmed": "Təsdiqlənib",
+    "checked_in": "Gəlib",
+    "completed": "Tamamlanıb",
+    "no_show": "Gəlmədi",
+    "cancelled": "Ləğv edilib",
+    "declined": "İmtina edilib"
+  },
+  "order": {
+    "new": "Yeni",
+    "preparing": "Hazırlanır",
+    "ready": "Hazırdır",
+    "delivered": "Çatdırılıb",
+    "picked_up": "Təhvil verilib",
+    "cancelled": "Ləğv edilib"
+  },
+  "ride": {
+    "scheduled": "Planlaşdırılıb",
+    "searching": "Sürücü axtarırıq",
+    "onway": "Sürücü yoldadır",
+    "arrived": "Sürücü qapıdadır",
+    "intrip": "Yoldadır",
+    "completed": "Çatdı",
+    "cancelled": "Ləğv edilib"
+  },
+  "health": {
+    "ok": "Qaydasındadır",
+    "due_soon": "Peyvənd yaxınlaşır",
+    "overdue": "Peyvənd gecikib"
+  },
+  "vaccine": {
+    "done": "Edilib",
+    "due_soon": "Yaxınlaşır",
+    "overdue": "Gecikib",
+    "scheduled": "Planlaşdırılıb"
+  },
+  "payment": {
+    "paid": "Ödənilib",
+    "unpaid": "Ödənilməyib"
+  },
+  "availability": {
+    "active": "Aktiv",
+    "inactive": "Gizlədilib"
+  },
+  "stock": {
+    "in": "Var",
+    "low": "Az qalıb",
+    "out": "Bitib"
+  },
+  "direction": {
+    "to_partner": "Sizə gəlir",
+    "from_partner": "Evə gedir",
+    "delivery": "Kuryer"
+  },
+  "source": {
+    "app": "PetRide tətbiqi",
+    "phone": "Telefon",
+    "walk_in": "Yerində",
+    "petride": "PetRide"
+  },
+  "fulfilment": {
+    "pickup": "Mağazadan götürmə",
+    "petride_courier": "PetRide kuryeri"
+  },
+  "category": {
+    "vet": "Baytar",
+    "groom": "Qrooming",
+    "hotel": "Pet otel",
+    "shop": "Mağaza"
+  },
+  "kind": {
+    "clinic": "Baytar klinikası",
+    "salon": "Qrooming salonu",
+    "hotel": "Pet otel",
+    "petshop": "Zoomağaza"
+  }
+}

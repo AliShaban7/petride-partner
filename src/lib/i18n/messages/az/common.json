@@ -1,0 +1,122 @@
+{
+  "appName": "PetRide Partner",
+  "actions": {
+    "save": "Yadda saxla",
+    "cancel": "Ləğv et",
+    "close": "Bağla",
+    "confirm": "Təsdiqlə",
+    "edit": "Düzəliş et",
+    "delete": "Sil",
+    "retry": "Yenidən cəhd et",
+    "back": "Geri",
+    "next": "Növbəti",
+    "apply": "Tətbiq et",
+    "reset": "Sıfırla",
+    "search": "Axtar",
+    "clear": "Təmizlə",
+    "more": "Daha çox",
+    "viewAll": "Hamısına bax",
+    "open": "Aç",
+    "call": "Zəng et",
+    "copy": "Kopyala",
+    "done": "Hazırdır",
+    "add": "Əlavə et",
+    "accept": "Qəbul et",
+    "decline": "İmtina et",
+    "reschedule": "Vaxtı dəyiş",
+    "checkIn": "Gəldi",
+    "complete": "Tamamla",
+    "noShow": "Gəlmədi",
+    "showMore": "Daha çox göstər",
+    "showLess": "Az göstər",
+    "filter": "Filtr",
+    "export": "Yüklə"
+  },
+  "states": {
+    "loading": "Yüklənir…",
+    "saving": "Yadda saxlanılır…",
+    "saved": "Yadda saxlanıldı",
+    "emptyTitle": "Hələ heç nə yoxdur",
+    "emptyBody": "Yeni məlumat gələn kimi burada görünəcək.",
+    "noResultsTitle": "Heç nə tapılmadı",
+    "noResultsBody": "Axtarışı və ya filtrləri dəyiş.",
+    "errorTitle": "Ups, nəsə alınmadı",
+    "errorBody": "İnterneti yoxla və yenidən cəhd et.",
+    "updating": "Yenilənir…"
+  },
+  "errors": {
+    "network": "Bağlantı alınmadı. İnterneti yoxla və yenidən cəhd et.",
+    "not_found": "Bu qeyd tapılmadı — bəlkə artıq silinib.",
+    "conflict": "Bu arada kimsə dəyişiklik edib. Səhifəni yenilə.",
+    "invalid_transition": "Bu addım indiki statusda mümkün deyil.",
+    "validation": "Məlumatları yoxla — nəsə düz deyil.",
+    "forbidden": "Bunu görmək üçün icazən yoxdur.",
+    "unknown": "Ups, nəsə alınmadı. Yenidən cəhd et."
+  },
+  "table": {
+    "sortBy": "{{column}} üzrə sırala",
+    "sortedAsc": "artan sıra ilə",
+    "sortedDesc": "azalan sıra ilə",
+    "range": "{{from}}–{{to}}, cəmi {{total}}",
+    "pagination": "Səhifələr",
+    "page": "Səhifə {{page}}",
+    "pageOf": "Səhifə {{page}} / {{count}}",
+    "previous": "Əvvəlki səhifə",
+    "next": "Növbəti səhifə",
+    "rowActions": "Əməliyyatlar"
+  },
+  "delta": {
+    "up": "{{value}} artım",
+    "down": "{{value}} azalma",
+    "flat": "dəyişiklik yoxdur",
+    "none": "müqayisə yoxdur",
+    "vs_today": "dünənə nəzərən",
+    "vs_7d": "keçən həftəyə nəzərən",
+    "vs_30d": "əvvəlki 30 günə nəzərən",
+    "vs_90d": "əvvəlki 90 günə nəzərən"
+  },
+  "periods": {
+    "today": "Bu gün",
+    "7d": "7 gün",
+    "30d": "30 gün",
+    "90d": "90 gün",
+    "label": "Dövr"
+  },
+  "money": {
+    "pricedOnSite": "Qiymət yerində",
+    "from": "{{price}}-dan",
+    "notSet": "Qiymət təyin edilməyib"
+  },
+  "species": {
+    "dog": "İt",
+    "cat": "Pişik",
+    "other": "Digər"
+  },
+  "sex": {
+    "f": "Dişi",
+    "m": "Erkək"
+  },
+  "size": {
+    "small": "Kiçik",
+    "medium": "Orta",
+    "large": "Böyük"
+  },
+  "a11y": {
+    "skipToContent": "Məzmuna keç",
+    "loading": "Məzmun yüklənir",
+    "required": "mütləqdir",
+    "optional": "istəyə görə",
+    "closeDialog": "Pəncərəni bağla",
+    "dismiss": "Bağla",
+    "showPassword": "Şifrəni göstər",
+    "hidePassword": "Şifrəni gizlət",
+    "chartSummary": "Qrafikin qısa təsviri",
+    "newTab": "yeni vərəqdə açılır",
+    "toasts": "Bildirişlər",
+    "chartData": "Qrafikin məlumatları"
+  },
+  "demo": {
+    "badge": "Demo məlumatlar",
+    "hint": "Bu, nümunə məlumatlardır — real sifarişlər deyil."
+  }
+}

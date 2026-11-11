@@ -1,0 +1,122 @@
+{
+  "appName": "PetRide Partner",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "delete": "Delete",
+    "retry": "Try again",
+    "back": "Back",
+    "next": "Next",
+    "apply": "Apply",
+    "reset": "Reset",
+    "search": "Search",
+    "clear": "Clear",
+    "more": "More",
+    "viewAll": "View all",
+    "open": "Open",
+    "call": "Call",
+    "copy": "Copy",
+    "done": "Done",
+    "add": "Add",
+    "accept": "Accept",
+    "decline": "Decline",
+    "reschedule": "Reschedule",
+    "checkIn": "Check in",
+    "complete": "Complete",
+    "noShow": "No-show",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "filter": "Filter",
+    "export": "Export"
+  },
+  "states": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "As soon as there's something new, it'll show up here.",
+    "noResultsTitle": "No matches",
+    "noResultsBody": "Try a different search or filters.",
+    "errorTitle": "Oops, something went wrong",
+    "errorBody": "Check your connection and try again.",
+    "updating": "Updating…"
+  },
+  "errors": {
+    "network": "Couldn't connect. Check your internet and try again.",
+    "not_found": "We couldn't find this — it may have been removed.",
+    "conflict": "Someone changed this in the meantime. Refresh the page.",
+    "invalid_transition": "That step isn't possible in the current status.",
+    "validation": "Check the details — something is off.",
+    "forbidden": "You don't have access to this.",
+    "unknown": "Oops, something went wrong. Try again."
+  },
+  "table": {
+    "sortBy": "Sort by {{column}}",
+    "sortedAsc": "ascending",
+    "sortedDesc": "descending",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "pagination": "Pagination",
+    "page": "Page {{page}}",
+    "pageOf": "Page {{page}} of {{count}}",
+    "previous": "Previous page",
+    "next": "Next page",
+    "rowActions": "Actions"
+  },
+  "delta": {
+    "up": "up {{value}}",
+    "down": "down {{value}}",
+    "flat": "no change",
+    "none": "no comparison",
+    "vs_today": "vs yesterday",
+    "vs_7d": "vs last week",
+    "vs_30d": "vs previous 30 days",
+    "vs_90d": "vs previous 90 days"
+  },
+  "periods": {
+    "today": "Today",
+    "7d": "7 days",
+    "30d": "30 days",
+    "90d": "90 days",
+    "label": "Period"
+  },
+  "money": {
+    "pricedOnSite": "Priced on site",
+    "from": "from {{price}}",
+    "notSet": "No price set"
+  },
+  "species": {
+    "dog": "Dog",
+    "cat": "Cat",
+    "other": "Other"
+  },
+  "sex": {
+    "f": "Female",
+    "m": "Male"
+  },
+  "size": {
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "loading": "Loading content",
+    "required": "required",
+    "optional": "optional",
+    "closeDialog": "Close dialog",
+    "dismiss": "Dismiss",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "chartSummary": "Chart summary",
+    "newTab": "opens in a new tab",
+    "toasts": "Notifications",
+    "chartData": "Chart data"
+  },
+  "demo": {
+    "badge": "Demo data",
+    "hint": "This is sample data, not real bookings."
+  }
+}

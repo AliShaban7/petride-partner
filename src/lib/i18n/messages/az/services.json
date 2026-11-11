@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "title": "Xidmətlər və qiymətlər",
+    "description": "Qiymətləri və müddətləri təyin et — tətbiqdə «Qiymət yerində» əvəzinə görünəcək."
+  },
+  "title": "Xidmətlər və qiymətlər",
+  "description": "Qiymət, müddət və sıranı burada idarə et — müştərilər bunu PetRide tətbiqində görür.",
+  "titleShop": "Məhsullar və qiymətlər",
+  "descriptionShop": "Qiymətləri və qalığı yenilə — tətbiqdə müştərilər həmişə aktual qiyməti görəcək.",
+  "add": "Xidmət əlavə et",
+  "addShort": "Əlavə et",
+  "listTitle": "Xidmətlər",
+  "listLabel": "{{category}}: xidmətlər",
+  "asideLabel": "Tətbiqdə necə görünür",
+  "categoryMeta": "{{count}} · {{active}} aktiv",
+  "serviceCount_one": "{{count}} xidmət",
+  "serviceCount_other": "{{count}} xidmət",
+  "categoryEmpty": "Bu bölmədə hələ xidmət yoxdur.",
+  "categories": {
+    "vet": { "title": "Baytar xidmətləri", "hint": "Müayinə, peyvənd və digər baytar xidmətləri." },
+    "groom": { "title": "Qrooming", "hint": "Yuyunma, daraqlama, qırxım və dırnaq." },
+    "hotel": { "title": "Otel və baxım", "hint": "Gecələmə və gündüz baxımı." }
+  },
+  "columns": {
+    "service": "Xidmət",
+    "duration": "Müddət",
+    "price": "Qiymət",
+    "active": "Tətbiqdə"
+  },
+  "kpi": {
+    "active": "Tətbiqdə aktiv",
+    "ofTotal": "/ {{total}}",
+    "hidden_one": "{{count}} xidmət gizlidir",
+    "hidden_other": "{{count}} xidmət gizlidir",
+    "allVisible": "Hamısı görünür",
+    "withPrice": "Qiyməti görünən",
+    "withPriceNote": "Qalanlarında «Qiymət yerində» yazılır",
+    "onSiteNote": "Qiymət yaz ki, müştəri əvvəlcədən bilsin",
+    "onSiteNone": "Bütün aktiv xidmətlərdə qiymət var",
+    "bookings": "30 gündə randevular",
+    "top": "Ən çox: {{name}}"
+  },
+  "notice": {
+    "onSite_one": "{{count}} aktiv xidmət tətbiqdə «{{label}}» kimi görünür",
+    "onSite_other": "{{count}} aktiv xidmət tətbiqdə «{{label}}» kimi görünür",
+    "onSiteBody": "Qiyməti yazsan, müştəri nə qədər ödəyəcəyini əvvəlcədən biləcək. Qiymət ölçüdən asılıdırsa, «Başlanğıc qiymət» seç.",
+    "setPrice": "Qiymət yaz"
+  },
+  "reorder": {
+    "instructions": "Sıranı dəyişmək üçün tutacağı sürüşdür və ya onu seçib yuxarı və aşağı ox düymələrini bas. Tətbiqdə xidmətlər bu sıra ilə görünür.",
+    "moved": "{{name}}: yer {{position}} / {{total}}"
+  },
+  "row": {
+    "handle": "Sıranı dəyiş: {{name}}, yer {{position}} / {{total}}",
+    "actions": "{{name}}: əməliyyatlar",
+    "price": "Qiymət",
+    "priceFor": "{{name}} — qiymət",
+    "showPrice": "Tətbiqdə göstər",
+    "exactHint": "Tətbiqdə bu qiymət görünür.",
+    "fromHint": "Tətbiqdə başlanğıc qiymət kimi görünür.",
+    "onSiteHint": "Tətbiqdə «{{label}}» yazılır.",
+    "active": "Aktiv",
+    "hidden": "Gizlidir",
+    "new": "Yeni",
+    "unsaved": "Saxlanmayıb",
+    "bookings_one": "30 gündə {{count}} randevu",
+    "bookings_other": "30 gündə {{count}} randevu",
+    "edit": "Düzəliş et",
+    "moveUp": "Yuxarı qaldır",
+    "moveDown": "Aşağı endir",
+    "archive": "Xidməti sil"
+  },
+  "errors": {
+    "price": {
+      "empty": "Qiyməti yaz.",
+      "emptyOrHide": "Qiyməti yaz və ya «Tətbiqdə göstər»i söndür.",
+      "invalid": "Rəqəmlə yaz, məsələn 12,50.",
+      "zero": "Qiymət 0-dan böyük olmalıdır.",
+      "tooBig": "Ən çox {{max}} ola bilər."
+    }
+  },
+  "saveBar": {
+    "label": "Saxlanmamış dəyişikliklər",
+    "changes_one": "{{count}} saxlanmamış dəyişiklik",
+    "changes_other": "{{count}} saxlanmamış dəyişiklik",
+    "fix_one": "Saxlamaq üçün {{count}} sahəni düzəlt",
+    "fix_other": "Saxlamaq üçün {{count}} sahəni düzəlt",
+    "orderChanged": "Sıra dəyişib — saxlamağı unutma",
+    "hint": "Saxlayan kimi tətbiqdə yenilənəcək.",
+    "save": "Yadda saxla",
+    "discard": "Geri qaytar",
+    "leaveConfirm": "Saxlanmamış dəyişikliklər var. Səhifədən çıxsan, onlar itəcək. Çıxırsan?"
+  },
+  "toast": {
+    "saved": "Yadda saxlandı",
+    "savedBody": "Tətbiqdə qiymətlər və sıra yeniləndi.",
+    "partial": "Hamısı saxlanmadı",
+    "saveFailed": "Saxlamaq alınmadı",
+    "created": "«{{name}}» əlavə olundu",
+    "updated": "«{{name}}» yeniləndi",
+    "archived": "«{{name}}» silindi",
+    "archiveFailed": "Silmək alınmadı"
+  },
+  "archive": {
+    "title": "«{{name}}» silinsin?",
+    "body": "Xidmət tətbiqdən götürüləcək və ona yeni sorğu gəlməyəcək. Keçmiş randevularda adı qalacaq. Bunu geri qaytarmaq olmur.",
+    "bodyNew": "Bu xidmət hələ saxlanmayıb — sadəcə siyahıdan çıxacaq.",
+    "confirm": "Sil"
+  },
+  "empty": {
+    "title": "Hələ xidmət yoxdur",
+    "body": "İlk xidmətini əlavə et — müştərilər onu PetRide tətbiqində görüb sorğu göndərəcək.",
+    "action": "İlk xidməti əlavə et"
+  },
+  "unavailable": {
+    "title": "Bu bölmə sənin hesabında yoxdur",
+    "body": "Hesabına xidmət və ya məhsul bağlanmayıb. PetRide komandasına yaz, birlikdə quraq."
+  },
+  "preview": {
+    "label": "Tətbiqdə belə görünür",
+    "caption": "Dəyişikliklər burada dərhal görünür, tətbiqə isə saxlayandan sonra düşür.",
+    "services": "Xidmətlər",
+    "empty": "Aktiv xidmət yoxdur",
+    "more_one": "və daha {{count}} xidmət",
+    "more_other": "və daha {{count}} xidmət",
+    "rating": "{{rating}} ({{count}})"
+  },
+  "hours": {
+    "title": "İş saatları",
+    "description": "Müştərilər bunu PetRide tətbiqində görür.",
+    "edit": "Dəyiş",
+    "confirm": "Təsdiqlə",
+    "closed": "Bağlı",
+    "breaks": "Fasilə: {{list}}",
+    "alwaysOpen": "Gecə-gündüz açıqdır (24/7).",
+    "unconfirmedTitle": "Saatlar hələ təsdiqlənməyib",
+    "unconfirmedBody": "Bunlar nümunə saatlardır. Təsdiqləyənə qədər tətbiq müştərilərə iş saatlarını göstərmir.",
+    "state": {
+      "always": "Gecə-gündüz açıqdır",
+      "open": "İndi açıqdır · {{time}}-dək",
+      "break": "Fasilədir · {{time}}-dək",
+      "closed": "Bağlıdır",
+      "opensToday": "Bağlıdır · bu gün {{time}} açılır",
+      "opensTomorrow": "Bağlıdır · sabah {{time}} açılır",
+      "opensOn": "Bağlıdır · açılır: {{day}}, {{time}}"
+    }
+  },
+  "dialog": {
+    "createTitle": "Yeni xidmət",
+    "editTitle": "Xidmətə düzəliş",
+    "description": "Bu məlumatları müştərilər PetRide tətbiqində görür.",
+    "create": "Xidməti əlavə et",
+    "category": "Bölmə",
+    "categoryLocked": "Mövcud xidmətin bölməsi dəyişmir. Lazımdırsa, yenisini yarat.",
+    "namesLegend": "Ad və təsvir",
+    "namesHint": "Azərbaycanca ad mütləqdir. Rusca və ya ingiliscə boş qalsa, tətbiq azərbaycanca adı göstərəcək.",
+    "languageTabs": "Dil",
+    "name": "Ad ({{language}})",
+    "nameAzHint": "Qısa və aydın yaz, məsələn «Ümumi müayinə».",
+    "nameFallbackHint": "Boş qalsa, azərbaycanca ad göstəriləcək.",
+    "namePlaceholder": "Xidmətin adı",
+    "descriptionField": "Qısa təsvir ({{language}})",
+    "descriptionPlaceholder": "Məsələn: İt və pişik · ~30 dəq",
+    "descriptionHint": "{{count}} / {{max}} simvol · adın altında görünür",
+    "duration": "Müddət",
+    "minutesUnit": "dəq",
+    "durationHint": "Təxminən {{duration}}",
+    "durationRange": "5 dəqiqədən 1440 dəqiqəyə (1 gün) qədər",
+    "durationPresets": "Müddəti tez seç",
+    "priceLegend": "Qiymət",
+    "showPrice": "Qiyməti tətbiqdə göstər",
+    "showPriceHint": "Söndürsən, tətbiqdə «{{label}}» yazılacaq.",
+    "priceKeptHint": "Qiymət yadda qalır, amma tətbiqdə görünmür.",
+    "priceFrom": "Başlanğıc qiymət",
+    "priceFromHint": "Tətbiqdə «{{example}}» kimi görünür — qiymət ölçüdən və ya işin həcmindən asılıdırsa.",
+    "species": "Kimlər üçün",
+    "active": "Tətbiqdə aktiv",
+    "activeHint": "Söndürsən, xidmət tətbiqdə gizlənəcək və ona sorğu gəlməyəcək.",
+    "previewLabel": "Tətbiqdə",
+    "previewHidden": "Gizlidir",
+    "errors": {
+      "nameRequired": "Azərbaycanca adı yaz.",
+      "duration": "Müddəti 5–1440 dəqiqə arası yaz.",
+      "species": "Ən azı birini seç."
+    }
+  },
+  "productCategories": {
+    "food": "Yem",
+    "treats": "Ləzzətlər",
+    "toys": "Oyuncaqlar",
+    "care": "Baxım",
+    "accessories": "Aksesuarlar",
+    "health": "Sağlamlıq"
+  },
+  "products": {
+    "listTitle": "Məhsullar",
+    "listHint": "Qiyməti və qalığı burada dəyiş, sonra yadda saxla.",
+    "search": "Məhsul və ya SKU axtar",
+    "lowOnly": "Yalnız azalanlar",
+    "categoryFilter": "Kateqoriya",
+    "all": "Hamısı",
+    "stock": "Qalıq",
+    "stockFor": "{{name}} — qalıq",
+    "lowStockAt": "«Az qalıb» həddi",
+    "lowStockHint": "Qalıq bu rəqəmə düşəndə xəbərdarlıq görünür.",
+    "active": "Tətbiqdə satışda",
+    "activeHint": "Söndürsən, məhsul tətbiqdə görünməyəcək.",
+    "edit": "Düzəliş et: {{name}}",
+    "dialogTitle": "Məhsula düzəliş",
+    "dialogDescription": "SKU {{sku}} · Müştərilər bunu PetRide tətbiqində görür.",
+    "kpi": {
+      "active": "Satışda",
+      "low": "Az qalıb",
+      "lowNote": "Vaxtında yenilə",
+      "out": "Bitib",
+      "sold": "30 gündə satılıb"
+    },
+    "sold_one": "30 gündə {{count}} ədəd satılıb",
+    "sold_other": "30 gündə {{count}} ədəd satılıb",
+    "emptyTitle": "Hələ məhsul yoxdur",
+    "emptyBody": "Məhsul siyahısını PetRide komandası yükləyir. Bizə yaz, birlikdə əlavə edək.",
+    "clearFilters": "Filtrləri təmizlə",
+    "saveHint": "Saxlayan kimi tətbiqdə qiymət və qalıq yenilənəcək.",
+    "savedBody": "Tətbiqdə qiymətlər və qalıq yeniləndi.",
+    "errors": {
+      "stock": "Qalığı tam rəqəmlə yaz (0 və ya çox).",
+      "lowStock": "0–999 arası tam rəqəm yaz."
+    }
+  }
+}

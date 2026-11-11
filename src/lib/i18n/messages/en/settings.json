@@ -1,0 +1,384 @@
+{
+  "meta": {
+    "title": "Settings",
+    "description": "Opening hours, contact details and PetRide settings."
+  },
+  "title": "Settings",
+  "description": "Your profile, opening hours, team and how you work with PetRide — all in one place.",
+  "leaveConfirm": "You have unsaved changes. If you leave this page, they'll be lost. Leave anyway?",
+  "nav": {
+    "label": "Settings sections",
+    "unsaved": "has unsaved changes",
+    "profile": "Profile",
+    "hours": "Opening hours",
+    "petride": "PetRide integration",
+    "notifications": "Notifications",
+    "team": "Team",
+    "language": "Language",
+    "security": "Security"
+  },
+  "saveBar": {
+    "label": "Unsaved changes",
+    "message": "You have unsaved changes",
+    "fix_one": "Fix {{count}} field to save",
+    "fix_other": "Fix {{count}} fields to save",
+    "save": "Save changes",
+    "discard": "Discard"
+  },
+  "toast": {
+    "saved": "Saved",
+    "saveFailed": "Couldn't save"
+  },
+  "profile": {
+    "title": "Business profile",
+    "description": "Clients see these details in the PetRide app.",
+    "name": "Business name",
+    "nameHint": "The title of your card in the app.",
+    "address": "Address",
+    "addressHint": "The Azerbaijani address is required. If Russian or English is empty, we'll show the Azerbaijani one.",
+    "phone": "Phone",
+    "phoneHint": "Clients call this number from the app. For example: +994 12 565 66 55",
+    "email": "Email",
+    "emailHint": "For emails and reports from PetRide.",
+    "logo": {
+      "title": "Logo",
+      "alt": "{{name}} logo",
+      "upload": "Upload logo",
+      "replace": "Replace logo",
+      "remove": "Remove logo",
+      "hint": "PNG, JPG or WebP up to 2 MB. Square images look best.",
+      "typeError": "That file type won't work. Pick a PNG, JPG or WebP.",
+      "sizeError": "That file is too big — pick an image under 2 MB.",
+      "readError": "Couldn't read that file. Try another image."
+    },
+    "map": {
+      "title": "Map pin",
+      "alt": "Your business on the map (sample map)",
+      "coords": "Lat {{lat}} · Lng {{lng}}",
+      "hint": "Drivers come to this pin. You'll soon be able to move it here; if it's wrong right now, message the PetRide team."
+    },
+    "categories": {
+      "title": "What you offer",
+      "description": "Pick the app sections you should appear in.",
+      "vet": {
+        "title": "Vet clinic",
+        "body": "Check-ups, vaccinations and treatment."
+      },
+      "groom": {
+        "title": "Grooming salon",
+        "body": "Baths, brushing and haircuts."
+      },
+      "hotel": {
+        "title": "Pet hotel",
+        "body": "Overnight stays and day care."
+      },
+      "shop": {
+        "title": "Pet shop",
+        "body": "Food, accessories and delivery."
+      }
+    },
+    "reviewHint": "When your name, address or services change, the PetRide team checks them before they update in the app.",
+    "reviewTitle": "Changes in review",
+    "reviewBody": "The PetRide team is checking the name, address or services you sent on {{date}}. They'll update in the app once checked.",
+    "reviewToast": "Your new name, address or services will show in the app once the PetRide team has checked them.",
+    "savedToast": "Updated in the app.",
+    "saveHint": "Phone, email and logo update right away.",
+    "errors": {
+      "name": "Add your business name.",
+      "address": "Add the Azerbaijani address.",
+      "phone": "Enter an Azerbaijani number, like +994 12 565 66 55.",
+      "email": "Check the email address, like info@example.az.",
+      "categories": "Pick at least one."
+    }
+  },
+  "hours": {
+    "title": "Opening hours",
+    "appTitle": "These hours show in the PetRide app",
+    "appBody": "Clients see your opening hours in the app and pick visit times around them. Keep them accurate.",
+    "unconfirmedTitle": "Confirm your opening hours",
+    "unconfirmedBody": "These are sample hours. Until you confirm them, the app doesn't show your opening hours to clients.",
+    "confirm": "Confirm these hours",
+    "saveAndConfirm": "Save and confirm",
+    "weekTitle": "Weekly schedule",
+    "weekDescription": "Opening, closing and breaks for each day.",
+    "alwaysOpen": "Open around the clock (24/7)",
+    "alwaysOpenHint": "Only turn this on if someone's really there at night.",
+    "alwaysOpenOn": "The app will say “Open 24/7”. Your weekly schedule is kept — turn 24/7 off and it comes back.",
+    "confirm247": {
+      "title": "Are you really open 24/7?",
+      "body": "Clients will see “Open 24/7” in the app and may come at night. Only confirm if someone's there around the clock.",
+      "confirm": "Yes, we're open 24/7"
+    },
+    "columns": {
+      "day": "Day",
+      "status": "Status",
+      "hours": "Hours"
+    },
+    "today": "Today",
+    "open": "Open",
+    "closed": "Closed",
+    "closedAllDay": "Closed all day",
+    "from": "Opens",
+    "to": "Closes",
+    "breaksLabel": "{{day}}: breaks",
+    "breakN": "Break {{n}}",
+    "breakFrom": "Starts",
+    "breakTo": "Ends",
+    "addBreak": "Add a break",
+    "removeBreak": "Remove break: {{day}}, break {{n}}",
+    "copyMenu": "{{day}}: copy hours",
+    "copyAll": "Copy to every day",
+    "copyWeekdays": "Copy to weekdays (Mon–Fri)",
+    "copyWeekend": "Copy to the weekend (Sat–Sun)",
+    "errors": {
+      "range": "Closing time has to be after opening time.",
+      "breakOrder": "A break has to end after it starts.",
+      "breakOutside": "Breaks have to be within opening hours.",
+      "breakOverlap": "These breaks overlap.",
+      "dateMissing": "Pick a date.",
+      "datePast": "That date has passed — pick today or later.",
+      "dateDuplicate": "That date is already on the list."
+    },
+    "exceptions": {
+      "title": "Holidays and special days",
+      "description": "Days you're closed or keep different hours.",
+      "add": "Add a date",
+      "empty": "No special days yet. Add holidays so clients don't turn up when you're closed.",
+      "date": "Date",
+      "newDate": "new date",
+      "closed": "Closed all day",
+      "note": "Note (optional)",
+      "notePlaceholder": "For example: Novruz",
+      "noteHint": "Shown next to the date in the app.",
+      "past": "Passed",
+      "remove": "Remove {{date}}"
+    },
+    "preview": {
+      "label": "How it'll look in the app",
+      "caption": "The app updates as soon as you save.",
+      "captionUnconfirmed": "Shows in the app once you confirm.",
+      "hours": "Opening hours",
+      "always": "Open 24/7",
+      "breaks": "Break: {{list}}",
+      "special": "Special days"
+    },
+    "state": {
+      "always": "Open 24/7",
+      "open": "Open now · until {{time}}",
+      "break": "On a break · until {{time}}",
+      "closed": "Closed",
+      "opensToday": "Closed · opens today at {{time}}",
+      "opensTomorrow": "Closed · opens tomorrow at {{time}}",
+      "opensOn": "Closed · opens {{day}} at {{time}}"
+    },
+    "saveHint": "The app updates as soon as you save.",
+    "saveHintConfirm": "Saving confirms your hours — then they show in the app.",
+    "toast": {
+      "saved": "Opening hours saved",
+      "confirmed": "Opening hours confirmed",
+      "body": "Clients will see them in the PetRide app."
+    }
+  },
+  "petride": {
+    "title": "PetRide integration",
+    "requests": {
+      "title": "Requests",
+      "description": "How you take appointment requests from the app.",
+      "autoConfirm": "Accept requests automatically",
+      "autoConfirmHint": "Requests within your hours are confirmed right away. Turn it off to accept each one yourself.",
+      "window": "Time to reply",
+      "windowHint": "If you don't reply in time, the app suggests the client picks another time.",
+      "windowOff": "Not needed with automatic accept."
+    },
+    "rides": {
+      "title": "PetRide rides",
+      "description": "A driver brings the pet from home and takes them back.",
+      "accept": "Accept PetRide rides",
+      "acceptHint": "Clients can book a PetRide driver along with the appointment.",
+      "buffer": "How early the driver drops the pet off",
+      "bufferHint": "Time for check-in and for the pet to settle.",
+      "bufferOff": "Rides are turned off.",
+      "offWarningTitle": "You're turning rides off",
+      "offWarningBody": "Rides already booked stay as they are. New requests won't be able to add a driver."
+    },
+    "courier": {
+      "title": "Courier delivery",
+      "description": "A PetRide courier takes orders to your clients.",
+      "accept": "Deliver with a PetRide courier",
+      "acceptHint": "When you mark an order “Ready”, a courier is booked automatically."
+    },
+    "noBuffer": "Right on time",
+    "connection": {
+      "title": "App connection",
+      "connected": "Connected",
+      "listing": "Your name in the app",
+      "partnerId": "Partner ID",
+      "mode": "Requests",
+      "modeAuto": "Accepted automatically",
+      "modeManual": "Manual · reply within {{window}}",
+      "note": "Requests, rides and orders arrive from the app in this dashboard in real time."
+    },
+    "saveHint": "Applies to new requests as soon as you save.",
+    "savedToast": "New rules are on."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "When and where we let you know.",
+    "columns": {
+      "event": "Event",
+      "panel": "Dashboard",
+      "email": "Email"
+    },
+    "events": {
+      "newRequest": {
+        "title": "New request",
+        "body": "When a client asks for an appointment in the app."
+      },
+      "rideArriving": {
+        "title": "Ride arriving",
+        "body": "The driver's bringing a pet and is almost there."
+      },
+      "newOrder": {
+        "title": "New order",
+        "body": "When a client places an order in the app."
+      },
+      "newReview": {
+        "title": "New review",
+        "body": "When a client leaves a review after a visit."
+      }
+    },
+    "sound": "Play a sound for new requests",
+    "soundHint": "You'll hear a short chime while the dashboard is open.",
+    "summary": {
+      "title": "Daily summary",
+      "description": "A short email every morning: what's on today, yesterday's revenue and new reviews.",
+      "toggle": "Email me a daily summary",
+      "toggleHint": "One email a day at the time you pick.",
+      "time": "Time",
+      "email": "Send it to"
+    },
+    "demoNote": "Demo mode doesn't send emails — your settings are still saved.",
+    "savedToast": "Notifications will follow your new settings.",
+    "errors": {
+      "email": "Enter a valid email for the summary."
+    }
+  },
+  "team": {
+    "title": "Team",
+    "description": "Who works in the dashboard and what they can do.",
+    "invite": "Invite member",
+    "caption": "Team members",
+    "columns": {
+      "member": "Member",
+      "role": "Role",
+      "status": "Status",
+      "activity": "Last active",
+      "actions": "Actions"
+    },
+    "you": "you",
+    "activeNow": "Active now",
+    "invitedAgo": "Invited {{time}}",
+    "roleFor": "Role of {{name}}",
+    "actions": "Actions for {{name}}",
+    "status": {
+      "active": "Active",
+      "invited": "Invited"
+    },
+    "roles": {
+      "owner": {
+        "title": "Owner",
+        "body": "Everything: prices, hours, team and security."
+      },
+      "manager": {
+        "title": "Manager",
+        "body": "Appointments, orders, prices, hours and stats. Can't manage the team."
+      },
+      "staff": {
+        "title": "Staff",
+        "body": "Appointments, orders and clients. Can't change prices or settings."
+      }
+    },
+    "rolesTitle": "Roles",
+    "rolesDescription": "What each role can do.",
+    "resend": "Resend invite",
+    "cancelInvite": "Cancel invite",
+    "remove": "Remove from team",
+    "undo": "Undo",
+    "aloneTitle": "It's just you for now",
+    "aloneBody": "Invite your colleagues — together you'll answer requests faster.",
+    "removeTitle": "Remove {{name}} from the team?",
+    "removeBody": "They won't be able to sign in to the dashboard. You can invite them again later.",
+    "cancelTitle": "Cancel the invite for {{email}}?",
+    "cancelBody": "The invite link will stop working.",
+    "inviteTitle": "Invite to the team",
+    "inviteDescription": "We'll email them an invite. You can change their role later.",
+    "email": "Email",
+    "name": "Name (optional)",
+    "nameHint": "How they'll show up in the list.",
+    "sendInvite": "Send invite",
+    "demoNote": "Demo mode doesn't send emails.",
+    "errors": {
+      "email": "Check the email address, like name@example.az.",
+      "duplicate": "That email is already on the team."
+    },
+    "toast": {
+      "invited": "{{email}} invited",
+      "resent": "Invite sent again to {{email}}",
+      "roleChanged": "{{name}} is now {{role}}",
+      "removed": "{{name}} removed from the team",
+      "inviteCancelled": "Invite for {{email}} cancelled",
+      "failed": "That didn't work"
+    }
+  },
+  "language": {
+    "title": "Dashboard language",
+    "description": "Changes right away — you stay on this page.",
+    "emailTitle": "Email language",
+    "emailDescription": "Notification emails and the daily summary come in this language.",
+    "emailLabel": "Email language",
+    "emailSaved": "Emails now come in {{language}}",
+    "clientsNote": "Messages to clients use each client's app language."
+  },
+  "security": {
+    "passwordTitle": "Password",
+    "passwordDescription": "Pick a strong password to keep your account safe.",
+    "changedAt": "Last changed {{date}}",
+    "current": "Current password",
+    "next": "New password",
+    "repeat": "Repeat new password",
+    "change": "Change password",
+    "rulesTitle": "Your new password needs",
+    "rules": {
+      "length": "At least 8 characters",
+      "letter": "At least one letter",
+      "digit": "At least one number",
+      "met": "done",
+      "notMet": "not yet"
+    },
+    "errors": {
+      "current": "Enter your current password.",
+      "wrong": "That's not your current password.",
+      "rules": "Use at least 8 characters with a letter and a number.",
+      "same": "Pick a password that's different from the old one.",
+      "repeat": "The passwords don't match."
+    },
+    "demoNote": "In demo mode the sign-in password stays the same.",
+    "sessionsTitle": "Active sessions",
+    "sessionsDescription": "Devices signed in to the dashboard.",
+    "sessionsNote": "See a device you don't know? Sign it out and change your password.",
+    "thisDevice": "This device",
+    "thisBrowser": "This browser",
+    "activeNow": "active now",
+    "signOut": "Sign out",
+    "signOutOthers": "Sign out other devices",
+    "confirmTitle": "Sign out {{device}}?",
+    "confirmOthersTitle": "Sign out all other devices?",
+    "confirmBody": "They'll need the password to sign in again.",
+    "toast": {
+      "changed": "Password changed",
+      "sessionOut": "Device signed out",
+      "othersOut": "Other devices signed out",
+      "failed": "That didn't work"
+    }
+  }
+}

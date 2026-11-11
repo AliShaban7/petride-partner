@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "title": "Orders",
+    "description": "Shop orders and PetRide courier delivery.",
+    "ridesTitle": "PetRide rides",
+    "ridesDescription": "PetRide rides that bring pets to you and take them home."
+  },
+  "title": "Orders",
+  "description": "Orders from the PetRide app. Pack them, hand them to the courier, follow the delivery.",
+  "sections": {
+    "label": "Sections",
+    "orders": "Orders",
+    "products": "Products & stock"
+  },
+  "kpi": {
+    "label": "Today's numbers",
+    "orders": "Orders today",
+    "revenue": "Revenue today",
+    "averageTicket": "Average basket",
+    "lowStock": "Running low",
+    "outOfStock_one": "{{count}} product sold out",
+    "outOfStock_other": "{{count}} products sold out",
+    "allStocked": "Everything's in stock"
+  },
+  "tabs": {
+    "label": "Filter orders by status",
+    "all": "All",
+    "new": "New",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "on_the_way": "On the way",
+    "done": "Handed over",
+    "cancelled": "Cancelled"
+  },
+  "view": {
+    "label": "View",
+    "table": "Table",
+    "board": "Board"
+  },
+  "filters": {
+    "searchLabel": "Search orders",
+    "search": "Number, customer or phone",
+    "fulfilment": "Delivery method",
+    "fulfilmentAll": "All methods",
+    "clear": "Reset filters"
+  },
+  "table": {
+    "caption": "Orders: {{tab}}",
+    "order": "Order",
+    "customer": "Customer",
+    "items": "Items",
+    "total": "Total",
+    "delivery": "Delivery",
+    "status": "Status",
+    "next": "Next step"
+  },
+  "items_one": "{{count}} item",
+  "items_other": "{{count}} items",
+  "itemsMore": "{{first}} and {{count}} more",
+  "empty": {
+    "title": "No orders yet",
+    "body": "As soon as customers order in PetRide, you'll see it here.",
+    "tabTitle": "No orders with this status",
+    "tabBody": "Check another status or reset the filters.",
+    "searchTitle": "Nothing found",
+    "searchBody": "Check the order number, name or phone."
+  },
+  "actions": {
+    "toPreparing": "Start preparing",
+    "toReady": "Mark ready",
+    "toReadyCourier": "Ready, call courier",
+    "toPickedUp": "Hand over",
+    "toDelivered": "Mark delivered",
+    "cancel": "Cancel order",
+    "moveTo": "Move",
+    "moveToLabel": "Move order {{code}} to another column",
+    "receipt": "Receipt",
+    "print": "Print",
+    "callCustomer": "Call customer",
+    "callDriver": "Call driver",
+    "openClient": "Customer card"
+  },
+  "toast": {
+    "moved": "{{code}}: {{status}}",
+    "courierBooked": "We've called a PetRide courier. The driver will be there soon.",
+    "cancelled": "{{code}} cancelled",
+    "cancelledBody": "The customer got a notification in the app.",
+    "failed": "Status didn't change",
+    "notAllowed": "This order can't go there",
+    "courierMoves": "The PetRide courier moves orders to “On the way” by themselves."
+  },
+  "board": {
+    "label": "Order board",
+    "hint": "Drag cards between columns, or press “Move”.",
+    "empty": "Nothing here yet",
+    "dropHere": "Drop here",
+    "count_one": "{{count}} order",
+    "count_other": "{{count}} orders",
+    "columns": {
+      "new": "New",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "on_the_way": "On the way",
+      "done": "Handed over",
+      "cancelled": "Cancelled"
+    },
+    "hints": {
+      "new": "Take a look and start preparing",
+      "preparing": "You're packing these",
+      "ready": "Waiting for the courier or customer",
+      "on_the_way": "The PetRide courier is on the way",
+      "done": "Handed over today",
+      "cancelled": "Cancelled today"
+    }
+  },
+  "move": {
+    "title": "Move order {{code}}",
+    "description": "Now: {{status}}. Where should it go?",
+    "none": "This order can't be moved right now.",
+    "courierOnly": "You can mark it delivered once the courier has picked it up."
+  },
+  "cancel": {
+    "title": "Cancel {{code}}?",
+    "description": "The customer will see a notification and the reason in the app. You can't undo this.",
+    "reasonLabel": "Reason",
+    "reasons": {
+      "out_of_stock": "Out of stock",
+      "client_asked": "The customer asked to cancel",
+      "no_delivery": "We can't deliver to this address",
+      "other": "Something else"
+    },
+    "otherLabel": "Write the reason",
+    "otherPlaceholder": "For example: the price has changed",
+    "otherRequired": "Add the reason in a few words.",
+    "confirm": "Cancel order",
+    "keep": "Keep it",
+    "courierNote": "The PetRide courier for this order will be cancelled too."
+  },
+  "drawer": {
+    "title": "Order {{code}}",
+    "loadingTitle": "Order",
+    "progress": "Order progress",
+    "stepDone": "done",
+    "stepCurrent": "current step",
+    "items": "Basket",
+    "itemsCaption": "Items in order {{code}}",
+    "product": "Product",
+    "qty": "Qty",
+    "unitPrice": "Price",
+    "lineTotal": "Total",
+    "subtotal": "Items",
+    "deliveryFee": "Delivery",
+    "total": "Total",
+    "free": "Free",
+    "customer": "Customer",
+    "phone": "Phone",
+    "pets": "Pets",
+    "address": "Delivery address",
+    "pickupAtShop": "Picks it up at the shop",
+    "payment": "Payment",
+    "card": "Card, in the app",
+    "cash": "Cash on handover",
+    "clientNote": "Customer's note",
+    "reason": "Cancellation reason",
+    "timeline": "History",
+    "by": {
+      "client": "Customer",
+      "partner": "You",
+      "system": "PetRide"
+    },
+    "courier": "PetRide courier",
+    "courierNotBooked": "When you mark the order ready, we'll call a PetRide courier for you.",
+    "courierEta": "{{eta}} to go",
+    "courierDoneHint": "The courier has delivered it. Mark it delivered to close the order.",
+    "driver": "Driver",
+    "car": "Car",
+    "driverPending": "No driver assigned yet",
+    "rideProgress": "Courier's route"
+  },
+  "receipt": {
+    "title": "Receipt {{code}}",
+    "description": "Print-ready view. Press “Print” for a paper receipt or a PDF.",
+    "heading": "Sales receipt",
+    "order": "Order",
+    "date": "Date",
+    "customer": "Customer",
+    "delivery": "Delivery",
+    "payment": "Payment",
+    "thanks": "Thank you! Hope your buddy loves it.",
+    "demo": "Demo data. Not an official payment document."
+  },
+  "products": {
+    "title": "Products & stock",
+    "description": "Change prices and stock here. The app updates right away.",
+    "caption": "Products and stock levels",
+    "searchLabel": "Search products",
+    "search": "Name or SKU",
+    "category": "Category",
+    "categoryAll": "All categories",
+    "stockFilter": "Stock",
+    "stockAll": "All",
+    "stockLow": "Running low",
+    "stockOut": "Sold out",
+    "name": "Product",
+    "price": "Price",
+    "stock": "Stock",
+    "sold30d": "Sold in 30 days",
+    "categories": {
+      "food": "Food",
+      "treats": "Treats",
+      "toys": "Toys",
+      "care": "Care",
+      "accessories": "Accessories",
+      "health": "Health"
+    },
+    "pcs": "{{count}} pcs",
+    "editPrice": "{{name}}: change price",
+    "editStock": "{{name}}: change stock",
+    "priceInput": "New price for {{name}}",
+    "stockInput": "New stock for {{name}}",
+    "save": "Save",
+    "cancelEdit": "Keep as is",
+    "invalidPrice": "Enter the price as a number, like 12.80.",
+    "invalidStock": "Stock must be a whole number, 0 or more.",
+    "priceSaved": "{{name}}: price updated",
+    "stockSaved": "{{name}}: stock updated",
+    "lowAt": "Counts as running low at {{count}} pcs or fewer",
+    "emptyTitle": "No products found",
+    "emptyBody": "Change the search or filters."
+  },
+  "rides": {
+    "title": "PetRide rides",
+    "description": "Rides that bring pets to you and take them home. Status and arrival times update live.",
+    "kpi": {
+      "label": "Ride numbers",
+      "live": "On the road now",
+      "liveNote": "{{in}} coming in · {{out}} going home",
+      "today": "Rides today",
+      "todayNote": "{{done}} finished",
+      "share": "Came with PetRide",
+      "shareNote": "last 30 days"
+    },
+    "tabs": {
+      "label": "Filter rides by time",
+      "live": "Now",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "searchLabel": "Search rides",
+    "search": "Customer, pet or driver",
+    "direction": "Direction",
+    "directionAll": "Both directions",
+    "caption": "PetRide rides: {{tab}}",
+    "columns": {
+      "client": "Customer & pet",
+      "direction": "Direction",
+      "time": "Time",
+      "driver": "Driver",
+      "status": "Status",
+      "price": "Price"
+    },
+    "etaShort": "{{eta}} to go",
+    "noDriver": "Not assigned yet",
+    "roundTrip": "Round trip",
+    "empty": {
+      "liveTitle": "No one's on the road right now",
+      "liveBody": "As soon as a pet sets off, you'll see the ride here live.",
+      "todayTitle": "No rides today",
+      "todayBody": "A ride shows up here when a customer adds PetRide to an appointment.",
+      "upcomingTitle": "No upcoming rides",
+      "upcomingBody": "New rides come in together with appointments.",
+      "pastTitle": "No rides in the last 30 days",
+      "pastBody": "Past rides stay here."
+    },
+    "drawer": {
+      "title": "{{pets}} · {{direction}}",
+      "client": "Customer",
+      "pickup": "Pick-up",
+      "arrive": "Arrival",
+      "from": "From",
+      "to": "To",
+      "driver": "Driver",
+      "car": "Car",
+      "distance": "Distance",
+      "price": "Ride price",
+      "travelNotes": "Travel notes",
+      "driverNote": "Note for the driver",
+      "openAppointment": "Open appointment",
+      "progress": "Ride progress",
+      "callDriver": "Call driver"
+    },
+    "off": {
+      "title": "PetRide rides are off",
+      "body": "Turn rides on in Settings so customers can bring their pets with PetRide.",
+      "action": "Go to Settings"
+    }
+  }
+}

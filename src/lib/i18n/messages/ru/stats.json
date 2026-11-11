@@ -1,0 +1,237 @@
+{
+  "meta": {
+    "title": "Статистика",
+    "description": "Выручка, записи, услуги, загруженные часы и поездки PetRide."
+  },
+  "title": "Статистика",
+  "subtitle": {
+    "visits": "Выручка, записи, услуги и поездки PetRide за выбранный период.",
+    "orders": "Выручка, заказы, товары и склад за выбранный период."
+  },
+  "loading": "Считаем цифры…",
+  "toolbar": {
+    "label": "Период и сравнение",
+    "custom": "Свой период",
+    "from": "Начало",
+    "to": "Конец",
+    "compare": "Сравнить с прошлым периодом",
+    "range": "{{range}} · {{days}}",
+    "comparedWith": "Сравниваем с периодом {{range}}",
+    "noHistory": "За прошлый период данных пока нет, поэтому сравнения не будет.",
+    "errors": {
+      "invalid": "Выбери обе даты.",
+      "order": "Начало не может быть позже конца.",
+      "future": "Будущую дату выбрать нельзя.",
+      "tooLong": "Можно выбрать не больше года."
+    }
+  },
+  "delta": {
+    "vsPrevious": "к прошлому периоду"
+  },
+  "count": {
+    "appointments_one": "{{count}} запись",
+    "appointments_few": "{{count}} записи",
+    "appointments_many": "{{count}} записей",
+    "appointments_other": "{{count}} записи",
+    "orders_one": "{{count}} заказ",
+    "orders_few": "{{count}} заказа",
+    "orders_many": "{{count}} заказов",
+    "orders_other": "{{count}} заказа",
+    "reviews_one": "{{count}} отзыв",
+    "reviews_few": "{{count}} отзыва",
+    "reviews_many": "{{count}} отзывов",
+    "reviews_other": "{{count}} отзыва",
+    "units_one": "{{count}} шт.",
+    "units_few": "{{count}} шт.",
+    "units_many": "{{count}} шт.",
+    "units_other": "{{count}} шт.",
+    "days_one": "{{count}} день",
+    "days_few": "{{count}} дня",
+    "days_many": "{{count}} дней",
+    "days_other": "{{count}} дня",
+    "stars_one": "{{count}} звезда",
+    "stars_few": "{{count}} звезды",
+    "stars_many": "{{count}} звёзд",
+    "stars_other": "{{count}} звезды"
+  },
+  "kpi": {
+    "revenue": "Выручка",
+    "appointments": "Записи",
+    "orders": "Заказы",
+    "averageTicket": "Средний чек",
+    "newClients": "Новые клиенты",
+    "returning": "вернулись: {{count}}",
+    "returningClients": "Вернувшиеся клиенты",
+    "rideShare": "С поездкой PetRide",
+    "courierShare": "Курьером PetRide",
+    "rating": "Рейтинг",
+    "outOf": "/ 5",
+    "noReviews": "отзывов пока нет",
+    "noShowRate": "Доля неявок",
+    "reviewsCount": "Количество отзывов"
+  },
+  "view": {
+    "label": "Вид",
+    "chart": "График",
+    "table": "Таблица"
+  },
+  "granularity": {
+    "day": "По дням",
+    "week": "По неделям"
+  },
+  "series": {
+    "current": "Этот период",
+    "previous": "Прошлый период",
+    "otherServices": "Другие услуги",
+    "pickup": "Самовывоз",
+    "courier": "Курьер PetRide",
+    "cancelled": "Отменены",
+    "declined": "Отклонены",
+    "noShow": "Не пришли",
+    "cancelledOrders": "Отменённые заказы",
+    "share": "Доля PetRide"
+  },
+  "columns": {
+    "day": "День",
+    "week": "Неделя",
+    "start": "Начало",
+    "end": "Конец",
+    "metric": "Показатель",
+    "revenue": "Выручка",
+    "service": "Услуга",
+    "category": "Категория",
+    "product": "Товар",
+    "appointments": "Записи",
+    "orders": "Заказы",
+    "completed": "Завершены",
+    "withRide": "С поездкой PetRide",
+    "share": "Доля",
+    "averageTicket": "Средний чек",
+    "change": "Изменение",
+    "unitsSold": "Продано",
+    "stock": "На складе",
+    "perDay": "В день",
+    "daysLeft": "Хватит на",
+    "weekday": "День недели",
+    "total": "Всего",
+    "stars": "Оценка",
+    "reviews": "Отзывы",
+    "previousBookings": "В прошлом периоде"
+  },
+  "revenue": {
+    "title": "Динамика выручки",
+    "description": "{{granularity}} · с завершённых записей и заказов",
+    "summary": "Выручка за {{range}}: {{total}}. Больше всего — {{best}}, {{bestValue}}.",
+    "summaryPrevious": "За прошлый период: {{total}}.",
+    "emptyTitle": "За этот период выручки нет",
+    "emptyBody": "Она появится здесь, как только завершится запись или заказ."
+  },
+  "volume": {
+    "titleVisits": "Записи по услугам",
+    "titleOrders": "Заказы и доставка",
+    "summaryVisits": "Всего {{total}}. Больше всего — {{best}}, {{bestCount}}. Самая популярная услуга — {{service}}.",
+    "summaryOrders": "Всего {{total}}, из них курьером PetRide — {{courier}}. Больше всего — {{best}}, {{bestCount}}.",
+    "emptyVisits": "За этот период записей нет",
+    "emptyOrders": "За этот период заказов нет",
+    "emptyBody": "Попробуй выбрать период подлиннее."
+  },
+  "mix": {
+    "titleServices": "Доля услуг",
+    "titleCategories": "Доля категорий",
+    "descriptionServices": "По числу записей",
+    "descriptionCategories": "По числу проданных товаров",
+    "total": "всего",
+    "summary": "Доли: {{list}}.",
+    "emptyTitle": "За этот период пока нечего показать"
+  },
+  "busy": {
+    "title": "Самые загруженные часы",
+    "descriptionVisits": "Когда начинаются записи — по дням недели и часам",
+    "descriptionOrders": "Когда оформляют заказы — по дням недели и часам",
+    "less": "Меньше",
+    "more": "Больше",
+    "cell": "{{day}}, {{time}}: {{count}}",
+    "summary": "Пик: {{day}}, {{time}} ({{count}}). Самый загруженный день — {{busiestDay}}, самый спокойный — {{quietestDay}}.",
+    "emptyTitle": "За этот период записей нет"
+  },
+  "rides": {
+    "titleVisits": "Приехали с PetRide",
+    "titleOrders": "Доставка курьером PetRide",
+    "descriptionVisits": "Какая доля записей пришла с поездкой PetRide",
+    "descriptionOrders": "Какую долю заказов доставил курьер PetRide",
+    "summary": "В среднем {{share}}. Максимум — {{best}}, {{bestShare}}.",
+    "summaryPrevious": "В прошлом периоде: {{share}}.",
+    "emptyTitle": "За этот период считать пока нечего"
+  },
+  "cancellations": {
+    "titleVisits": "Отмены и неявки",
+    "titleOrders": "Отменённые заказы",
+    "descriptionVisits": "Доля неявок: {{rate}}",
+    "descriptionOrders": "Доля отмен: {{rate}}",
+    "summaryVisits": "Отменены: {{cancelled}}, отклонены: {{declined}}, не пришли: {{noShow}}. Потеряно записей: {{rate}}.",
+    "summaryOrders": "Отменено: {{count}} ({{rate}}).",
+    "emptyTitle": "Отмен нет",
+    "emptyVisits": "За этот период ни отмен, ни неявок — отличный результат.",
+    "emptyOrders": "За этот период ни один заказ не отменили."
+  },
+  "topServices": {
+    "title": "Итоги по услугам",
+    "description": "Записи, выручка и средний чек",
+    "caption": "Итоги по услугам, {{range}}",
+    "emptyTitle": "За этот период записей нет"
+  },
+  "topProducts": {
+    "title": "Хиты продаж",
+    "description": "Топ-10 товаров по выручке",
+    "caption": "Хиты продаж, {{range}}",
+    "emptyTitle": "За этот период продаж нет"
+  },
+  "stock": {
+    "title": "Оборачиваемость склада",
+    "description": "На сколько дней хватит остатка при текущих продажах",
+    "caption": "Оборачиваемость склада, {{range}}",
+    "noSales": "Продаж нет",
+    "lessThanDay": "Меньше дня",
+    "runningLow_one": "{{count}} товар закончится раньше чем через неделю",
+    "runningLow_few": "{{count}} товара закончатся раньше чем через неделю",
+    "runningLow_many": "{{count}} товаров закончатся раньше чем через неделю",
+    "runningLow_other": "{{count}} товара закончатся раньше чем через неделю",
+    "emptyTitle": "Товаров пока нет"
+  },
+  "rating": {
+    "title": "Рейтинг и отзывы",
+    "description": "Оценки клиентов в PetRide",
+    "average": "Средняя оценка",
+    "row": "{{stars}}: {{reviews}} ({{share}})",
+    "summary": "Средняя оценка {{average}} из 5, {{reviews}}. Пять звёзд — {{share}}.",
+    "emptyTitle": "За этот период отзывов нет",
+    "emptyBody": "Когда клиенты оставят отзывы, они появятся здесь."
+  },
+  "empty": {
+    "title": "За этот период пока пусто",
+    "body": "Как только из PetRide придут записи или заказы, цифры появятся здесь. Попробуй и период подлиннее.",
+    "action": "Показать 90 дней"
+  },
+  "export": {
+    "button": "Скачать CSV",
+    "menu": "Файл CSV",
+    "summary": "Ключевые показатели",
+    "seriesDay": "По дням",
+    "seriesWeek": "По неделям",
+    "services": "По услугам",
+    "products": "По товарам",
+    "done": "CSV готов",
+    "money": "{{label}} (AZN)",
+    "percent": "{{label}} (%)",
+    "period": "Период"
+  },
+  "categories": {
+    "food": "Корм",
+    "treats": "Лакомства",
+    "toys": "Игрушки",
+    "care": "Уход",
+    "accessories": "Аксессуары",
+    "health": "Здоровье"
+  },
+  "range": "{{from}} – {{to}}"
+}

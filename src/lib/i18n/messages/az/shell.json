@@ -1,0 +1,73 @@
+{
+  "brand": "PetRide",
+  "partnerLabel": "Partner",
+  "homeLink": "PetRide Partner — ümumi baxış",
+  "nav": {
+    "label": "Əsas menyu",
+    "overview": "Ümumi baxış",
+    "appointments": "Randevular",
+    "orders": "Sifarişlər",
+    "rides": "PetRide gedişləri",
+    "clients": "Müştərilər",
+    "stats": "Statistika",
+    "services": "Xidmətlər və qiymətlər",
+    "servicesShop": "Məhsullar və qiymətlər",
+    "settings": "Ayarlar",
+    "more": "Daha çox"
+  },
+  "navShort": {
+    "overview": "Baxış",
+    "appointments": "Randevular",
+    "orders": "Sifarişlər",
+    "rides": "Gedişlər",
+    "clients": "Müştərilər",
+    "stats": "Statistika",
+    "services": "Qiymətlər",
+    "settings": "Ayarlar",
+    "more": "Daha çox"
+  },
+  "sidebar": {
+    "collapse": "Menyunu yığ",
+    "expand": "Menyunu aç"
+  },
+  "partner": {
+    "cardLabel": "Tərəfdaş",
+    "switchLabel": "Demo: tərəfdaşı dəyiş",
+    "switchTo": "Keç: {{name}}",
+    "switching": "Keçirik…"
+  },
+  "topbar": {
+    "searchLabel": "Axtarış",
+    "searchPlaceholder": "Müştəri, heyvan və ya kod axtar",
+    "notifications": "Bildirişlər",
+    "unread_one": "{{count}} oxunmamış",
+    "unread_other": "{{count}} oxunmamış",
+    "unread_few": "{{count}} oxunmamış",
+    "unread_many": "{{count}} oxunmamış",
+    "newRequests_one": "{{count}} yeni sorğu",
+    "newRequests_other": "{{count}} yeni sorğu",
+    "newRequests_few": "{{count}} yeni sorğu",
+    "newRequests_many": "{{count}} yeni sorğu",
+    "newOrders_one": "{{count}} yeni sifariş",
+    "newOrders_other": "{{count}} yeni sifariş",
+    "newOrders_few": "{{count}} yeni sifariş",
+    "newOrders_many": "{{count}} yeni sifariş",
+    "markAllRead": "Hamısını oxunmuş et",
+    "noNotificationsTitle": "Hələ bildiriş yoxdur",
+    "noNotificationsBody": "Yeni sorğu, gediş və ya rəy gələndə xəbər verəcəyik.",
+    "profile": "Profil menyusu",
+    "openMenu": "Menyunu aç"
+  },
+  "profile": {
+    "signedInAs": "Daxil olmusan",
+    "settings": "Ayarlar",
+    "logout": "Çıxış"
+  },
+  "language": {
+    "label": "Dil",
+    "choose": "Dil seç"
+  },
+  "more": {
+    "title": "Daha çox"
+  }
+}

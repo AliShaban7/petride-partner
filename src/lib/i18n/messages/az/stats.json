@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "title": "Statistika",
+    "description": "Gəlir, randevular, xidmətlər, ən sıx saatlar və PetRide gedişləri."
+  },
+  "title": "Statistika",
+  "subtitle": {
+    "visits": "Seçdiyin dövr üzrə gəlir, randevular, xidmətlər və PetRide ilə gələnlər.",
+    "orders": "Seçdiyin dövr üzrə gəlir, sifarişlər, məhsullar və anbar."
+  },
+  "loading": "Rəqəmləri hesablayırıq…",
+  "toolbar": {
+    "label": "Dövr və müqayisə",
+    "custom": "Öz dövrün",
+    "from": "Başlanğıc",
+    "to": "Son",
+    "compare": "Əvvəlki dövrlə müqayisə",
+    "range": "{{range}} · {{days}}",
+    "comparedWith": "Müqayisə: {{range}}",
+    "noHistory": "Əvvəlki dövr üçün hələ məlumat yoxdur, ona görə müqayisə göstərmirik.",
+    "errors": {
+      "invalid": "Hər iki tarixi seç.",
+      "order": "Başlanğıc son tarixdən sonra ola bilməz.",
+      "future": "Gələcək tarixi seçmək olmaz.",
+      "tooLong": "Ən çoxu bir illik dövr seçə bilərsən."
+    }
+  },
+  "delta": {
+    "vsPrevious": "əvvəlki dövrə nəzərən"
+  },
+  "count": {
+    "appointments_one": "{{count}} randevu",
+    "appointments_other": "{{count}} randevu",
+    "orders_one": "{{count}} sifariş",
+    "orders_other": "{{count}} sifariş",
+    "reviews_one": "{{count}} rəy",
+    "reviews_other": "{{count}} rəy",
+    "units_one": "{{count}} ədəd",
+    "units_other": "{{count}} ədəd",
+    "days_one": "{{count}} gün",
+    "days_other": "{{count}} gün",
+    "stars_one": "{{count}} ulduz",
+    "stars_other": "{{count}} ulduz"
+  },
+  "kpi": {
+    "revenue": "Gəlir",
+    "appointments": "Randevular",
+    "orders": "Sifarişlər",
+    "averageTicket": "Orta çek",
+    "newClients": "Yeni müştərilər",
+    "returning": "qayıdan: {{count}}",
+    "returningClients": "Qayıdan müştərilər",
+    "rideShare": "PetRide gedişi ilə",
+    "courierShare": "PetRide kuryeri ilə",
+    "rating": "Reytinq",
+    "outOf": "/ 5",
+    "noReviews": "hələ rəy yoxdur",
+    "noShowRate": "Gəlməmə payı",
+    "reviewsCount": "Rəylərin sayı"
+  },
+  "view": {
+    "label": "Görünüş",
+    "chart": "Qrafik",
+    "table": "Cədvəl"
+  },
+  "granularity": {
+    "day": "Günlər üzrə",
+    "week": "Həftələr üzrə"
+  },
+  "series": {
+    "current": "Bu dövr",
+    "previous": "Əvvəlki dövr",
+    "otherServices": "Digər xidmətlər",
+    "pickup": "Mağazadan götürmə",
+    "courier": "PetRide kuryeri",
+    "cancelled": "Ləğv edilib",
+    "declined": "İmtina edilib",
+    "noShow": "Gəlmədi",
+    "cancelledOrders": "Ləğv edilmiş sifarişlər",
+    "share": "PetRide payı"
+  },
+  "columns": {
+    "day": "Gün",
+    "week": "Həftə",
+    "start": "Başlanğıc",
+    "end": "Son",
+    "metric": "Göstərici",
+    "revenue": "Gəlir",
+    "service": "Xidmət",
+    "category": "Kateqoriya",
+    "product": "Məhsul",
+    "appointments": "Randevular",
+    "orders": "Sifarişlər",
+    "completed": "Tamamlanıb",
+    "withRide": "PetRide gedişi ilə",
+    "share": "Pay",
+    "averageTicket": "Orta çek",
+    "change": "Dəyişiklik",
+    "unitsSold": "Satılıb",
+    "stock": "Anbarda",
+    "perDay": "Gündə",
+    "daysLeft": "Nə qədər çatar",
+    "weekday": "Həftənin günü",
+    "total": "Cəmi",
+    "stars": "Qiymət",
+    "reviews": "Rəylər",
+    "previousBookings": "Əvvəlki dövrdə"
+  },
+  "revenue": {
+    "title": "Gəlirin dinamikası",
+    "description": "{{granularity}} · tamamlanan randevu və sifarişlərdən",
+    "summary": "{{range}} ərzində gəlir {{total}} olub. Ən yüksək: {{best}}, {{bestValue}}.",
+    "summaryPrevious": "Əvvəlki dövrdə: {{total}}.",
+    "emptyTitle": "Bu dövrdə gəlir yoxdur",
+    "emptyBody": "Randevu və ya sifariş tamamlanan kimi burada görünəcək."
+  },
+  "volume": {
+    "titleVisits": "Xidmətlər üzrə randevular",
+    "titleOrders": "Sifarişlər və çatdırılma",
+    "summaryVisits": "Cəmi {{total}}. Ən sıx: {{best}}, {{bestCount}}. Ən çox seçilən xidmət: {{service}}.",
+    "summaryOrders": "Cəmi {{total}}, onlardan {{courier}} PetRide kuryeri ilə. Ən sıx: {{best}}, {{bestCount}}.",
+    "emptyVisits": "Bu dövrdə randevu yoxdur",
+    "emptyOrders": "Bu dövrdə sifariş yoxdur",
+    "emptyBody": "Daha uzun dövr seçməyi yoxla."
+  },
+  "mix": {
+    "titleServices": "Xidmətlərin payı",
+    "titleCategories": "Kateqoriyaların payı",
+    "descriptionServices": "Randevuların sayına görə",
+    "descriptionCategories": "Satılan məhsulların sayına görə",
+    "total": "cəmi",
+    "summary": "Pay üzrə: {{list}}.",
+    "emptyTitle": "Bu dövr üçün hələ bölgü yoxdur"
+  },
+  "busy": {
+    "title": "Ən sıx saatlar",
+    "descriptionVisits": "Randevuların başladığı vaxt, həftənin günü və saat üzrə",
+    "descriptionOrders": "Sifarişlərin verildiyi vaxt, həftənin günü və saat üzrə",
+    "less": "Az",
+    "more": "Çox",
+    "cell": "{{day}}, {{time}}: {{count}}",
+    "summary": "Ən sıx vaxt: {{day}}, {{time}} ({{count}}). Ən sıx gün: {{busiestDay}}, ən sakit gün: {{quietestDay}}.",
+    "emptyTitle": "Bu dövrdə qeyd yoxdur"
+  },
+  "rides": {
+    "titleVisits": "PetRide gedişi ilə gələnlər",
+    "titleOrders": "PetRide kuryeri ilə çatdırılma",
+    "descriptionVisits": "Randevuların neçə faizi PetRide gedişi ilə sifariş edilib",
+    "descriptionOrders": "Sifarişlərin neçə faizi PetRide kuryeri ilə çatdırılıb",
+    "summary": "Orta hesabla {{share}}. Ən yüksək: {{best}}, {{bestShare}}.",
+    "summaryPrevious": "Əvvəlki dövrdə: {{share}}.",
+    "emptyTitle": "Bu dövrdə hesablamağa məlumat yoxdur"
+  },
+  "cancellations": {
+    "titleVisits": "Ləğvlər və gəlməyənlər",
+    "titleOrders": "Ləğv edilmiş sifarişlər",
+    "descriptionVisits": "Gəlməmə payı: {{rate}}",
+    "descriptionOrders": "Ləğv payı: {{rate}}",
+    "summaryVisits": "Ləğv edilib: {{cancelled}}, imtina: {{declined}}, gəlmədi: {{noShow}}. İtirilən randevular: {{rate}}.",
+    "summaryOrders": "Ləğv edilib: {{count}} ({{rate}}).",
+    "emptyTitle": "Ləğv yoxdur",
+    "emptyVisits": "Bu dövrdə nə ləğv, nə də gəlməyən olub — əla nəticədir.",
+    "emptyOrders": "Bu dövrdə heç bir sifariş ləğv edilməyib."
+  },
+  "topServices": {
+    "title": "Xidmətlər üzrə nəticələr",
+    "description": "Randevular, gəlir və orta çek",
+    "caption": "Xidmətlər üzrə nəticələr, {{range}}",
+    "emptyTitle": "Bu dövrdə randevu yoxdur"
+  },
+  "topProducts": {
+    "title": "Ən çox satılan məhsullar",
+    "description": "Gəlirə görə ilk 10 məhsul",
+    "caption": "Ən çox satılan məhsullar, {{range}}",
+    "emptyTitle": "Bu dövrdə satış yoxdur"
+  },
+  "stock": {
+    "title": "Anbar dövriyyəsi",
+    "description": "İndiki satış tempi ilə qalıq neçə günə çatar",
+    "caption": "Anbar dövriyyəsi, {{range}}",
+    "noSales": "Satış yoxdur",
+    "lessThanDay": "1 gündən az",
+    "runningLow_one": "{{count}} məhsul bir həftəyə çatmayacaq",
+    "runningLow_other": "{{count}} məhsul bir həftəyə çatmayacaq",
+    "emptyTitle": "Hələ məhsul yoxdur"
+  },
+  "rating": {
+    "title": "Reytinq və rəylər",
+    "description": "Müştərilərin PetRide-da qoyduğu qiymətlər",
+    "average": "Orta qiymət",
+    "row": "{{stars}}: {{reviews}} ({{share}})",
+    "summary": "Orta qiymət 5 üzərindən {{average}}, {{reviews}}. Beş ulduz: {{share}}.",
+    "emptyTitle": "Bu dövrdə rəy yoxdur",
+    "emptyBody": "Müştərilər rəy yazanda burada görünəcək."
+  },
+  "empty": {
+    "title": "Bu dövrdə hələ heç nə yoxdur",
+    "body": "PetRide-dan randevu və ya sifariş gələn kimi rəqəmlər burada görünəcək. Daha uzun dövr seçməyi də yoxla.",
+    "action": "90 günə bax"
+  },
+  "export": {
+    "button": "CSV yüklə",
+    "menu": "CSV faylı",
+    "summary": "Əsas göstəricilər",
+    "seriesDay": "Günlər üzrə",
+    "seriesWeek": "Həftələr üzrə",
+    "services": "Xidmətlər üzrə",
+    "products": "Məhsullar üzrə",
+    "done": "CSV hazırdır",
+    "money": "{{label}} (AZN)",
+    "percent": "{{label}} (%)",
+    "period": "Dövr"
+  },
+  "categories": {
+    "food": "Yem",
+    "treats": "Ləzzətlər",
+    "toys": "Oyuncaqlar",
+    "care": "Baxım",
+    "accessories": "Aksesuarlar",
+    "health": "Sağlamlıq"
+  },
+  "range": "{{from}} – {{to}}"
+}

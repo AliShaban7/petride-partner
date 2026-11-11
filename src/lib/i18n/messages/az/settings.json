@@ -1,0 +1,384 @@
+{
+  "meta": {
+    "title": "Ayarlar",
+    "description": "İş saatları, əlaqə məlumatları və PetRide ayarları."
+  },
+  "title": "Ayarlar",
+  "description": "Profil, iş saatları, komanda və PetRide ilə iş qaydası — hamısı burada.",
+  "leaveConfirm": "Saxlanmamış dəyişikliklər var. Səhifədən çıxsan, onlar itəcək. Çıxırsan?",
+  "nav": {
+    "label": "Ayarlar bölmələri",
+    "unsaved": "saxlanmamış dəyişiklik var",
+    "profile": "Profil",
+    "hours": "İş saatları",
+    "petride": "PetRide inteqrasiyası",
+    "notifications": "Bildirişlər",
+    "team": "Komanda",
+    "language": "Dil",
+    "security": "Təhlükəsizlik"
+  },
+  "saveBar": {
+    "label": "Saxlanmamış dəyişikliklər",
+    "message": "Saxlanmamış dəyişikliklər var",
+    "fix_one": "Saxlamaq üçün {{count}} sahəni düzəlt",
+    "fix_other": "Saxlamaq üçün {{count}} sahəni düzəlt",
+    "save": "Yadda saxla",
+    "discard": "Geri qaytar"
+  },
+  "toast": {
+    "saved": "Yadda saxlandı",
+    "saveFailed": "Saxlamaq alınmadı"
+  },
+  "profile": {
+    "title": "Biznes profili",
+    "description": "Müştərilər bu məlumatları PetRide tətbiqində görür.",
+    "name": "Biznesin adı",
+    "nameHint": "Tətbiqdə kartın başlığında görünür.",
+    "address": "Ünvan",
+    "addressHint": "Azərbaycanca ünvan mütləqdir. Rusca və ya ingiliscə boş qalsa, azərbaycanca göstəriləcək.",
+    "phone": "Telefon",
+    "phoneHint": "Müştərilər tətbiqdən bu nömrəyə zəng edir. Məsələn: +994 12 565 66 55",
+    "email": "E-poçt",
+    "emailHint": "PetRide-dan gələn məktublar və hesabatlar üçün.",
+    "logo": {
+      "title": "Loqo",
+      "alt": "{{name}} loqosu",
+      "upload": "Loqo yüklə",
+      "replace": "Loqonu dəyiş",
+      "remove": "Loqonu sil",
+      "hint": "PNG, JPG və ya WebP, 2 MB-a qədər. Kvadrat şəkil daha yaxşı görünür.",
+      "typeError": "Bu fayl növü olmur. PNG, JPG və ya WebP seç.",
+      "sizeError": "Fayl çox böyükdür — 2 MB-dan kiçik şəkil seç.",
+      "readError": "Faylı oxumaq alınmadı. Başqa şəkil seç."
+    },
+    "map": {
+      "title": "Xəritədə yer",
+      "alt": "Xəritədə biznesin yeri (nümunə xəritə)",
+      "coords": "En {{lat}} · Uzunluq {{lng}}",
+      "hint": "Sürücülər bu nöqtəyə gəlir. Nöqtəni burada dəyişmək tezliklə mümkün olacaq; indilik səhv varsa, PetRide komandasına yaz."
+    },
+    "categories": {
+      "title": "Xidmət növləri",
+      "description": "Tətbiqdə hansı bölmələrdə görünəcəyini seç.",
+      "vet": {
+        "title": "Baytar klinikası",
+        "body": "Müayinə, peyvənd və müalicə."
+      },
+      "groom": {
+        "title": "Qrooming salonu",
+        "body": "Yuyunma, daraqlama və qırxım."
+      },
+      "hotel": {
+        "title": "Heyvan oteli",
+        "body": "Gecələmə və gündüz baxımı."
+      },
+      "shop": {
+        "title": "Zoomağaza",
+        "body": "Yem, aksesuar və çatdırılma."
+      }
+    },
+    "reviewHint": "Ad, ünvan və xidmət növləri dəyişəndə PetRide komandası onları yoxlayır, sonra tətbiqdə yenilənir.",
+    "reviewTitle": "Dəyişikliklər yoxlanılır",
+    "reviewBody": "{{date}} tarixində göndərdiyin ad, ünvan və ya xidmət növlərini PetRide komandası yoxlayır. Yoxlamadan sonra tətbiqdə yenilənəcək.",
+    "reviewToast": "Yeni ad, ünvan və ya xidmət növlərini PetRide komandası yoxlayandan sonra tətbiqdə görəcəksən.",
+    "savedToast": "Tətbiqdə yeniləndi.",
+    "saveHint": "Telefon, e-poçt və loqo dərhal yenilənir.",
+    "errors": {
+      "name": "Biznesin adını yaz.",
+      "address": "Azərbaycanca ünvanı yaz.",
+      "phone": "Azərbaycan nömrəsini yaz, məsələn +994 12 565 66 55.",
+      "email": "E-poçtu düzgün yaz, məsələn info@example.az.",
+      "categories": "Ən azı bir xidmət növü seç."
+    }
+  },
+  "hours": {
+    "title": "İş saatları",
+    "appTitle": "Bu saatlar PetRide tətbiqində görünür",
+    "appBody": "Müştərilər iş saatlarını tətbiqdə görür və gəliş vaxtını buna görə seçir. Saatları dəqiq yaz.",
+    "unconfirmedTitle": "İş saatlarını təsdiqlə",
+    "unconfirmedBody": "Bunlar nümunə saatlardır. Təsdiqləyənə qədər tətbiq müştərilərə iş saatlarını göstərmir.",
+    "confirm": "Bu saatları təsdiqlə",
+    "saveAndConfirm": "Saxla və təsdiqlə",
+    "weekTitle": "Həftəlik cədvəl",
+    "weekDescription": "Hər gün üçün açılış, bağlanış və fasilələr.",
+    "alwaysOpen": "Gecə-gündüz açıq (24/7)",
+    "alwaysOpenHint": "Yalnız gecə də həqiqətən kimsə işləyirsə yandır.",
+    "alwaysOpenOn": "Tətbiqdə «Gecə-gündüz açıqdır» yazılacaq. Həftəlik cədvəl yadda qalır — 24/7-ni söndürsən, geri qayıdacaq.",
+    "confirm247": {
+      "title": "Həqiqətən gecə-gündüz açıqsan?",
+      "body": "Müştərilər tətbiqdə «Gecə-gündüz açıqdır» görəcək və gecə də gələ bilər. Yalnız 24 saat kimsə yerindədirsə təsdiqlə.",
+      "confirm": "Bəli, 24/7 açığıq"
+    },
+    "columns": {
+      "day": "Gün",
+      "status": "Vəziyyət",
+      "hours": "Saatlar"
+    },
+    "today": "Bu gün",
+    "open": "Açıq",
+    "closed": "Bağlı",
+    "closedAllDay": "Bütün gün bağlı",
+    "from": "Açılır",
+    "to": "Bağlanır",
+    "breaksLabel": "{{day}}: fasilələr",
+    "breakN": "Fasilə {{n}}",
+    "breakFrom": "Başlayır",
+    "breakTo": "Bitir",
+    "addBreak": "Fasilə əlavə et",
+    "removeBreak": "Fasiləni sil: {{day}}, fasilə {{n}}",
+    "copyMenu": "{{day}}: saatları köçür",
+    "copyAll": "Bütün günlərə köçür",
+    "copyWeekdays": "İş günlərinə köçür (B.e–C.)",
+    "copyWeekend": "Həftə sonuna köçür (Ş–B)",
+    "errors": {
+      "range": "Bağlanış vaxtı açılışdan sonra olmalıdır.",
+      "breakOrder": "Fasilənin sonu başlanğıcdan sonra olmalıdır.",
+      "breakOutside": "Fasilə iş saatlarının içində olmalıdır.",
+      "breakOverlap": "Fasilələr bir-birinin üstünə düşür.",
+      "dateMissing": "Tarixi seç.",
+      "datePast": "Bu tarix keçib — bu gün və ya sonrasını seç.",
+      "dateDuplicate": "Bu tarix artıq siyahıda var."
+    },
+    "exceptions": {
+      "title": "Bayramlar və xüsusi günlər",
+      "description": "Bağlı olduğun və ya fərqli saatlarla işlədiyin günlər.",
+      "add": "Tarix əlavə et",
+      "empty": "Hələ xüsusi gün yoxdur. Bayramları əlavə et ki, müştərilər bağlı gündə gəlməsin.",
+      "date": "Tarix",
+      "newDate": "yeni tarix",
+      "closed": "Bütün gün bağlı",
+      "note": "Qeyd (istəyə görə)",
+      "notePlaceholder": "Məsələn: Novruz bayramı",
+      "noteHint": "Tətbiqdə tarixin yanında görünür.",
+      "past": "Keçib",
+      "remove": "Sil: {{date}}"
+    },
+    "preview": {
+      "label": "Tətbiqdə belə görünəcək",
+      "caption": "Saxlayan kimi tətbiqdə yenilənəcək.",
+      "captionUnconfirmed": "Təsdiqləyəndən sonra tətbiqdə görünəcək.",
+      "hours": "İş saatları",
+      "always": "Gecə-gündüz açıqdır",
+      "breaks": "Fasilə: {{list}}",
+      "special": "Xüsusi günlər"
+    },
+    "state": {
+      "always": "Gecə-gündüz açıqdır",
+      "open": "İndi açıqdır · {{time}}-dək",
+      "break": "Fasilədir · {{time}}-dək",
+      "closed": "Bağlıdır",
+      "opensToday": "Bağlıdır · bu gün {{time}} açılır",
+      "opensTomorrow": "Bağlıdır · sabah {{time}} açılır",
+      "opensOn": "Bağlıdır · açılır: {{day}}, {{time}}"
+    },
+    "saveHint": "Saxlayan kimi tətbiqdə yenilənəcək.",
+    "saveHintConfirm": "Saxlamaq saatları təsdiqləyir — sonra tətbiqdə görünəcək.",
+    "toast": {
+      "saved": "İş saatları yadda saxlandı",
+      "confirmed": "İş saatları təsdiqləndi",
+      "body": "Müştərilər onları PetRide tətbiqində görəcək."
+    }
+  },
+  "petride": {
+    "title": "PetRide inteqrasiyası",
+    "requests": {
+      "title": "Sorğular",
+      "description": "Tətbiqdən gələn randevu sorğularını necə qəbul edirsən.",
+      "autoConfirm": "Sorğuları avtomatik qəbul et",
+      "autoConfirmHint": "İş saatlarına uyğun sorğular dərhal təsdiqlənir. Söndürsən, hər sorğunu özün qəbul edəcəksən.",
+      "window": "Cavab vermə müddəti",
+      "windowHint": "Bu müddətdə cavab verməsən, tətbiq müştəriyə başqa vaxt seçməyi təklif edəcək.",
+      "windowOff": "Avtomatik qəbulda lazım deyil."
+    },
+    "rides": {
+      "title": "PetRide gedişləri",
+      "description": "Sürücü dostu evdən gətirir və geri aparır.",
+      "accept": "PetRide gedişlərini qəbul et",
+      "acceptHint": "Müştərilər randevu ilə birlikdə PetRide sürücüsü sifariş edə bilər.",
+      "buffer": "Sürücü randevudan nə qədər əvvəl çatdırsın",
+      "bufferHint": "Bu vaxt qəbul və dostun sakitləşməsi üçündür.",
+      "bufferOff": "Gedişlər söndürülüb.",
+      "offWarningTitle": "Gedişləri söndürürsən",
+      "offWarningBody": "Artıq sifariş olunmuş gedişlər qalır. Yeni sorğularda müştərilər sürücü seçə bilməyəcək."
+    },
+    "courier": {
+      "title": "Kuryerlə çatdırılma",
+      "description": "Sifarişləri PetRide kuryeri müştəriyə aparır.",
+      "accept": "PetRide kuryeri ilə çatdır",
+      "acceptHint": "Sifarişi «Hazırdır» edəndə kuryer avtomatik çağırılır."
+    },
+    "noBuffer": "Dəqiq vaxtında",
+    "connection": {
+      "title": "Tətbiqə qoşulma",
+      "connected": "Qoşulub",
+      "listing": "Tətbiqdə adın",
+      "partnerId": "Tərəfdaş ID",
+      "mode": "Sorğu qaydası",
+      "modeAuto": "Avtomatik qəbul",
+      "modeManual": "Əl ilə · cavab {{window}} ərzində",
+      "note": "Sorğular, gedişlər və sifarişlər tətbiqdən bu panelə canlı gəlir."
+    },
+    "saveHint": "Yeni sorğulara saxlayan kimi tətbiq olunur.",
+    "savedToast": "Tətbiqdə yeni qayda ilə işləyirik."
+  },
+  "notifications": {
+    "title": "Bildirişlər",
+    "description": "Nə vaxt və harada xəbər verək.",
+    "columns": {
+      "event": "Hadisə",
+      "panel": "Paneldə",
+      "email": "E-poçtla"
+    },
+    "events": {
+      "newRequest": {
+        "title": "Yeni sorğu",
+        "body": "Müştəri tətbiqdən randevu istəyəndə."
+      },
+      "rideArriving": {
+        "title": "Gediş yaxınlaşır",
+        "body": "Sürücü dostu gətirir və artıq yaxındadır."
+      },
+      "newOrder": {
+        "title": "Yeni sifariş",
+        "body": "Müştəri tətbiqdən sifariş verəndə."
+      },
+      "newReview": {
+        "title": "Yeni rəy",
+        "body": "Müştəri ziyarətdən sonra rəy yazanda."
+      }
+    },
+    "sound": "Yeni sorğuda səs çal",
+    "soundHint": "Panel açıqdırsa, qısa səs eşidəcəksən.",
+    "summary": {
+      "title": "Gündəlik xülasə",
+      "description": "Hər səhər qısa məktub: bu gün nələr gözlənilir, dünənki gəlir və yeni rəylər.",
+      "toggle": "Gündəlik xülasəni e-poçtla göndər",
+      "toggleHint": "Hər gün seçdiyin vaxtda bir məktub.",
+      "time": "Vaxt",
+      "email": "Hansı e-poçta"
+    },
+    "demoNote": "Demo rejimində məktub göndərilmir — ayarlar yadda qalır.",
+    "savedToast": "Bildirişlər yeni qaydada gələcək.",
+    "errors": {
+      "email": "Xülasə üçün düzgün e-poçt yaz."
+    }
+  },
+  "team": {
+    "title": "Komanda",
+    "description": "Paneldə kim işləyir və nə edə bilər.",
+    "invite": "Üzv dəvət et",
+    "caption": "Komanda üzvləri",
+    "columns": {
+      "member": "Üzv",
+      "role": "Rol",
+      "status": "Vəziyyət",
+      "activity": "Son aktivlik",
+      "actions": "Əməliyyatlar"
+    },
+    "you": "sən",
+    "activeNow": "İndi aktivdir",
+    "invitedAgo": "Dəvət: {{time}}",
+    "roleFor": "{{name}}: rol",
+    "actions": "{{name}}: əməliyyatlar",
+    "status": {
+      "active": "Aktiv",
+      "invited": "Dəvət göndərilib"
+    },
+    "roles": {
+      "owner": {
+        "title": "Sahib",
+        "body": "Hər şey: qiymətlər, saatlar, komanda və təhlükəsizlik."
+      },
+      "manager": {
+        "title": "Menecer",
+        "body": "Randevular, sifarişlər, qiymətlər, saatlar və statistika. Komandanı idarə edə bilmir."
+      },
+      "staff": {
+        "title": "İşçi",
+        "body": "Randevular, sifarişlər və müştərilər. Qiymət və ayarları dəyişə bilmir."
+      }
+    },
+    "rolesTitle": "Rollar",
+    "rolesDescription": "Kimə nə qədər icazə verdiyini bil.",
+    "resend": "Dəvəti yenidən göndər",
+    "cancelInvite": "Dəvəti ləğv et",
+    "remove": "Komandadan çıxar",
+    "undo": "Geri al",
+    "aloneTitle": "Hələ təkcə sənsən",
+    "aloneBody": "Həmkarlarını dəvət et — sorğuları birlikdə daha tez cavablandırarsınız.",
+    "removeTitle": "{{name}} komandadan çıxarılsın?",
+    "removeBody": "O artıq panelə daxil ola bilməyəcək. İstəsən, sonra yenidən dəvət edə bilərsən.",
+    "cancelTitle": "{{email}} üçün dəvət ləğv edilsin?",
+    "cancelBody": "Dəvət linki işləməyəcək.",
+    "inviteTitle": "Komandaya dəvət",
+    "inviteDescription": "E-poçtuna dəvət gedəcək. Rolunu sonra da dəyişə bilərsən.",
+    "email": "E-poçt",
+    "name": "Ad (istəyə görə)",
+    "nameHint": "Siyahıda bu adla görünəcək.",
+    "sendInvite": "Dəvət göndər",
+    "demoNote": "Demo rejimində məktub göndərilmir.",
+    "errors": {
+      "email": "E-poçtu düzgün yaz, məsələn ad@example.az.",
+      "duplicate": "Bu e-poçt artıq komandadadır."
+    },
+    "toast": {
+      "invited": "{{email}} dəvət olundu",
+      "resent": "Dəvət yenidən göndərildi: {{email}}",
+      "roleChanged": "{{name}} indi: {{role}}",
+      "removed": "{{name}} komandadan çıxarıldı",
+      "inviteCancelled": "{{email}} üçün dəvət ləğv edildi",
+      "failed": "Alınmadı"
+    }
+  },
+  "language": {
+    "title": "Panelin dili",
+    "description": "Dərhal dəyişir, bu səhifədə qalırsan.",
+    "emailTitle": "Məktubların dili",
+    "emailDescription": "Bildiriş məktubları və gündəlik xülasə bu dildə gələcək.",
+    "emailLabel": "Məktubların dili",
+    "emailSaved": "Məktublar artıq bu dildə gələcək: {{language}}",
+    "clientsNote": "Müştərilərə gedən mesajlar hər müştərinin tətbiq dilində olur."
+  },
+  "security": {
+    "passwordTitle": "Şifrə",
+    "passwordDescription": "Hesabını qorumaq üçün güclü şifrə seç.",
+    "changedAt": "Son dəyişiklik: {{date}}",
+    "current": "İndiki şifrə",
+    "next": "Yeni şifrə",
+    "repeat": "Yeni şifrəni təkrarla",
+    "change": "Şifrəni dəyiş",
+    "rulesTitle": "Yeni şifrədə",
+    "rules": {
+      "length": "Ən azı 8 simvol",
+      "letter": "Ən azı bir hərf",
+      "digit": "Ən azı bir rəqəm",
+      "met": "var",
+      "notMet": "hələ yoxdur"
+    },
+    "errors": {
+      "current": "İndiki şifrəni yaz.",
+      "wrong": "İndiki şifrə düz deyil.",
+      "rules": "Yeni şifrə ən azı 8 simvol olmalı, hərf və rəqəm olmalıdır.",
+      "same": "Yeni şifrə köhnəsindən fərqli olmalıdır.",
+      "repeat": "Şifrələr eyni deyil."
+    },
+    "demoNote": "Demo rejimində giriş şifrəsi dəyişmir.",
+    "sessionsTitle": "Aktiv sessiyalar",
+    "sessionsDescription": "Panelə hansı cihazlardan daxil olunub.",
+    "sessionsNote": "Tanımadığın cihaz görsən, ondan çıxış et və şifrəni dəyiş.",
+    "thisDevice": "Bu cihaz",
+    "thisBrowser": "Bu brauzer",
+    "activeNow": "indi aktivdir",
+    "signOut": "Çıxış et",
+    "signOutOthers": "Digər cihazlardan çıxış",
+    "confirmTitle": "{{device}} cihazından çıxış edilsin?",
+    "confirmOthersTitle": "Bütün digər cihazlardan çıxış edilsin?",
+    "confirmBody": "Orada yenidən daxil olmaq üçün şifrə lazım olacaq.",
+    "toast": {
+      "changed": "Şifrə dəyişdi",
+      "sessionOut": "Cihazdan çıxış edildi",
+      "othersOut": "Digər cihazlardan çıxış edildi",
+      "failed": "Alınmadı"
+    }
+  }
+}

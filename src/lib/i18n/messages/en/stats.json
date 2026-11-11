@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "title": "Statistics",
+    "description": "Revenue, bookings, services, busiest hours and PetRide rides."
+  },
+  "title": "Statistics",
+  "subtitle": {
+    "visits": "Revenue, appointments, services and PetRide rides for the period you pick.",
+    "orders": "Revenue, orders, products and stock for the period you pick."
+  },
+  "loading": "Crunching the numbers…",
+  "toolbar": {
+    "label": "Period and comparison",
+    "custom": "Custom",
+    "from": "From",
+    "to": "To",
+    "compare": "Compare with previous period",
+    "range": "{{range}} · {{days}}",
+    "comparedWith": "Compared with {{range}}",
+    "noHistory": "There's no data for the previous period yet, so there's nothing to compare with.",
+    "errors": {
+      "invalid": "Pick both dates.",
+      "order": "The start can't be after the end.",
+      "future": "You can't pick a date in the future.",
+      "tooLong": "Pick a period of a year or less."
+    }
+  },
+  "delta": {
+    "vsPrevious": "vs previous period"
+  },
+  "count": {
+    "appointments_one": "{{count}} appointment",
+    "appointments_other": "{{count}} appointments",
+    "orders_one": "{{count}} order",
+    "orders_other": "{{count}} orders",
+    "reviews_one": "{{count}} review",
+    "reviews_other": "{{count}} reviews",
+    "units_one": "{{count}} unit",
+    "units_other": "{{count}} units",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "stars_one": "{{count}} star",
+    "stars_other": "{{count}} stars"
+  },
+  "kpi": {
+    "revenue": "Revenue",
+    "appointments": "Appointments",
+    "orders": "Orders",
+    "averageTicket": "Average ticket",
+    "newClients": "New clients",
+    "returning": "{{count}} returning",
+    "returningClients": "Returning clients",
+    "rideShare": "With a PetRide ride",
+    "courierShare": "By PetRide courier",
+    "rating": "Rating",
+    "outOf": "/ 5",
+    "noReviews": "no reviews yet",
+    "noShowRate": "No-show rate",
+    "reviewsCount": "Number of reviews"
+  },
+  "view": {
+    "label": "View",
+    "chart": "Chart",
+    "table": "Table"
+  },
+  "granularity": {
+    "day": "By day",
+    "week": "By week"
+  },
+  "series": {
+    "current": "This period",
+    "previous": "Previous period",
+    "otherServices": "Other services",
+    "pickup": "Pickup",
+    "courier": "PetRide courier",
+    "cancelled": "Cancelled",
+    "declined": "Declined",
+    "noShow": "No-show",
+    "cancelledOrders": "Cancelled orders",
+    "share": "PetRide share"
+  },
+  "columns": {
+    "day": "Day",
+    "week": "Week",
+    "start": "Start",
+    "end": "End",
+    "metric": "Metric",
+    "revenue": "Revenue",
+    "service": "Service",
+    "category": "Category",
+    "product": "Product",
+    "appointments": "Appointments",
+    "orders": "Orders",
+    "completed": "Completed",
+    "withRide": "With a PetRide ride",
+    "share": "Share",
+    "averageTicket": "Average ticket",
+    "change": "Change",
+    "unitsSold": "Sold",
+    "stock": "In stock",
+    "perDay": "Per day",
+    "daysLeft": "Lasts",
+    "weekday": "Weekday",
+    "total": "Total",
+    "stars": "Stars",
+    "reviews": "Reviews",
+    "previousBookings": "Previous period"
+  },
+  "revenue": {
+    "title": "Revenue over time",
+    "description": "{{granularity}} · from completed appointments and orders",
+    "summary": "Revenue for {{range}}: {{total}}. Highest: {{best}}, {{bestValue}}.",
+    "summaryPrevious": "Previous period: {{total}}.",
+    "emptyTitle": "No revenue in this period",
+    "emptyBody": "It shows up here as soon as an appointment or order is completed."
+  },
+  "volume": {
+    "titleVisits": "Appointments by service",
+    "titleOrders": "Orders and delivery",
+    "summaryVisits": "{{total}} in total. Busiest: {{best}}, {{bestCount}}. Most booked service: {{service}}.",
+    "summaryOrders": "{{total}} in total, {{courier}} by PetRide courier. Busiest: {{best}}, {{bestCount}}.",
+    "emptyVisits": "No appointments in this period",
+    "emptyOrders": "No orders in this period",
+    "emptyBody": "Try a longer period."
+  },
+  "mix": {
+    "titleServices": "Service mix",
+    "titleCategories": "Category mix",
+    "descriptionServices": "By number of appointments",
+    "descriptionCategories": "By units sold",
+    "total": "total",
+    "summary": "Share: {{list}}.",
+    "emptyTitle": "Nothing to break down yet"
+  },
+  "busy": {
+    "title": "Busiest hours",
+    "descriptionVisits": "When appointments start, by weekday and hour",
+    "descriptionOrders": "When orders come in, by weekday and hour",
+    "less": "Fewer",
+    "more": "More",
+    "cell": "{{day}}, {{time}}: {{count}}",
+    "summary": "Peak: {{day}}, {{time}} ({{count}}). Busiest day: {{busiestDay}}; quietest: {{quietestDay}}.",
+    "emptyTitle": "Nothing booked in this period"
+  },
+  "rides": {
+    "titleVisits": "Arrived with PetRide",
+    "titleOrders": "Delivered by PetRide courier",
+    "descriptionVisits": "Share of appointments booked with a PetRide ride",
+    "descriptionOrders": "Share of orders delivered by PetRide courier",
+    "summary": "{{share}} on average. Highest: {{best}}, {{bestShare}}.",
+    "summaryPrevious": "Previous period: {{share}}.",
+    "emptyTitle": "Nothing to work out for this period yet"
+  },
+  "cancellations": {
+    "titleVisits": "Cancellations and no-shows",
+    "titleOrders": "Cancelled orders",
+    "descriptionVisits": "No-show rate: {{rate}}",
+    "descriptionOrders": "Cancellation rate: {{rate}}",
+    "summaryVisits": "Cancelled: {{cancelled}}, declined: {{declined}}, no-shows: {{noShow}}. Appointments lost: {{rate}}.",
+    "summaryOrders": "Cancelled: {{count}} ({{rate}}).",
+    "emptyTitle": "No cancellations",
+    "emptyVisits": "No cancellations or no-shows this period — nice work.",
+    "emptyOrders": "No orders were cancelled this period."
+  },
+  "topServices": {
+    "title": "Results by service",
+    "description": "Appointments, revenue and average ticket",
+    "caption": "Results by service, {{range}}",
+    "emptyTitle": "No appointments in this period"
+  },
+  "topProducts": {
+    "title": "Top products",
+    "description": "Top 10 by revenue",
+    "caption": "Top products, {{range}}",
+    "emptyTitle": "No sales in this period"
+  },
+  "stock": {
+    "title": "Stock turnover",
+    "description": "How long current stock lasts at this pace of sales",
+    "caption": "Stock turnover, {{range}}",
+    "noSales": "No sales",
+    "lessThanDay": "Less than a day",
+    "runningLow_one": "{{count}} product runs out within a week",
+    "runningLow_other": "{{count}} products run out within a week",
+    "emptyTitle": "No products yet"
+  },
+  "rating": {
+    "title": "Rating and reviews",
+    "description": "What clients rated you in PetRide",
+    "average": "Average rating",
+    "row": "{{stars}}: {{reviews}} ({{share}})",
+    "summary": "Average {{average}} out of 5 from {{reviews}}. Five stars: {{share}}.",
+    "emptyTitle": "No reviews in this period",
+    "emptyBody": "When clients leave reviews, they'll show up here."
+  },
+  "empty": {
+    "title": "Nothing to count for this period yet",
+    "body": "As soon as appointments or orders come in from PetRide, the numbers show up here. Try a longer period too.",
+    "action": "Show 90 days"
+  },
+  "export": {
+    "button": "Export CSV",
+    "menu": "CSV export",
+    "summary": "Key figures",
+    "seriesDay": "By day",
+    "seriesWeek": "By week",
+    "services": "By service",
+    "products": "By product",
+    "done": "Your CSV is ready",
+    "money": "{{label}} (AZN)",
+    "percent": "{{label}} (%)",
+    "period": "Period"
+  },
+  "categories": {
+    "food": "Food",
+    "treats": "Treats",
+    "toys": "Toys",
+    "care": "Care",
+    "accessories": "Accessories",
+    "health": "Health"
+  },
+  "range": "{{from}} – {{to}}"
+}

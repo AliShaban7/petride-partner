@@ -1,0 +1,79 @@
+{
+  "appointment": {
+    "requested": "New request",
+    "confirmed": "Confirmed",
+    "checked_in": "Checked in",
+    "completed": "Completed",
+    "no_show": "No-show",
+    "cancelled": "Cancelled",
+    "declined": "Declined"
+  },
+  "order": {
+    "new": "New",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "delivered": "Delivered",
+    "picked_up": "Picked up",
+    "cancelled": "Cancelled"
+  },
+  "ride": {
+    "scheduled": "Scheduled",
+    "searching": "Finding a driver",
+    "onway": "Driver on the way",
+    "arrived": "Driver at the door",
+    "intrip": "On the way",
+    "completed": "Arrived",
+    "cancelled": "Cancelled"
+  },
+  "health": {
+    "ok": "Up to date",
+    "due_soon": "Vaccine due soon",
+    "overdue": "Vaccine overdue"
+  },
+  "vaccine": {
+    "done": "Done",
+    "due_soon": "Due soon",
+    "overdue": "Overdue",
+    "scheduled": "Scheduled"
+  },
+  "payment": {
+    "paid": "Paid",
+    "unpaid": "Unpaid"
+  },
+  "availability": {
+    "active": "Active",
+    "inactive": "Hidden"
+  },
+  "stock": {
+    "in": "In stock",
+    "low": "Low stock",
+    "out": "Out of stock"
+  },
+  "direction": {
+    "to_partner": "Coming in",
+    "from_partner": "Going home",
+    "delivery": "Courier"
+  },
+  "source": {
+    "app": "PetRide app",
+    "phone": "Phone",
+    "walk_in": "Walk-in",
+    "petride": "PetRide"
+  },
+  "fulfilment": {
+    "pickup": "Pickup",
+    "petride_courier": "PetRide courier"
+  },
+  "category": {
+    "vet": "Vet",
+    "groom": "Grooming",
+    "hotel": "Pet hotel",
+    "shop": "Shop"
+  },
+  "kind": {
+    "clinic": "Vet clinic",
+    "salon": "Grooming salon",
+    "hotel": "Pet hotel",
+    "petshop": "Pet shop"
+  }
+}

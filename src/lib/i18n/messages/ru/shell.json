@@ -1,0 +1,73 @@
+{
+  "brand": "PetRide",
+  "partnerLabel": "Partner",
+  "homeLink": "PetRide Partner — обзор",
+  "nav": {
+    "label": "Главное меню",
+    "overview": "Обзор",
+    "appointments": "Записи",
+    "orders": "Заказы",
+    "rides": "Поездки PetRide",
+    "clients": "Клиенты",
+    "stats": "Статистика",
+    "services": "Услуги и цены",
+    "servicesShop": "Товары и цены",
+    "settings": "Настройки",
+    "more": "Ещё"
+  },
+  "navShort": {
+    "overview": "Обзор",
+    "appointments": "Записи",
+    "orders": "Заказы",
+    "rides": "Поездки",
+    "clients": "Клиенты",
+    "stats": "Статистика",
+    "services": "Цены",
+    "settings": "Настройки",
+    "more": "Ещё"
+  },
+  "sidebar": {
+    "collapse": "Свернуть меню",
+    "expand": "Развернуть меню"
+  },
+  "partner": {
+    "cardLabel": "Партнёр",
+    "switchLabel": "Демо: сменить партнёра",
+    "switchTo": "Перейти: {{name}}",
+    "switching": "Переключаем…"
+  },
+  "topbar": {
+    "searchLabel": "Поиск",
+    "searchPlaceholder": "Клиент, питомец или код",
+    "notifications": "Уведомления",
+    "unread_one": "{{count}} непрочитанное",
+    "unread_other": "{{count}} непрочитанных",
+    "unread_few": "{{count}} непрочитанных",
+    "unread_many": "{{count}} непрочитанных",
+    "newRequests_one": "{{count}} новая заявка",
+    "newRequests_other": "{{count}} новых заявок",
+    "newRequests_few": "{{count}} новые заявки",
+    "newRequests_many": "{{count}} новых заявок",
+    "newOrders_one": "{{count}} новый заказ",
+    "newOrders_other": "{{count}} новых заказов",
+    "newOrders_few": "{{count}} новых заказа",
+    "newOrders_many": "{{count}} новых заказов",
+    "markAllRead": "Прочитать все",
+    "noNotificationsTitle": "Пока нет уведомлений",
+    "noNotificationsBody": "Сообщим, когда придёт заявка, поездка или отзыв.",
+    "profile": "Меню профиля",
+    "openMenu": "Открыть меню"
+  },
+  "profile": {
+    "signedInAs": "Ты вошёл как",
+    "settings": "Настройки",
+    "logout": "Выйти"
+  },
+  "language": {
+    "label": "Язык",
+    "choose": "Выбери язык"
+  },
+  "more": {
+    "title": "Ещё"
+  }
+}

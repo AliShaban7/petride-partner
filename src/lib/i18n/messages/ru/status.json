@@ -1,0 +1,79 @@
+{
+  "appointment": {
+    "requested": "Новая заявка",
+    "confirmed": "Подтверждена",
+    "checked_in": "На месте",
+    "completed": "Завершена",
+    "no_show": "Неявка",
+    "cancelled": "Отменена",
+    "declined": "Отклонена"
+  },
+  "order": {
+    "new": "Новый",
+    "preparing": "Собирается",
+    "ready": "Готов",
+    "delivered": "Доставлен",
+    "picked_up": "Выдан",
+    "cancelled": "Отменён"
+  },
+  "ride": {
+    "scheduled": "Запланирована",
+    "searching": "Ищем водителя",
+    "onway": "Водитель едет",
+    "arrived": "Водитель у двери",
+    "intrip": "В пути",
+    "completed": "Доехали",
+    "cancelled": "Отменена"
+  },
+  "health": {
+    "ok": "Всё в порядке",
+    "due_soon": "Скоро прививка",
+    "overdue": "Прививка просрочена"
+  },
+  "vaccine": {
+    "done": "Сделана",
+    "due_soon": "Скоро",
+    "overdue": "Просрочена",
+    "scheduled": "Запланирована"
+  },
+  "payment": {
+    "paid": "Оплачен",
+    "unpaid": "Не оплачен"
+  },
+  "availability": {
+    "active": "Активна",
+    "inactive": "Скрыта"
+  },
+  "stock": {
+    "in": "В наличии",
+    "low": "Мало",
+    "out": "Нет в наличии"
+  },
+  "direction": {
+    "to_partner": "Едет к вам",
+    "from_partner": "Едет домой",
+    "delivery": "Курьер"
+  },
+  "source": {
+    "app": "Приложение PetRide",
+    "phone": "Телефон",
+    "walk_in": "Без записи",
+    "petride": "PetRide"
+  },
+  "fulfilment": {
+    "pickup": "Самовывоз",
+    "petride_courier": "Курьер PetRide"
+  },
+  "category": {
+    "vet": "Ветеринар",
+    "groom": "Груминг",
+    "hotel": "Зоотель",
+    "shop": "Магазин"
+  },
+  "kind": {
+    "clinic": "Ветклиника",
+    "salon": "Груминг-салон",
+    "hotel": "Зоотель",
+    "petshop": "Зоомагазин"
+  }
+}

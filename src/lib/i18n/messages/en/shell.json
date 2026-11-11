@@ -1,0 +1,73 @@
+{
+  "brand": "PetRide",
+  "partnerLabel": "Partner",
+  "homeLink": "PetRide Partner — overview",
+  "nav": {
+    "label": "Main menu",
+    "overview": "Overview",
+    "appointments": "Appointments",
+    "orders": "Orders",
+    "rides": "PetRide rides",
+    "clients": "Clients",
+    "stats": "Statistics",
+    "services": "Services & prices",
+    "servicesShop": "Products & prices",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "navShort": {
+    "overview": "Overview",
+    "appointments": "Bookings",
+    "orders": "Orders",
+    "rides": "Rides",
+    "clients": "Clients",
+    "stats": "Stats",
+    "services": "Prices",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "sidebar": {
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
+  },
+  "partner": {
+    "cardLabel": "Partner",
+    "switchLabel": "Demo: switch partner",
+    "switchTo": "Switch to {{name}}",
+    "switching": "Switching…"
+  },
+  "topbar": {
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search clients, pets or codes",
+    "notifications": "Notifications",
+    "unread_one": "{{count}} unread",
+    "unread_other": "{{count}} unread",
+    "unread_few": "{{count}} unread",
+    "unread_many": "{{count}} unread",
+    "newRequests_one": "{{count}} new request",
+    "newRequests_other": "{{count}} new requests",
+    "newRequests_few": "{{count}} new requests",
+    "newRequests_many": "{{count}} new requests",
+    "newOrders_one": "{{count}} new order",
+    "newOrders_other": "{{count}} new orders",
+    "newOrders_few": "{{count}} new orders",
+    "newOrders_many": "{{count}} new orders",
+    "markAllRead": "Mark all as read",
+    "noNotificationsTitle": "No notifications yet",
+    "noNotificationsBody": "We'll let you know about new requests, rides and reviews.",
+    "profile": "Profile menu",
+    "openMenu": "Open menu"
+  },
+  "profile": {
+    "signedInAs": "Signed in as",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "language": {
+    "label": "Language",
+    "choose": "Choose language"
+  },
+  "more": {
+    "title": "More"
+  }
+}

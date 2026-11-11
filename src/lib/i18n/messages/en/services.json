@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "title": "Services & prices",
+    "description": "Set prices and durations — they replace “Priced on site” in the app."
+  },
+  "title": "Services & prices",
+  "description": "Prices, durations and the order of your services — exactly what clients see in the PetRide app.",
+  "titleShop": "Products & prices",
+  "descriptionShop": "Keep prices and stock up to date — clients always see the current price in the app.",
+  "add": "Add service",
+  "addShort": "Add",
+  "listTitle": "Services",
+  "listLabel": "{{category}}: services",
+  "asideLabel": "How it looks in the app",
+  "categoryMeta": "{{count}} · {{active}} active",
+  "serviceCount_one": "{{count}} service",
+  "serviceCount_other": "{{count}} services",
+  "categoryEmpty": "No services in this section yet.",
+  "categories": {
+    "vet": { "title": "Vet services", "hint": "Check-ups, vaccinations and other vet care." },
+    "groom": { "title": "Grooming", "hint": "Baths, brushing, haircuts and nails." },
+    "hotel": { "title": "Hotel & day care", "hint": "Overnight stays and day care." }
+  },
+  "columns": {
+    "service": "Service",
+    "duration": "Duration",
+    "price": "Price",
+    "active": "In the app"
+  },
+  "kpi": {
+    "active": "Active in the app",
+    "ofTotal": "/ {{total}}",
+    "hidden_one": "{{count}} service hidden",
+    "hidden_other": "{{count}} services hidden",
+    "allVisible": "All visible",
+    "withPrice": "Showing a price",
+    "withPriceNote": "The rest say “Priced on site”",
+    "onSiteNote": "Add a price so clients know upfront",
+    "onSiteNone": "Every active service has a price",
+    "bookings": "Appointments, 30 days",
+    "top": "Most booked: {{name}}"
+  },
+  "notice": {
+    "onSite_one": "{{count}} active service shows “{{label}}” in the app",
+    "onSite_other": "{{count}} active services show “{{label}}” in the app",
+    "onSiteBody": "Add a price and clients will know what they'll pay before they book. If it depends on size, tick “Starting price”.",
+    "setPrice": "Add a price"
+  },
+  "reorder": {
+    "instructions": "To reorder, drag the handle, or focus it and press the up and down arrow keys. The app lists your services in this order.",
+    "moved": "{{name}}: position {{position}} of {{total}}"
+  },
+  "row": {
+    "handle": "Reorder {{name}}, position {{position}} of {{total}}",
+    "actions": "Actions for {{name}}",
+    "price": "Price",
+    "priceFor": "Price of {{name}}",
+    "showPrice": "Show in the app",
+    "exactHint": "The app shows this price.",
+    "fromHint": "The app shows it as a starting price.",
+    "onSiteHint": "The app says “{{label}}”.",
+    "active": "Active",
+    "hidden": "Hidden",
+    "new": "New",
+    "unsaved": "Not saved",
+    "bookings_one": "{{count}} appointment in 30 days",
+    "bookings_other": "{{count}} appointments in 30 days",
+    "edit": "Edit",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "archive": "Delete service"
+  },
+  "errors": {
+    "price": {
+      "empty": "Enter a price.",
+      "emptyOrHide": "Enter a price or turn off “Show in the app”.",
+      "invalid": "Use numbers only, like 12.50.",
+      "zero": "The price has to be more than 0.",
+      "tooBig": "It can't be more than {{max}}."
+    }
+  },
+  "saveBar": {
+    "label": "Unsaved changes",
+    "changes_one": "{{count}} unsaved change",
+    "changes_other": "{{count}} unsaved changes",
+    "fix_one": "Fix {{count}} field to save",
+    "fix_other": "Fix {{count}} fields to save",
+    "orderChanged": "New order — don't forget to save",
+    "hint": "The app updates as soon as you save.",
+    "save": "Save changes",
+    "discard": "Discard",
+    "leaveConfirm": "You have unsaved changes. If you leave this page, they'll be lost. Leave anyway?"
+  },
+  "toast": {
+    "saved": "Saved",
+    "savedBody": "Prices and order are updated in the app.",
+    "partial": "Not everything was saved",
+    "saveFailed": "Couldn't save",
+    "created": "“{{name}}” added",
+    "updated": "“{{name}}” updated",
+    "archived": "“{{name}}” deleted",
+    "archiveFailed": "Couldn't delete"
+  },
+  "archive": {
+    "title": "Delete “{{name}}”?",
+    "body": "It'll disappear from the app and won't get new requests. Past appointments keep its name. You can't undo this.",
+    "bodyNew": "This service isn't saved yet — it'll just leave the list.",
+    "confirm": "Delete"
+  },
+  "empty": {
+    "title": "No services yet",
+    "body": "Add your first service — clients will see it in the PetRide app and can send you a request.",
+    "action": "Add your first service"
+  },
+  "unavailable": {
+    "title": "This section isn't part of your account",
+    "body": "There are no services or products on your account yet. Message the PetRide team and we'll set it up together."
+  },
+  "preview": {
+    "label": "How it looks in the app",
+    "caption": "Changes show here right away and reach the app once you save.",
+    "services": "Services",
+    "empty": "No active services",
+    "more_one": "and {{count}} more service",
+    "more_other": "and {{count}} more services",
+    "rating": "{{rating}} ({{count}})"
+  },
+  "hours": {
+    "title": "Opening hours",
+    "description": "Clients see these in the PetRide app.",
+    "edit": "Change",
+    "confirm": "Confirm",
+    "closed": "Closed",
+    "breaks": "Break: {{list}}",
+    "alwaysOpen": "Open around the clock (24/7).",
+    "unconfirmedTitle": "Hours aren't confirmed yet",
+    "unconfirmedBody": "These are sample hours. Until you confirm them, the app doesn't show your opening hours to clients.",
+    "state": {
+      "always": "Open 24/7",
+      "open": "Open now · until {{time}}",
+      "break": "On a break · until {{time}}",
+      "closed": "Closed",
+      "opensToday": "Closed · opens today at {{time}}",
+      "opensTomorrow": "Closed · opens tomorrow at {{time}}",
+      "opensOn": "Closed · opens {{day}} at {{time}}"
+    }
+  },
+  "dialog": {
+    "createTitle": "New service",
+    "editTitle": "Edit service",
+    "description": "Clients see these details in the PetRide app.",
+    "create": "Add service",
+    "category": "Section",
+    "categoryLocked": "An existing service can't change section. Create a new one if you need to.",
+    "namesLegend": "Name and description",
+    "namesHint": "The Azerbaijani name is required. If Russian or English is empty, the app shows the Azerbaijani one.",
+    "languageTabs": "Language",
+    "name": "Name ({{language}})",
+    "nameAzHint": "Short and clear, like “Ümumi müayinə”.",
+    "nameFallbackHint": "Leave it empty and we'll show the Azerbaijani name.",
+    "namePlaceholder": "Service name",
+    "descriptionField": "Short description ({{language}})",
+    "descriptionPlaceholder": "For example: Dogs and cats · ~30 min",
+    "descriptionHint": "{{count}} / {{max}} characters · shown under the name",
+    "duration": "Duration",
+    "minutesUnit": "min",
+    "durationHint": "About {{duration}}",
+    "durationRange": "From 5 to 1440 minutes (1 day)",
+    "durationPresets": "Quick durations",
+    "priceLegend": "Price",
+    "showPrice": "Show the price in the app",
+    "showPriceHint": "Turn it off and the app says “{{label}}”.",
+    "priceKeptHint": "We keep the price, but the app won't show it.",
+    "priceFrom": "Starting price",
+    "priceFromHint": "The app shows “{{example}}” — use it when the price depends on size or the amount of work.",
+    "species": "Who it's for",
+    "active": "Active in the app",
+    "activeHint": "Turn it off to hide the service in the app; it won't get requests.",
+    "previewLabel": "In the app",
+    "previewHidden": "Hidden",
+    "errors": {
+      "nameRequired": "Add the Azerbaijani name.",
+      "duration": "Enter a duration between 5 and 1440 minutes.",
+      "species": "Pick at least one."
+    }
+  },
+  "productCategories": {
+    "food": "Food",
+    "treats": "Treats",
+    "toys": "Toys",
+    "care": "Care",
+    "accessories": "Accessories",
+    "health": "Health"
+  },
+  "products": {
+    "listTitle": "Products",
+    "listHint": "Change prices and stock here, then save.",
+    "search": "Search products or SKU",
+    "lowOnly": "Running low only",
+    "categoryFilter": "Category",
+    "all": "All",
+    "stock": "Stock",
+    "stockFor": "Stock of {{name}}",
+    "lowStockAt": "“Running low” at",
+    "lowStockHint": "You'll see a warning when stock drops to this number.",
+    "active": "On sale in the app",
+    "activeHint": "Turn it off and the product disappears from the app.",
+    "edit": "Edit {{name}}",
+    "dialogTitle": "Edit product",
+    "dialogDescription": "SKU {{sku}} · Clients see this in the PetRide app.",
+    "kpi": {
+      "active": "On sale",
+      "low": "Running low",
+      "lowNote": "Restock in time",
+      "out": "Out of stock",
+      "sold": "Sold in 30 days"
+    },
+    "sold_one": "{{count}} sold in 30 days",
+    "sold_other": "{{count}} sold in 30 days",
+    "emptyTitle": "No products yet",
+    "emptyBody": "The PetRide team uploads your catalogue. Message us and we'll add it together.",
+    "clearFilters": "Clear filters",
+    "saveHint": "Prices and stock update in the app as soon as you save.",
+    "savedBody": "Prices and stock are updated in the app.",
+    "errors": {
+      "stock": "Enter stock as a whole number (0 or more).",
+      "lowStock": "Enter a whole number from 0 to 999."
+    }
+  }
+}

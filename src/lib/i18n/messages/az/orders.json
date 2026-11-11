@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "title": "Sifarişlər",
+    "description": "Mağaza sifarişləri və PetRide kuryeri ilə çatdırılma.",
+    "ridesTitle": "PetRide gedişləri",
+    "ridesDescription": "Dostları sənə gətirən və evə aparan PetRide gedişləri."
+  },
+  "title": "Sifarişlər",
+  "description": "PetRide tətbiqindən gələn sifarişlər. Hazırla, kuryerə ver, yolunu izlə.",
+  "sections": {
+    "label": "Bölmələr",
+    "orders": "Sifarişlər",
+    "products": "Məhsullar və stok"
+  },
+  "kpi": {
+    "label": "Bu günün göstəriciləri",
+    "orders": "Bu günkü sifarişlər",
+    "revenue": "Bu günkü gəlir",
+    "averageTicket": "Orta səbət",
+    "lowStock": "Azalan məhsullar",
+    "outOfStock_one": "{{count}} məhsul bitib",
+    "outOfStock_other": "{{count}} məhsul bitib",
+    "allStocked": "Hamısı stokda var"
+  },
+  "tabs": {
+    "label": "Sifarişləri statusa görə süz",
+    "all": "Hamısı",
+    "new": "Yeni",
+    "preparing": "Hazırlanır",
+    "ready": "Hazırdır",
+    "on_the_way": "Yolda",
+    "done": "Təhvil verildi",
+    "cancelled": "Ləğv edildi"
+  },
+  "view": {
+    "label": "Görünüş",
+    "table": "Cədvəl",
+    "board": "Lövhə"
+  },
+  "filters": {
+    "searchLabel": "Sifarişlərdə axtar",
+    "search": "Nömrə, müştəri və ya telefon",
+    "fulfilment": "Çatdırılma üsulu",
+    "fulfilmentAll": "Bütün üsullar",
+    "clear": "Filtrləri sıfırla"
+  },
+  "table": {
+    "caption": "Sifarişlər: {{tab}}",
+    "order": "Sifariş",
+    "customer": "Müştəri",
+    "items": "Məhsullar",
+    "total": "Məbləğ",
+    "delivery": "Çatdırılma",
+    "status": "Status",
+    "next": "Növbəti addım"
+  },
+  "items_one": "{{count}} məhsul",
+  "items_other": "{{count}} məhsul",
+  "itemsMore": "{{first}} və daha {{count}}",
+  "empty": {
+    "title": "Hələ sifariş yoxdur",
+    "body": "Müştərilər PetRide-da sifariş verən kimi burada görəcəksən.",
+    "tabTitle": "Bu statusda sifariş yoxdur",
+    "tabBody": "Başqa statusa bax və ya filtrləri sıfırla.",
+    "searchTitle": "Heç nə tapılmadı",
+    "searchBody": "Sifariş nömrəsini, adı və ya telefonu yoxla."
+  },
+  "actions": {
+    "toPreparing": "Hazırlamağa başla",
+    "toReady": "Hazırdır",
+    "toReadyCourier": "Hazırdır, kuryer çağır",
+    "toPickedUp": "Təhvil ver",
+    "toDelivered": "Çatdırıldı",
+    "cancel": "Sifarişi ləğv et",
+    "moveTo": "Köçür",
+    "moveToLabel": "{{code}} sifarişini başqa sütuna köçür",
+    "receipt": "Çek",
+    "print": "Çap et",
+    "callCustomer": "Müştəriyə zəng et",
+    "callDriver": "Sürücüyə zəng et",
+    "openClient": "Müştəri kartı"
+  },
+  "toast": {
+    "moved": "{{code}}: {{status}}",
+    "courierBooked": "PetRide kuryerini çağırdıq. Sürücü tezliklə gələcək.",
+    "cancelled": "{{code}} ləğv edildi",
+    "cancelledBody": "Müştəri tətbiqdə bildiriş aldı.",
+    "failed": "Status dəyişmədi",
+    "notAllowed": "Bu sifarişi ora köçürmək olmur",
+    "courierMoves": "“Yolda” sütununa sifarişi PetRide kuryeri özü keçirir."
+  },
+  "board": {
+    "label": "Sifariş lövhəsi",
+    "hint": "Kartı sütundan sütuna sürüşdür və ya “Köçür” düyməsini bas.",
+    "empty": "Hələ boşdur",
+    "dropHere": "Bura burax",
+    "count_one": "{{count}} sifariş",
+    "count_other": "{{count}} sifariş",
+    "columns": {
+      "new": "Yeni",
+      "preparing": "Hazırlanır",
+      "ready": "Hazırdır",
+      "on_the_way": "Yolda",
+      "done": "Təhvil verildi",
+      "cancelled": "Ləğv edildi"
+    },
+    "hints": {
+      "new": "Bax və hazırlamağa başla",
+      "preparing": "Səbəti yığırsan",
+      "ready": "Kuryeri və ya müştərini gözləyir",
+      "on_the_way": "PetRide kuryeri yoldadır",
+      "done": "Bu gün təhvil verilənlər",
+      "cancelled": "Bu gün ləğv edilənlər"
+    }
+  },
+  "move": {
+    "title": "{{code}} sifarişini köçür",
+    "description": "İndiki status: {{status}}. Hara keçirək?",
+    "none": "Bu sifarişi indi köçürmək olmur.",
+    "courierOnly": "Kuryer sifarişi götürəndən sonra onu “Çatdırıldı” edə bilərsən."
+  },
+  "cancel": {
+    "title": "{{code}} ləğv edilsin?",
+    "description": "Müştəri tətbiqdə bildiriş və səbəbi görəcək. Bunu geri qaytarmaq olmur.",
+    "reasonLabel": "Səbəb",
+    "reasons": {
+      "out_of_stock": "Məhsul bitib",
+      "client_asked": "Müştəri özü istədi",
+      "no_delivery": "Bu ünvana çatdıra bilmirik",
+      "other": "Başqa səbəb"
+    },
+    "otherLabel": "Səbəbi yaz",
+    "otherPlaceholder": "Məsələn: qiymət dəyişib",
+    "otherRequired": "Səbəbi bir neçə sözlə yaz.",
+    "confirm": "Ləğv et",
+    "keep": "Saxla",
+    "courierNote": "Sifarişə bağlı PetRide kuryeri də ləğv olunacaq."
+  },
+  "drawer": {
+    "title": "Sifariş {{code}}",
+    "loadingTitle": "Sifariş",
+    "progress": "Sifarişin gedişatı",
+    "stepDone": "tamamlanıb",
+    "stepCurrent": "indiki addım",
+    "items": "Səbət",
+    "itemsCaption": "{{code}} sifarişindəki məhsullar",
+    "product": "Məhsul",
+    "qty": "Say",
+    "unitPrice": "Qiymət",
+    "lineTotal": "Cəmi",
+    "subtotal": "Məhsullar",
+    "deliveryFee": "Çatdırılma",
+    "total": "Yekun",
+    "free": "Pulsuz",
+    "customer": "Müştəri",
+    "phone": "Telefon",
+    "pets": "Dostları",
+    "address": "Çatdırılma ünvanı",
+    "pickupAtShop": "Mağazadan özü götürəcək",
+    "payment": "Ödəniş",
+    "card": "Kartla, tətbiqdə",
+    "cash": "Nağd, təhvil zamanı",
+    "clientNote": "Müştərinin qeydi",
+    "reason": "Ləğv səbəbi",
+    "timeline": "Tarixçə",
+    "by": {
+      "client": "Müştəri",
+      "partner": "Sən",
+      "system": "PetRide"
+    },
+    "courier": "PetRide kuryeri",
+    "courierNotBooked": "Sifarişi “Hazırdır” edəndə PetRide kuryerini avtomatik çağıracağıq.",
+    "courierEta": "Çatmağa {{eta}} qalıb",
+    "courierDoneHint": "Kuryer sifarişi çatdırdı. “Çatdırıldı” edib bağla.",
+    "driver": "Sürücü",
+    "car": "Avtomobil",
+    "driverPending": "Sürücü hələ təyin olunmayıb",
+    "rideProgress": "Kuryerin yolu"
+  },
+  "receipt": {
+    "title": "{{code}} çeki",
+    "description": "Çapa hazır görünüş. Kağız və ya PDF üçün “Çap et” düyməsini bas.",
+    "heading": "Satış çeki",
+    "order": "Sifariş",
+    "date": "Tarix",
+    "customer": "Müştəri",
+    "delivery": "Çatdırılma",
+    "payment": "Ödəniş",
+    "thanks": "Təşəkkür edirik! Qoy dostun sevinsin.",
+    "demo": "Demo məlumat. Rəsmi ödəniş sənədi deyil."
+  },
+  "products": {
+    "title": "Məhsullar və stok",
+    "description": "Qiyməti və qalığı burada dəyiş. Tətbiqdə dərhal yenilənir.",
+    "caption": "Məhsullar və stok qalığı",
+    "searchLabel": "Məhsullarda axtar",
+    "search": "Ad və ya SKU",
+    "category": "Kateqoriya",
+    "categoryAll": "Bütün kateqoriyalar",
+    "stockFilter": "Stok",
+    "stockAll": "Hamısı",
+    "stockLow": "Azalan",
+    "stockOut": "Bitib",
+    "name": "Məhsul",
+    "price": "Qiymət",
+    "stock": "Qalıq",
+    "sold30d": "30 gündə satılıb",
+    "categories": {
+      "food": "Yem",
+      "treats": "Ləzzətlər",
+      "toys": "Oyuncaqlar",
+      "care": "Baxım",
+      "accessories": "Aksesuarlar",
+      "health": "Sağlamlıq"
+    },
+    "pcs": "{{count}} əd.",
+    "editPrice": "{{name}}: qiyməti dəyiş",
+    "editStock": "{{name}}: qalığı dəyiş",
+    "priceInput": "{{name}} üçün yeni qiymət",
+    "stockInput": "{{name}} üçün yeni qalıq",
+    "save": "Yadda saxla",
+    "cancelEdit": "Dəyişmə",
+    "invalidPrice": "Qiyməti rəqəmlə yaz, məsələn 12,80.",
+    "invalidStock": "Qalıq 0 və ya daha çox tam ədəd olmalıdır.",
+    "priceSaved": "{{name}}: qiymət yeniləndi",
+    "stockSaved": "{{name}}: qalıq yeniləndi",
+    "lowAt": "{{count}} əd. qalanda “azalan” sayılır",
+    "emptyTitle": "Məhsul tapılmadı",
+    "emptyBody": "Axtarışı və ya filtrləri dəyiş."
+  },
+  "rides": {
+    "title": "PetRide gedişləri",
+    "description": "Dostları sənə gətirən və evə aparan gedişlər. Status və gəliş vaxtı canlı yenilənir.",
+    "kpi": {
+      "label": "Gediş göstəriciləri",
+      "live": "İndi yolda",
+      "liveNote": "{{in}} gəlir · {{out}} evə gedir",
+      "today": "Bu günkü gedişlər",
+      "todayNote": "{{done}} başa çatıb",
+      "share": "PetRide ilə gələnlər",
+      "shareNote": "son 30 gündə"
+    },
+    "tabs": {
+      "label": "Gedişləri vaxta görə süz",
+      "live": "İndi",
+      "today": "Bu gün",
+      "upcoming": "Qarşıda",
+      "past": "Keçmiş"
+    },
+    "searchLabel": "Gedişlərdə axtar",
+    "search": "Müştəri, dost və ya sürücü",
+    "direction": "İstiqamət",
+    "directionAll": "Hər iki istiqamət",
+    "caption": "PetRide gedişləri: {{tab}}",
+    "columns": {
+      "client": "Müştəri və dost",
+      "direction": "İstiqamət",
+      "time": "Vaxt",
+      "driver": "Sürücü",
+      "status": "Status",
+      "price": "Qiymət"
+    },
+    "etaShort": "{{eta}} qalıb",
+    "noDriver": "Hələ təyin olunmayıb",
+    "roundTrip": "Gediş-dönüş",
+    "empty": {
+      "liveTitle": "İndi yolda gediş yoxdur",
+      "liveBody": "Dost yola çıxan kimi burada canlı görəcəksən.",
+      "todayTitle": "Bu gün gediş yoxdur",
+      "todayBody": "Müştəri randevuya PetRide gedişi əlavə edəndə burada görünəcək.",
+      "upcomingTitle": "Qarşıda gediş yoxdur",
+      "upcomingBody": "Yeni gedişlər randevularla birlikdə gəlir.",
+      "pastTitle": "Son 30 gündə gediş olmayıb",
+      "pastBody": "Keçmiş gedişlər burada qalır."
+    },
+    "drawer": {
+      "title": "{{pets}} · {{direction}}",
+      "client": "Müştəri",
+      "pickup": "Götürmə",
+      "arrive": "Çatma",
+      "from": "Haradan",
+      "to": "Haraya",
+      "driver": "Sürücü",
+      "car": "Avtomobil",
+      "distance": "Məsafə",
+      "price": "Gedişin qiyməti",
+      "travelNotes": "Yol üçün qeydlər",
+      "driverNote": "Sürücüyə qeyd",
+      "openAppointment": "Randevunu aç",
+      "progress": "Gedişin irəliləməsi",
+      "callDriver": "Sürücüyə zəng et"
+    },
+    "off": {
+      "title": "PetRide gedişləri söndürülüb",
+      "body": "Müştərilərin dostlarını PetRide ilə gətirməsi üçün Ayarlarda gedişləri aç.",
+      "action": "Ayarlara keç"
+    }
+  }
+}
