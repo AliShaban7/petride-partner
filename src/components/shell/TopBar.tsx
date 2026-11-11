@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu as MenuIcon, Search, Sparkles } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -42,12 +42,12 @@ function NewBadge({ requests, orders, className }: { requests: number; orders: n
 }
 
 /** Desktop / tablet top bar (≥ 640px). */
-export function TopBar({ counts, onMenu }: { counts: { requests: number; orders: number }; onMenu: () => void }) {
-  const t = useT("shell");
+export function TopBar({ counts }: { counts: { requests: number; orders: number } }) {
   const tc = useT("common");
   return (
-    <header className="sticky top-0 z-30 hidden h-[var(--topbar-h)] items-center gap-3 border-b border-border/70 bg-bg/85 px-4 backdrop-blur-md sm:flex lg:px-8">
-      <IconButton label={t("sidebar.expand")} icon={<MenuIcon size={20} />} onClick={onMenu} className="lg:hidden" />
+    // The sidebar's half-circle tab sticks 24px into this bar (it replaces the old hamburger), so the
+    // left padding keeps the search clear of it.
+    <header className="sticky top-0 z-30 hidden h-[var(--topbar-h)] items-center gap-3 border-b border-border/70 bg-bg/85 pl-10 pr-4 backdrop-blur-md sm:flex lg:px-8">
       <GlobalSearch className="w-full max-w-md" />
       <div className="ml-auto flex items-center gap-1.5">
         <NewBadge requests={counts.requests} orders={counts.orders} className="hidden md:inline-flex" />

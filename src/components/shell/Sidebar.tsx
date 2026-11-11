@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftClose, PanelLeftOpen, type LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,8 +22,8 @@ export type SidebarMode = {
 };
 
 /**
- * Dark teal sidebar: logo tile + "Partner" with the collapse toggle beside it (under the logo on
- * the icon rail), nav with a coral active pill, live count badges, partner card at the bottom. ≥ 1024px full width (collapsible to a rail); 640–1023px icon rail
+ * Dark teal sidebar: logo tile + "Partner", nav with a coral active pill, live count badges,
+ * partner card at the bottom, and a half-circle collapse / expand tab on its right edge. ≥ 1024px full width (collapsible to a rail); 640–1023px icon rail
  * that expands as an overlay; hidden below 640px (bottom tab bar instead).
  */
 export function Sidebar({
@@ -47,8 +47,11 @@ export function Sidebar({
   const wide = mode.expanded ? "w-[var(--sidebar-w)]" : mode.collapsed ? "w-[var(--sidebar-rail-w)]" : "w-[var(--sidebar-rail-w)] lg:w-[var(--sidebar-w)]";
   const railOnly = mode.expanded ? "hidden" : mode.collapsed ? "flex" : "flex lg:hidden";
   const fullOnly = mode.expanded ? "flex" : mode.collapsed ? "hidden" : "hidden lg:flex";
+  // The edge tab sits where the sidebar ends, so it uses the same width per mode.
+  const edge = mode.expanded ? "left-[var(--sidebar-w)]" : mode.collapsed ? "left-[var(--sidebar-rail-w)]" : "left-[var(--sidebar-rail-w)] lg:left-[var(--sidebar-w)]";
 
   return (
+    <>
     <aside
       data-surface="dark"
       className={cn(
@@ -57,13 +60,13 @@ export function Sidebar({
         mode.expanded && "shadow-sheet",
       )}
     >
-      {/* Brand + collapse (full sidebar: the toggle sits at the end of the logo row) */}
-      <div className="flex h-[var(--topbar-h)] shrink-0 items-center gap-2 px-4">
+      {/* Brand */}
+      <div className="flex h-[var(--topbar-h)] shrink-0 items-center gap-3 px-4">
         <Link
           href={localizedHref(locale, "/overview")}
           onClick={onNavigate}
           aria-label={t("homeLink")}
-          className="flex min-w-0 items-center gap-2.5 rounded-tile"
+          className="flex min-w-0 items-center gap-3 rounded-tile"
         >
           <span aria-hidden="true" className="inline-flex size-11 shrink-0 items-center justify-center rounded-tile bg-surface shadow-thumb">
             <PawMark size={28} />
@@ -73,19 +76,6 @@ export function Sidebar({
             <span className="rounded-chip bg-accent px-2 py-0.5 text-caption font-bold text-fg">{t("partnerLabel")}</span>
           </span>
         </Link>
-        {/* Two buttons instead of one, so each has a name that matches what it does at this width. */}
-        <SidebarToggle
-          label={t("sidebar.collapse")}
-          icon={PanelLeftClose}
-          onClick={onToggle}
-          expanded={mode.expanded || undefined}
-          className={cn("-mr-1.5 ml-auto", fullOnly)}
-        />
-      </div>
-
-      {/* Icon rail: the expand toggle sits right under the logo */}
-      <div className={cn("shrink-0 justify-center px-3 pb-1", railOnly)}>
-        <SidebarToggle label={t("sidebar.expand")} icon={PanelLeftOpen} onClick={onToggle} />
       </div>
 
       {/* Nav */}
@@ -144,36 +134,33 @@ export function Sidebar({
         </div>
       </div>
     </aside>
-  );
-}
 
-/** 44px icon-only sidebar toggle with a tooltip; its name is the action it performs. */
-function SidebarToggle({
-  label,
-  icon: Icon,
-  onClick,
-  expanded,
-  className,
-}: {
-  label: string;
-  icon: LucideIcon;
-  onClick: () => void;
-  expanded?: boolean;
-  className?: string;
-}) {
-  return (
+    {/*
+      Collapse / expand toggle: a half-circle tab sticking out of the sidebar's right edge at the logo
+      row. It lives outside <aside> (which clips overflow for the width animation) and follows the
+      sidebar's width with the same transition. The visible tab is 24×48; an invisible part reaches
+      20px back into the sidebar, so the hit area is 44×48. Its name follows the state shown at this
+      width (hidden spans don't count towards the accessible name).
+    */}
     <button
       type="button"
-      onClick={onClick}
-      aria-label={label}
-      aria-expanded={expanded}
-      title={label}
+      onClick={onToggle}
+      aria-expanded={mode.expanded || undefined}
       className={cn(
-        "size-11 shrink-0 items-center justify-center rounded-chip text-on-primary-muted transition-colors duration-200 hover:bg-primary-dark-raised hover:text-on-primary",
-        className,
+        "group fixed top-[calc((var(--topbar-h)-3rem)/2)] z-40 hidden h-12 w-6 items-center justify-center rounded-r-full bg-primary-dark text-on-primary-muted transition-[left,color] duration-300 ease-[var(--ease-out-soft)] hover:text-on-primary sm:flex",
+        "after:absolute after:inset-y-0 after:-left-5 after:right-0 after:content-['']",
+        edge,
       )}
     >
-      <Icon aria-hidden="true" size={20} />
+      <span className={cn(fullOnly, "items-center")}>
+        <ChevronLeft aria-hidden="true" size={18} strokeWidth={2.4} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
+        <span className="sr-only">{t("sidebar.collapse")}</span>
+      </span>
+      <span className={cn(railOnly, "items-center")}>
+        <ChevronRight aria-hidden="true" size={18} strokeWidth={2.4} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+        <span className="sr-only">{t("sidebar.expand")}</span>
+      </span>
     </button>
+    </>
   );
 }

@@ -95,7 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       ) : null}
 
       <div className={cn("flex min-h-dvh min-w-0 flex-col transition-[padding] duration-300", collapsed ? "sm:pl-[var(--sidebar-rail-w)]" : "sm:pl-[var(--sidebar-rail-w)] lg:pl-[var(--sidebar-w)]")}>
-        <TopBar counts={counts} onMenu={toggle} />
+        <TopBar counts={counts} />
         <MobileTopBar title={title} counts={counts} />
         <main
           id="main"
