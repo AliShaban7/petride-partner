@@ -127,6 +127,7 @@ export interface PartnerApi {
   getServiceMix(period: StatsPeriod): Promise<ServiceMixItem[]>;
   /** Weekday × hour counts of started visits / placed orders. */
   getBusyHours(period: StatsPeriod): Promise<BusyHourCell[]>;
+  /** Share of visits (shops: orders) that came with a PetRide ride, plus the ride count. No ride prices. */
   getRideShare(period: StatsPeriod): Promise<RideShareStats>;
   getRepeatClients(period: StatsPeriod): Promise<RepeatStats>;
   getRatingStats(period: StatsPeriod): Promise<RatingStats>;

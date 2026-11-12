@@ -6,10 +6,12 @@ import { useState } from "react";
 
 import { Pagination, ResponsiveTable, StatusPill, Tag, type Column } from "@/components/ui";
 import type { Appointment, Order } from "@/lib/api/types";
+import { cn } from "@/lib/cn";
 import { formatDate, formatMoney, formatNumber, formatTime } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 
+import { TOUCH_HIT_AREA } from "./bits";
 import { paginate } from "../_lib/directory";
 import { useMockParam } from "../_lib/url";
 
@@ -67,7 +69,7 @@ export function VisitsTable({ rows, caption, showPet, now, pageSize = 6 }: { row
   const mobileCard = (a: Appointment) => (
     <div className="min-w-0">
       <div className="flex items-start justify-between gap-3">
-        <Link href={href(a)} className="font-semibold text-fg underline-offset-4 hover:underline">
+        <Link href={href(a)} className={cn("font-semibold text-fg underline-offset-4 hover:underline", TOUCH_HIT_AREA)}>
           {formatDate(a.start, locale, today)}, <span className="tabular">{formatTime(a.start)}</span>
         </Link>
         <StatusPill kind="appointment" status={a.status} size="sm" className="shrink-0" />
@@ -117,7 +119,7 @@ export function OrdersTable({ rows, caption, now, pageSize = 6 }: { rows: Order[
   const mobileCard = (o: Order) => (
     <div className="min-w-0">
       <div className="flex items-start justify-between gap-3">
-        <Link href={href(o)} className="font-semibold text-fg tabular underline-offset-4 hover:underline">
+        <Link href={href(o)} className={cn("font-semibold text-fg tabular underline-offset-4 hover:underline", TOUCH_HIT_AREA)}>
           {o.code}
         </Link>
         <StatusPill kind="order" status={o.status} size="sm" className="shrink-0" />

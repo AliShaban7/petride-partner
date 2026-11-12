@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { getT, localeFromParams } from "@/lib/i18n/server";
 
-import { OwnerProfileView } from "./OwnerProfileView";
+import { OwnerProfile } from "../../_components/OwnerProfile";
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -16,7 +16,7 @@ export default async function OwnerPage({ params }: Props) {
   const { id } = await params;
   return (
     <Suspense>
-      <OwnerProfileView key={id} clientId={decodeURIComponent(id)} />
+      <OwnerProfile key={id} clientId={decodeURIComponent(id)} variant="page" />
     </Suspense>
   );
 }

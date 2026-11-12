@@ -2,19 +2,22 @@
 
 import { ArrowLeft } from "lucide-react";
 
-import { ButtonLink, EmptyState, ErrorState, Skeleton, SkeletonCard, SkeletonRows } from "@/components/ui";
+import { Button, ButtonLink, EmptyState, ErrorState, Skeleton, SkeletonCard, SkeletonRows } from "@/components/ui";
 import { errorCode } from "@/lib/api/hooks";
 import { useT } from "@/lib/i18n/client";
 
 /**
  * Skeleton of a profile page (band with avatar, title and facts; then tabs + side panels). `title`
- * is the page's h1 while the name loads (visually hidden).
+ * is the page's h1 while the name loads (visually hidden); in a dialog it is the h2 that names the
+ * dialog (`heading="h2"`, `titleId`).
  */
-export function ProfileSkeleton({ title }: { title: string }) {
+export function ProfileSkeleton({ title, heading: Heading = "h1", titleId }: { title: string; heading?: "h1" | "h2"; titleId?: string }) {
   const tc = useT("common");
   return (
     <div aria-busy="true" className="space-y-section">
-      <h1 className="sr-only">{title}</h1>
+      <Heading id={titleId} className="sr-only">
+        {title}
+      </Heading>
       <span className="sr-only">{tc("states.loading")}</span>
       <div aria-hidden="true" className="overflow-hidden rounded-panel bg-surface shadow-card">
         <div className="flex items-center gap-4 p-4 lg:px-5">
@@ -47,9 +50,26 @@ export function ProfileSkeleton({ title }: { title: string }) {
   );
 }
 
-/** Not found (deleted / wrong link) vs. any other error (retry). */
-export function ProfileError({ error, onRetry, backHref, kind }: { error: unknown; onRetry: () => void; backHref: string; kind: "pet" | "owner" }) {
+/**
+ * Not found (deleted / wrong link) vs. any other error (retry). On a page the not-found state links
+ * back to the list (`backHref`); in a modal over the list, `onBack` closes it instead (the list,
+ * with its search, sort and page, is right underneath).
+ */
+export function ProfileError({
+  error,
+  onRetry,
+  backHref,
+  onBack,
+  kind,
+}: {
+  error: unknown;
+  onRetry: () => void;
+  backHref: string;
+  onBack?: () => void;
+  kind: "pet" | "owner";
+}) {
   const t = useT("clients");
+  const tc = useT("common");
   if (errorCode(error) === "not_found") {
     return (
       <EmptyState
@@ -57,9 +77,15 @@ export function ProfileError({ error, onRetry, backHref, kind }: { error: unknow
         title={kind === "pet" ? t("profile.petNotFound") : t("profile.ownerNotFound")}
         description={t("profile.notFoundBody")}
         action={
-          <ButtonLink href={backHref} variant="secondary" leftIcon={<ArrowLeft aria-hidden="true" size={18} />}>
-            {kind === "owner" ? t("profile.backToOwners") : t("profile.backToClients")}
-          </ButtonLink>
+          onBack ? (
+            <Button variant="secondary" onClick={onBack}>
+              {tc("actions.close")}
+            </Button>
+          ) : (
+            <ButtonLink href={backHref} variant="secondary" leftIcon={<ArrowLeft aria-hidden="true" size={18} />}>
+              {kind === "owner" ? t("profile.backToOwners") : t("profile.backToClients")}
+            </ButtonLink>
+          )
         }
       />
     );

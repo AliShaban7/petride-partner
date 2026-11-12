@@ -247,12 +247,6 @@
     "reviewsTitle": "Отзывы клиента",
     "rating": "{{rating}} из 5 звёзд"
   },
-  "quickView": {
-    "title": "Клиент",
-    "openProfile": "Открыть профиль",
-    "recentVisits": "Последние визиты",
-    "recentOrders": "Последние заказы"
-  },
   "profile": {
     "backToClients": "Назад к клиентам",
     "backToOwners": "Назад к владельцам",
@@ -358,7 +352,6 @@
     "sourcePhone": "По телефону",
     "sourceWalkIn": "Пришли сами",
     "note": "Заметка для команды",
-    "hoursHint": "Проверь, что время попадает в часы работы — здесь это не проверяется.",
     "submit": "Записать",
     "errorService": "Выбери услугу.",
     "errorWhen": "Выбери дату и время.",

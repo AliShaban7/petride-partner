@@ -225,12 +225,6 @@
     "reviewsTitle": "Their reviews",
     "rating": "{{rating}} out of 5 stars"
   },
-  "quickView": {
-    "title": "Client",
-    "openProfile": "Open profile",
-    "recentVisits": "Recent visits",
-    "recentOrders": "Recent orders"
-  },
   "profile": {
     "backToClients": "Back to clients",
     "backToOwners": "Back to owners",
@@ -334,7 +328,6 @@
     "sourcePhone": "By phone",
     "sourceWalkIn": "Walk-in",
     "note": "Note for the team",
-    "hoursHint": "Check that the time is within your opening hours — it isn't checked here.",
     "submit": "Book appointment",
     "errorService": "Pick a service.",
     "errorWhen": "Pick a date and time.",

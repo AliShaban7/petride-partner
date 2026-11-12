@@ -246,8 +246,7 @@
       "direction": "Direction",
       "time": "Time",
       "driver": "Driver",
-      "status": "Status",
-      "price": "Price"
+      "status": "Status"
     },
     "etaShort": "{{eta}} to go",
     "noDriver": "Not assigned yet",
@@ -271,7 +270,6 @@
       "driver": "Driver",
       "car": "Car",
       "distance": "Distance",
-      "price": "Ride price",
       "travelNotes": "Travel notes",
       "driverNote": "Note for the driver",
       "openAppointment": "Open appointment",

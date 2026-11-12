@@ -53,6 +53,8 @@ export { Pill, StatusPill, type PillProps, type StatusPillProps } from "./Status
 export { Switch, type SwitchProps } from "./Switch";
 export {
   ResponsiveTable,
+  isPlainClick,
+  isRepeatClick,
   SortableTh,
   TBody,
   THead,

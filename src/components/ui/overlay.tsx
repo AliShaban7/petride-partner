@@ -29,7 +29,7 @@ const stack: symbol[] = [];
 /**
  * Modal behaviour for Dialog / Drawer: focus moves inside (initialFocus or first focusable),
  * Tab / Shift+Tab are trapped, Esc closes the top-most layer, page scroll is locked, and focus
- * returns to the element that opened it.
+ * returns to the element that opened it (or to `#main` when the layer was open on page load).
  */
 export function useModalLayer(open: boolean, containerRef: RefObject<HTMLElement | null>, onClose: () => void, initialFocusRef?: RefObject<HTMLElement | null>) {
   // Portal renders nothing on the hydration pass, so a layer that is already open on first load
@@ -116,7 +116,10 @@ export function useModalLayer(open: boolean, containerRef: RefObject<HTMLElement
         body.style.overflow = prevOverflow;
         body.style.paddingRight = prevPadding;
       }
-      if (previous && document.contains(previous)) previous.focus({ preventScroll: true });
+      if (previous && previous !== document.body && document.contains(previous)) previous.focus({ preventScroll: true });
+      // Opened straight from a link (/clients?id=…, /appointments?id=…): nothing had focus, so
+      // land on the page's <main> (tabIndex -1, the skip link's target) instead of <body>.
+      else if (stack.length === 0) document.getElementById("main")?.focus({ preventScroll: true });
     };
   }, [open, isClient, containerRef, initialFocusRef]);
 }

@@ -3,7 +3,7 @@
 import { Car, History, Wallet } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, ResponsiveTable, StatusPill, Tag, type Column, type SortState } from "@/components/ui";
+import { Avatar, ResponsiveTable, StatusPill, Tag, isPlainClick, isRepeatClick, type Column, type SortState } from "@/components/ui";
 import type { Client } from "@/lib/api/types";
 import { formatDate, formatMoney, formatNumber, formatPhone } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
@@ -14,6 +14,9 @@ import type { DirectoryMode } from "../_lib/directory";
  * Owners directory. From 640px a table with one line per owner (phone in its own column; pets and
  * the visit count once the results area is 1024px wide); on phones a compact card: name + vaccine
  * status, phone · pets, then visits / spend / last visit on one line.
+ *
+ * A click on an owner calls `onOpen` (the profile modal); the name stays a link to `rowHref` (the
+ * profile page) for Ctrl/⌘-click, a new tab or copying the link.
  */
 export function OwnersTable({
   rows,
@@ -21,6 +24,8 @@ export function OwnersTable({
   sort,
   onSortChange,
   rowHref,
+  onOpen,
+  selectedId,
   rideClientIds,
   now,
   loading,
@@ -31,6 +36,9 @@ export function OwnersTable({
   sort: SortState;
   onSortChange: (sort: SortState) => void;
   rowHref: (client: Client) => string;
+  onOpen?: (client: Client) => void;
+  /** The owner whose profile is open (row highlight). */
+  selectedId?: string | null;
   rideClientIds: Set<string>;
   now: number;
   loading?: boolean;
@@ -135,7 +143,19 @@ export function OwnersTable({
   const mobileCard = (c: Client) => (
     <div className="min-w-0">
       <div className="flex items-start justify-between gap-3">
-        <Link href={rowHref(c)} className="min-w-0 break-words text-body font-semibold text-fg underline-offset-4 hover:underline">
+        <Link
+          href={rowHref(c)}
+          onClick={
+            onOpen
+              ? (e) => {
+                  if (!isPlainClick(e)) return;
+                  e.preventDefault();
+                  if (!isRepeatClick(e)) onOpen(c);
+                }
+              : undefined
+          }
+          className="min-w-0 break-words text-body font-semibold text-fg underline-offset-4 hover:underline"
+        >
           {c.fullName}
         </Link>
         <StatusPill kind="health" status={c.vaccineAlert} size="sm" className="shrink-0" />
@@ -175,6 +195,8 @@ export function OwnersTable({
       sort={sort}
       onSortChange={onSortChange}
       rowHref={rowHref}
+      onRowClick={onOpen}
+      selectedId={selectedId}
       loading={loading}
       skeletonRows={skeletonRows}
       mobileCard={mobileCard}

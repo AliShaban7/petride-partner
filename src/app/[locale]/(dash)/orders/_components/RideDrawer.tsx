@@ -1,11 +1,11 @@
 "use client";
 
-import { CalendarDays, Phone, Star, TriangleAlert } from "lucide-react";
+import { CalendarDays, Phone, Route, Star, TriangleAlert } from "lucide-react";
 
 import { ButtonLink, DetailList, Drawer, ErrorState, ProgressBar, Skeleton, SkeletonText, Tag, buttonClasses } from "@/components/ui";
 import { useApiQuery } from "@/lib/api/hooks";
 import type { Ride } from "@/lib/api/types";
-import { formatDateTime, formatDistance, formatFixed, formatMoney, phoneHref } from "@/lib/format";
+import { formatDateTime, formatDistance, formatFixed, phoneHref } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { localizedHref, ROUTES } from "@/lib/i18n/navigation";
 
@@ -62,6 +62,11 @@ function RideDetails({ ride }: { ride: Ride }) {
         <RideStatus ride={ride} size="md" />
         <DirectionTag direction={ride.direction} />
         {ride.roundTrip ? <Tag>{t("rides.roundTrip")}</Tag> : null}
+        {/* Distance rides with the tags, so the details below are an even 2 × 2 (no price: PetRide's). */}
+        <Tag icon={<Route size={13} aria-hidden="true" />}>
+          <span className="sr-only">{t("rides.drawer.distance")}: </span>
+          <span className="tabular">{formatDistance(ride.distanceKm, locale)}</span>
+        </Tag>
       </div>
       {ride.status === "intrip" ? <ProgressBar value={ride.progress} label={t("rides.drawer.progress")} /> : null}
 
@@ -72,8 +77,6 @@ function RideDetails({ ride }: { ride: Ride }) {
           { label: t("rides.drawer.to"), value: <Place label={ride.to.label} address={ride.to.address} /> },
           { label: t("rides.drawer.pickup"), value: <span className="tabular">{formatDateTime(ride.pickupAt, locale, now)}</span> },
           { label: t("rides.drawer.arrive"), value: <span className="tabular">{formatDateTime(ride.arriveAt, locale, now)}</span> },
-          { label: t("rides.drawer.distance"), value: formatDistance(ride.distanceKm, locale) },
-          { label: t("rides.drawer.price"), value: <span className="tabular">{formatMoney(ride.priceAZN, locale)}</span> },
         ]}
       />
 

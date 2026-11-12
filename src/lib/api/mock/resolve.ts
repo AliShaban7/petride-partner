@@ -140,7 +140,6 @@ export function resolveRide(r: RideRecord, ix: Index, locale: Locale, now: numbe
     progress: state.progress,
     distanceKm: r.distanceKm,
     roundTrip: r.roundTrip,
-    priceAZN: r.priceAZN,
     driverNote: r.driverNote ? txt(r.driverNote, locale) : undefined,
     travelNotes: pets.flatMap((p) => p.travelNotes.map((n) => n[locale])),
   };

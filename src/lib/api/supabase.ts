@@ -9,10 +9,13 @@
  *    (the app writes them; partner-side status lives in `appointments`), rides (+ live status from
  *    the dispatch service), orders/order_items, reviews, partner_notifications.
  *  - Row Level Security: every row carries partner_id; policies allow members of that partner only.
+ *    RLS filters rows, not columns: partners read rides through a view / RPC without the price
+ *    columns (PetRide sets and bills ride and courier prices; partners only hand over or receive
+ *    the pet), and no stats RPC returns ride revenue.
  *  - Live data: subscribe to `rides` and `appointments` via Realtime and call `invalidate()` from
  *    src/lib/api/hooks.ts so screens refetch.
  *  - Stats: SQL views / RPCs (kpis(period), daily_series(period) …) returning the same shapes as
- *    ./mock/stats.ts.
+ *    ./mock/stats.ts (ride share is counts only).
  * Every method must resolve localised fields for `locale` and reject with `ApiError` (./types).
  */
 import type { PartnerApi } from "./partner-api";

@@ -38,19 +38,23 @@ export function DirectionTag({ direction }: { direction: RideDirection }) {
   return <Tag icon={<Icon size={13} aria-hidden="true" />}>{ts.dynamic(`direction.${direction}`)}</Tag>;
 }
 
-/** Ride status pill + "12 min to go" while the ride is live. */
-export function RideStatus({ ride, size = "sm", className }: { ride: Pick<Ride, "status" | "etaMin">; size?: "sm" | "md"; className?: string }) {
-  const t = useT("orders");
-  const locale = useLocale();
-  const live = (LIVE_RIDE_STATUSES as readonly string[]).includes(ride.status);
+/** Ride status pill + "12 min to go" while the ride is live (`eta={false}`: the pill only). */
+export function RideStatus({ ride, size = "sm", eta = true, className }: { ride: Pick<Ride, "status" | "etaMin">; size?: "sm" | "md"; eta?: boolean; className?: string }) {
   return (
     <span className={cn("inline-flex flex-wrap items-center gap-x-2 gap-y-1", className)}>
       <StatusPill kind="ride" status={ride.status} size={size} />
-      {live && ride.etaMin !== undefined ? (
-        <span className="whitespace-nowrap text-meta font-semibold text-fg tabular">{t("rides.etaShort", { eta: formatDuration(ride.etaMin, locale) })}</span>
-      ) : null}
+      {eta ? <RideEta ride={ride} /> : null}
     </span>
   );
+}
+
+/** "12 min to go" while the ride is live; nothing otherwise. */
+export function RideEta({ ride, className }: { ride: Pick<Ride, "status" | "etaMin">; className?: string }) {
+  const t = useT("orders");
+  const locale = useLocale();
+  const live = (LIVE_RIDE_STATUSES as readonly string[]).includes(ride.status);
+  if (!live || ride.etaMin === undefined) return null;
+  return <span className={cn("whitespace-nowrap text-meta font-semibold text-fg tabular", className)}>{t("rides.etaShort", { eta: formatDuration(ride.etaMin, locale) })}</span>;
 }
 
 /** "5 min ago" with the exact date and time in `title` / `dateTime`. */

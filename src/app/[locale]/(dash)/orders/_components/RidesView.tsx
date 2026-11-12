@@ -22,12 +22,12 @@ import {
 import { useApiQuery } from "@/lib/api/hooks";
 import type { Ride, RideDirection } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
-import { formatDayLabel, formatMoney, formatNumber, formatPercent, formatTimeRange } from "@/lib/format";
+import { formatDayLabel, formatNumber, formatPercent, formatTimeRange } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { localizedHref, ROUTES } from "@/lib/i18n/navigation";
 import { LIVE_RIDE_STATUSES } from "@/lib/status";
 
-import { DirectionTag, RideStatus } from "./bits";
+import { DirectionTag, RideEta, RideStatus } from "./bits";
 import { CountTabs } from "./CountTabs";
 import { FiltersPopover } from "./FiltersPopover";
 import { dayStartISO, useDebouncedParam, useNow, useUrlState } from "./hooks";
@@ -43,7 +43,7 @@ const PAGE_SIZE = 12;
 const DENSE = "lg:[tbody_&]:py-1.5";
 /**
  * Non-sortable columns (header and cells alike, so they stay aligned): 12px sides instead of 16px.
- * At 1280px in ru the table was 2px wider than its card, so the price sat behind a sideways scroll.
+ * At 1280px in ru the table was 2px wider than its card, so the last column sat behind a sideways scroll.
  */
 const NARROW = "px-3";
 const DIRECTIONS: RideDirection[] = ["to_partner", "from_partner"];
@@ -109,7 +109,7 @@ export function RidesView() {
     });
     const ordered = tab === "past" ? [...list].reverse() : list;
     if (!sort) return ordered;
-    const value = (r: Ride) => (sort.id === "price" ? r.priceAZN : new Date(r.pickupAt).getTime());
+    const value = (r: Ride) => new Date(r.pickupAt).getTime();
     const factor = sort.direction === "asc" ? 1 : -1;
     return [...ordered].sort((a, b) => (value(a) - value(b)) * factor);
   }, [source.data, direction, q, tab, sort]);
@@ -162,8 +162,11 @@ export function RidesView() {
       rowHeader: true,
       mobile: "title",
       className: cn(NARROW, DENSE),
+      // Below xl the client column is the one that gives (a long owner name wraps; the status cell
+      // stacks pill and ETA): at 1024px with the sidebar open, ru / en tables were 15–20px wider than
+      // the card and the status sat behind a sideways scroll.
       cell: (r) => (
-        <span className="block min-w-36">
+        <span className="block min-w-28 xl:min-w-36">
           <span className="block font-semibold text-fg">{r.petNames.join(", ") || r.clientName}</span>
           <span className="block text-meta font-normal text-fg-secondary">{r.clientName}</span>
         </span>
@@ -222,19 +225,12 @@ export function RidesView() {
           <span className="text-meta text-fg-secondary">{r.status === "cancelled" || r.status === "completed" ? "—" : t("rides.noDriver")}</span>
         ),
     },
-    { id: "status", header: t("rides.columns.status"), mobile: "badge", className: cn(NARROW, DENSE), cell: (r) => <RideStatus ride={r} className="flex-col items-end gap-y-0.5 sm:flex-row sm:items-center" /> },
-    {
-      id: "price",
-      header: t("rides.columns.price"),
-      align: "end",
-      sortable: true,
-      sortValue: (r) => r.priceAZN,
-      className: DENSE,
-      cell: (r) => <span className="whitespace-nowrap font-semibold tabular">{formatMoney(r.priceAZN, locale)}</span>,
-    },
+    { id: "status", header: t("rides.columns.status"), mobile: "badge", className: cn(NARROW, DENSE), cell: (r) => <RideStatus ride={r} className="flex-col items-end gap-y-0.5 sm:items-start xl:flex-row xl:items-center" /> },
   ];
 
-  // Phone card, four short lines: pet + time, owner + status, direction + price, driver.
+  // Phone card, four short lines: pet + time, owner + status, direction + ETA, driver. No ride
+  // price: PetRide sets and bills it, partners only hand over or receive the pet. The ETA sits at
+  // the end of the direction line ("Coming to you … 12 min to go"), so the owner's name has room.
   const mobileCard = (r: Ride) => (
     <div className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
@@ -248,17 +244,14 @@ export function RidesView() {
       </div>
       <div className="flex items-center justify-between gap-3">
         <p className="min-w-0 truncate text-meta text-fg-secondary">{r.clientName}</p>
-        <RideStatus ride={r} className="shrink-0 justify-end" />
+        <RideStatus ride={r} eta={false} className="shrink-0 justify-end" />
       </div>
-      <div className="mt-1.5 flex items-center justify-between gap-2">
+      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
         <span className="flex min-w-0 flex-wrap items-center gap-1.5">
           <DirectionTag direction={r.direction} />
           {r.roundTrip ? <Tag icon={<Repeat size={13} aria-hidden="true" />}>{t("rides.roundTrip")}</Tag> : null}
         </span>
-        <span className="shrink-0 font-semibold text-fg tabular">
-          <span className="sr-only">{t("rides.columns.price")}: </span>
-          {formatMoney(r.priceAZN, locale)}
-        </span>
+        <RideEta ride={r} className="ml-auto" />
       </div>
       {r.driver || (r.status !== "cancelled" && r.status !== "completed") ? (
         <p className="mt-1 text-meta text-fg-secondary">

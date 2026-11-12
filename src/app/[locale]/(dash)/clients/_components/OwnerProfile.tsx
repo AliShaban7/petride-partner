@@ -7,6 +7,7 @@ import { useState, type ReactNode } from "react";
 import { partnerFeatures } from "@/components/shell";
 import { Avatar, Button, Card, EmptyState, PageHeader, Panel, StatusPill, TabPanel, Tabs } from "@/components/ui";
 import { useApiQuery } from "@/lib/api/hooks";
+import { cn } from "@/lib/cn";
 import type { Review, Ride } from "@/lib/api/types";
 import { useSession } from "@/lib/auth/client";
 import { LOCALE_NAMES } from "@/lib/i18n/config";
@@ -14,14 +15,14 @@ import { formatDate, formatDateLong, formatDateTime, formatMoney, formatNumber, 
 import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 
-import { BackLink, CallLink, PetLinkRow, ProfileBand, SourcePill, type BandFact } from "../../_components/bits";
-import { OrdersTable, VisitsTable } from "../../_components/HistoryTables";
-import { SendMessageDialog } from "../../_components/MessageDialogs";
-import { NewAppointmentDialog } from "../../_components/NewAppointmentDialog";
-import { NoteEditor } from "../../_components/NoteEditor";
-import { ProfileError, ProfileSkeleton } from "../../_components/ProfileStates";
-import { useNow, useOutbox } from "../../_lib/stores";
-import { useMockParam, useQueryUpdater } from "../../_lib/url";
+import { BackLink, CallLink, PetLinkRow, ProfileBand, SourcePill, TOUCH_HIT_AREA, type BandFact } from "./bits";
+import { OrdersTable, VisitsTable } from "./HistoryTables";
+import { SendMessageDialog } from "./MessageDialogs";
+import { NewAppointmentDialog } from "./NewAppointmentDialog";
+import { NoteEditor } from "./NoteEditor";
+import { ProfileError, ProfileSkeleton } from "./ProfileStates";
+import { useNow, useOutbox } from "../_lib/stores";
+import { useMockParam, useQueryUpdater } from "../_lib/url";
 
 type TabId = "visits" | "orders" | "rides" | "reviews";
 
@@ -30,10 +31,16 @@ const REVIEWS_STEP = 3;
 
 /**
  * Owner profile. One band on top (name, contact, source, vaccine status, actions and the key
- * numbers), then two columns on desktop: history tabs (visits / orders / rides / reviews) on the
- * left, pets and the internal note on the right. Phones: band, pets, history, note.
+ * numbers), then two columns on wide screens: history tabs (visits / orders / rides / reviews) on
+ * the left, pets and the internal note on the right. Phones: band, pets, history, note.
+ *
+ * - `variant="page"` (/clients/owners/[id]): back link, the name is the page's h1, the tab lives in
+ *   the URL (`?tab=`).
+ * - `variant="dialog"` (OwnerProfileDialog over the clients list): the name is an h2 with `titleId`
+ *   (the dialog's accessible name), panel headings are h3, the tab is local state, and the
+ *   not-found state offers `onClose` instead of a link away from the list.
  */
-export function OwnerProfileView({ clientId }: { clientId: string }) {
+export function OwnerProfile({ clientId, variant, titleId, onClose }: { clientId: string; variant: "page" | "dialog"; titleId?: string; onClose?: () => void }) {
   const t = useT("clients");
   const tc = useT("common");
   const locale = useLocale();
@@ -48,8 +55,23 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
   const lastMessage = useOutbox(`client:${clientId}`);
   const [messageKey, setMessageKey] = useState(0);
   const [bookingKey, setBookingKey] = useState(0);
+  const [dialogTab, setDialogTab] = useState<string | null>(null);
+  const inDialog = variant === "dialog";
+  const panelHeading = inDialog ? 3 : 2;
 
   if (!query.data) {
+    if (inDialog) {
+      return query.error ? (
+        <div className="space-y-section pt-2">
+          <h2 id={titleId} className="sr-only">
+            {t("meta.ownerTitle")}
+          </h2>
+          <ProfileError error={query.error} onRetry={query.refetch} backHref={backHref} onBack={onClose} kind="owner" />
+        </div>
+      ) : (
+        <ProfileSkeleton title={t("meta.ownerTitle")} heading="h2" titleId={titleId} />
+      );
+    }
     return (
       <div className="space-y-2">
         <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>
@@ -84,8 +106,9 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
     "rides",
     ...(reviews.length ? (["reviews"] as const) : []),
   ];
-  const tabParam = params.get("tab");
+  const tabParam = inDialog ? dialogTab : params.get("tab");
   const tab: TabId = (tabIds as string[]).includes(tabParam ?? "") ? (tabParam as TabId) : tabIds[0];
+  const setTab = (id: string) => (inDialog ? setDialogTab(id) : update({ tab: id === tabIds[0] ? null : id }));
   const ridesTitle = mode === "visits" ? t("owner.ridesTitle") : t("owner.courierTitle");
   const TAB_META: Record<TabId, { label: string; count: number; icon: ReactNode }> = {
     visits: { label: t("owner.visitsTitle"), count: appointments.length, icon: <Stethoscope aria-hidden="true" size={16} className="max-sm:hidden" /> },
@@ -129,25 +152,35 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
     },
   ];
 
+  // Source and vaccine status ride on the eyebrow's line (no row of their own).
+  const eyebrow = (
+    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <span>{client.firstVisitAt ? t("owner.since", { date: formatDateLong(client.firstVisitAt, locale) }) : t("owner.newClient")}</span>
+      <SourcePill source={client.source} />
+      <StatusPill kind="health" status={client.vaccineAlert} size="sm" />
+    </span>
+  );
+
   return (
     <div className="space-y-section">
       <div className="space-y-1">
-        <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>
+        {inDialog ? null : <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>}
 
         <ProfileBand
+          // Dialog: room for the close button that floats over the band's top-right corner.
+          reserveCorner={inDialog}
           avatar={<Avatar name={client.fullName} size="lg" className="animate-fade-up" />}
           header={
-            <PageHeader
-              eyebrow={
-                // Source and vaccine status ride on the eyebrow's line (no row of their own).
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span>{client.firstVisitAt ? t("owner.since", { date: formatDateLong(client.firstVisitAt, locale) }) : t("owner.newClient")}</span>
-                  <SourcePill source={client.source} />
-                  <StatusPill kind="health" status={client.vaccineAlert} size="sm" />
-                </span>
-              }
-              title={client.fullName}
-            />
+            inDialog ? (
+              <div className="min-w-0">
+                <div className="mb-0.5 text-meta font-semibold text-fg-secondary">{eyebrow}</div>
+                <h2 id={titleId} className="font-display text-h1 font-extrabold tracking-tight text-fg">
+                  {client.fullName}
+                </h2>
+              </div>
+            ) : (
+              <PageHeader eyebrow={eyebrow} title={client.fullName} />
+            )
           }
           details={
             <>
@@ -156,7 +189,7 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
                 <span className="sr-only">{t("owner.area")}: </span>
                 {client.area}
               </span>
-              <a href={phoneHref(client.phone)} className="inline-flex items-center gap-1 tabular underline-offset-4 hover:text-fg hover:underline">
+              <a href={phoneHref(client.phone)} className={cn("inline-flex items-center gap-1 tabular underline-offset-4 hover:text-fg hover:underline", TOUCH_HIT_AREA)}>
                 <Phone aria-hidden="true" size={14} className="shrink-0" />
                 <span className="sr-only">{t("owners.phone")}: </span>
                 {formatPhone(client.phone)}
@@ -208,7 +241,7 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
       */}
       <div className="@container">
         <div className="grid items-start gap-4 @xl:grid-cols-2 @4xl:grid-cols-[minmax(0,1fr)_22rem] @4xl:grid-rows-[auto_1fr]">
-          <Panel title={t.plural("owner.petsCount", pets.length)} icon={<PawPrint size={18} />} className="@xl:col-start-1 @xl:row-start-1 @4xl:col-start-2">
+          <Panel title={t.plural("owner.petsCount", pets.length)} headingLevel={panelHeading} icon={<PawPrint size={18} />} className="@xl:col-start-1 @xl:row-start-1 @4xl:col-start-2">
             {pets.length ? (
               <ul className="grid gap-2">
                 {pets.map((pet) => (
@@ -226,7 +259,7 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
             <Tabs
               tabs={tabs}
               value={tab}
-              onChange={(id) => update({ tab: id === tabIds[0] ? null : id })}
+              onChange={setTab}
               label={t("owner.historyLabel", { name: client.fullName })}
               idPrefix="owner"
               className="px-2 pt-1 sm:px-4"
@@ -265,10 +298,11 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
             </TabPanel>
           </Card>
 
-          <Panel title={t("notes.internal")} icon={<NotebookPen size={18} />} className="@xl:col-start-2 @xl:row-start-1 @4xl:row-start-2">
+          <Panel title={t("notes.internal")} headingLevel={panelHeading} icon={<NotebookPen size={18} />} className="@xl:col-start-2 @xl:row-start-1 @4xl:row-start-2">
             <NoteEditor
               label={t("notes.internalOwnerLabel", { name: client.firstName })}
               initial={client.partnerNote ?? ""}
+              draftKey={`client:${client.id}`}
               save={(api, note) => api.updateClientNote(client.id, note)}
               invalidates={["clients"]}
             />

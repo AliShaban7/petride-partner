@@ -32,6 +32,10 @@ export type BandFact = {
  * phones). From 640px the details sit under the title, next to the avatar; on phones they take the
  * band's full width under the avatar row (fewer wrapped lines). Text on the pastel cells:
  * text-fg / text-fg-tertiary only.
+ *
+ * `reserveCorner` keeps the top-right corner free for a dialog's close button that floats over it
+ * (OwnerProfileDialog): from 640px the whole top row (title and actions) ends left of it; on phones,
+ * where the actions wrap under the name, only the title block does.
  */
 export function ProfileBand({
   avatar,
@@ -40,6 +44,7 @@ export function ProfileBand({
   actions,
   facts,
   factsLabel,
+  reserveCorner,
 }: {
   avatar: ReactNode;
   header: ReactNode;
@@ -48,13 +53,16 @@ export function ProfileBand({
   actions?: ReactNode;
   facts: BandFact[];
   factsLabel: string;
+  /** Keep the top-right corner free for a floating close button (see above). */
+  reserveCorner?: boolean;
 }) {
   return (
     <div className="overflow-hidden rounded-panel bg-surface shadow-card">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4 lg:px-5">
+      {/* The lg: longhand is needed too: lg:px-5 would otherwise win over a plain sm:pr-16 from 1024px. */}
+      <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-3 p-4 lg:px-5", reserveCorner && "sm:pr-16 lg:pr-16")}>
         <div className="grid min-w-0 flex-1 basis-72 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 sm:gap-x-4 sm:gap-y-0.5">
           <div className={cn(details && "sm:row-span-2")}>{avatar}</div>
-          <div className={cn("min-w-0", details && "sm:self-end")}>{header}</div>
+          <div className={cn("min-w-0", details && "sm:self-end", reserveCorner && "max-sm:pr-12")}>{header}</div>
           {details ? (
             <div className="col-span-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-fg-secondary sm:col-span-1 sm:col-start-2 sm:self-start">
               {details}
@@ -88,6 +96,12 @@ export function ProfileBand({
     </div>
   );
 }
+
+/**
+ * An invisible ::after that grows a small inline link (≈ 20px tall: a phone number, a date in a
+ * history card) to a 44px touch target below 1024px, without making its line any taller.
+ */
+export const TOUCH_HIT_AREA = "relative max-lg:after:absolute max-lg:after:inset-x-0 max-lg:after:-inset-y-3 max-lg:after:content-['']";
 
 /** "← Clients" link above a profile (44px on touch widths, 36px from 1024px). */
 export function BackLink({ href, children }: { href: string; children: ReactNode }) {

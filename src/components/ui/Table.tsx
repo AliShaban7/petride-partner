@@ -156,7 +156,11 @@ export type ResponsiveTableProps<T> = {
   defaultSort?: SortState;
   /** Row navigates (link on the row header + row click). */
   rowHref?: (row: T) => string;
-  /** Row opens something (button on the row header + row click), e.g. a Drawer. */
+  /**
+   * Row opens something (button on the row header + row click), e.g. a Drawer. With `rowHref` too,
+   * the row header stays a link to `rowHref` (new tab, copy link) and a plain click opens in place.
+   * The second click of a double click never activates a row again (see `isRepeatClick`).
+   */
   onRowClick?: (row: T) => void;
   /** Highlights a row (e.g. the one open in a drawer). */
   selectedId?: string | null;
@@ -171,6 +175,20 @@ export type ResponsiveTableProps<T> = {
   mobileCard?: (row: T) => ReactNode;
   className?: string;
 };
+
+/** A left click without modifier keys (Ctrl/⌘/Shift/Alt clicks keep a link's own behaviour, e.g. a new tab). */
+export function isPlainClick(e: MouseEvent): boolean {
+  return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+
+/**
+ * The 2nd/3rd click of a double or triple click (`detail` > 1; keyboard activation is 0). Rows
+ * ignore it, so a double click opens a record once, and the second click of a double click on a
+ * modal's backdrop doesn't open the row that appears under the mouse.
+ */
+export function isRepeatClick(e: MouseEvent): boolean {
+  return e.detail > 1;
+}
 
 const INTERACTIVE = "a,button,input,select,textarea,label,[role=menuitem],[role=switch],[role=checkbox]";
 
@@ -227,12 +245,12 @@ export function ResponsiveTable<T>({
   };
 
   const activate = (row: T) => {
-    if (rowHref) router.push(rowHref(row));
-    else onRowClick?.(row);
+    if (onRowClick) onRowClick(row);
+    else if (rowHref) router.push(rowHref(row));
   };
   const clickable = Boolean(rowHref || onRowClick);
   const onRowMouse = (row: T) => (e: MouseEvent) => {
-    if (!clickable) return;
+    if (!clickable || isRepeatClick(e)) return;
     if ((e.target as HTMLElement).closest(INTERACTIVE)) return;
     activate(row);
   };
@@ -240,14 +258,32 @@ export function ResponsiveTable<T>({
   const primaryTarget = (row: T, content: ReactNode) => {
     if (rowHref) {
       return (
-        <Link href={rowHref(row)} className="font-semibold text-fg underline-offset-4 hover:underline">
+        <Link
+          href={rowHref(row)}
+          onClick={
+            onRowClick
+              ? (e) => {
+                  if (!isPlainClick(e)) return;
+                  e.preventDefault();
+                  if (!isRepeatClick(e)) onRowClick(row);
+                }
+              : undefined
+          }
+          className="font-semibold text-fg underline-offset-4 hover:underline"
+        >
           {content}
         </Link>
       );
     }
     if (onRowClick) {
       return (
-        <button type="button" onClick={() => onRowClick(row)} className="text-left font-semibold text-fg underline-offset-4 hover:underline">
+        <button
+          type="button"
+          onClick={(e) => {
+            if (!isRepeatClick(e)) onRowClick(row);
+          }}
+          className="text-left font-semibold text-fg underline-offset-4 hover:underline"
+        >
           {content}
         </button>
       );

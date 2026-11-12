@@ -11,7 +11,7 @@ import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 
 import { DirectoryToolbar, type SortOption } from "./_components/DirectoryToolbar";
-import { OwnerQuickView } from "./_components/OwnerQuickView";
+import { OwnerProfileDialog } from "./_components/OwnerProfileDialog";
 import { OwnersTable } from "./_components/OwnersTable";
 import { PetCard, PetCardSkeleton } from "./_components/PetCard";
 import type { QuickFilterId } from "./_components/QuickFilters";
@@ -31,7 +31,7 @@ import {
   type PetSort,
 } from "./_lib/directory";
 import { useNow } from "./_lib/stores";
-import { useMockParam, useQueryUpdater } from "./_lib/url";
+import { useMockParam, useQueryUpdater, useRecordParam } from "./_lib/url";
 
 /** 12 = 4 rows of 3 cards: a page plus its pagination fits a 1440×900 screen; phones scroll half as far. */
 const PET_PAGE_SIZE = 12;
@@ -50,7 +50,8 @@ function parseOwnerSort(value: string | null): { id: OwnerSortId; direction: "as
 
 /**
  * Clients & pets directory. URL state: view (pets|owners), q, species, vaccine, last, ride=1,
- * sort (pets), osort (owners, e.g. spent_desc), page, id (owner quick view from notifications).
+ * sort (pets), osort (owners, e.g. spent_desc), page, id (owner profile modal: a click on an owner,
+ * or `/clients?id=…` links from notifications and the appointment / order drawers).
  */
 export function ClientsView() {
   const t = useT("clients");
@@ -62,6 +63,7 @@ export function ClientsView() {
   const now = useNow();
   const params = useSearchParams();
   const update = useQueryUpdater();
+  const record = useRecordParam();
   const linkQuery = useMockParam();
 
   // ---- URL state -------------------------------------------------------------------------------
@@ -290,6 +292,8 @@ export function ClientsView() {
                     update({ osort: id === "last" && direction === "desc" ? null : `${id}_${direction}`, page: null });
                   }}
                   rowHref={(c) => ownerHref(c.id)}
+                  onOpen={(c) => record.open(c.id)}
+                  selectedId={openId}
                   rideClientIds={dir.rideClientIds}
                   now={now}
                 />
@@ -300,7 +304,7 @@ export function ClientsView() {
         </>
       )}
 
-      <OwnerQuickView clientId={openId} mode={mode} onClose={() => update({ id: null })} linkQuery={linkQuery} />
+      <OwnerProfileDialog clientId={openId} onClose={record.close} />
     </div>
   );
 }

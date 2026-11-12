@@ -225,12 +225,6 @@
     "reviewsTitle": "Rəyləri",
     "rating": "{{rating}} / 5 ulduz"
   },
-  "quickView": {
-    "title": "Müştəri",
-    "openProfile": "Profili aç",
-    "recentVisits": "Son ziyarətlər",
-    "recentOrders": "Son sifarişlər"
-  },
   "profile": {
     "backToClients": "Müştərilərə qayıt",
     "backToOwners": "Sahiblərə qayıt",
@@ -334,7 +328,6 @@
     "sourcePhone": "Telefonla",
     "sourceWalkIn": "Yerində",
     "note": "Komanda üçün qeyd",
-    "hoursHint": "Vaxtın iş saatlarına düşdüyünü özün yoxla — burada ayrıca yoxlanılmır.",
     "submit": "Randevu yarat",
     "errorService": "Xidmət seç.",
     "errorWhen": "Tarix və saatı seç.",

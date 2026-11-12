@@ -150,7 +150,6 @@ export function NewAppointmentDialog({ open, onClose, pets, defaultPetId }: { op
           />
         </div>
         <Textarea label={t("newAppointment.note")} hint={t("notes.privateHint")} rows={3} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} />
-        <p className="text-meta text-fg-secondary">{t("newAppointment.hoursHint")}</p>
       </form>
     </Dialog>
   );

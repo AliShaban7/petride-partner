@@ -246,8 +246,7 @@
       "direction": "İstiqamət",
       "time": "Vaxt",
       "driver": "Sürücü",
-      "status": "Status",
-      "price": "Qiymət"
+      "status": "Status"
     },
     "etaShort": "{{eta}} qalıb",
     "noDriver": "Hələ təyin olunmayıb",
@@ -271,7 +270,6 @@
       "driver": "Sürücü",
       "car": "Avtomobil",
       "distance": "Məsafə",
-      "price": "Gedişin qiyməti",
       "travelNotes": "Yol üçün qeydlər",
       "driverNote": "Sürücüyə qeyd",
       "openAppointment": "Randevunu aç",

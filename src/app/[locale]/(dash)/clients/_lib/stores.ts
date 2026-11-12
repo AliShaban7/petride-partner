@@ -7,6 +7,8 @@
  *  - Outbox: reminders / messages sent "via the PetRide app". The PartnerApi has no messaging
  *    endpoint yet, so these are mocked in the browser tab (like the mock data itself).
  *  - Pet files: uploads kept as object URLs in this tab (the PartnerApi has no file storage yet).
+ *  - Note drafts: unsaved internal-note text per record, so closing the owner modal (Esc, a click
+ *    outside, Back) or leaving the page doesn't throw it away.
  */
 import { useSyncExternalStore } from "react";
 
@@ -117,4 +119,23 @@ const NO_FILES: PetFile[] = [];
 export function usePetFiles(petId: string): PetFile[] {
   const all = useSyncExternalStore(files.subscribe, files.get, files.get);
   return all[petId] ?? NO_FILES;
+}
+
+// ---- Note drafts ---------------------------------------------------------------------------------
+
+/** Unsaved note text by record key (`client:<id>`), kept for this tab only. Read once on mount. */
+const noteDrafts = new Map<string, string>();
+
+export function readNoteDraft(key: string): string | undefined {
+  return noteDrafts.get(key);
+}
+
+/** Remembers `value` while it differs from the saved note; forgets it once it matches again. */
+export function writeNoteDraft(key: string, value: string, saved: string): void {
+  if (value.trim() === saved.trim()) noteDrafts.delete(key);
+  else noteDrafts.set(key, value);
+}
+
+export function clearNoteDraft(key: string): void {
+  noteDrafts.delete(key);
 }

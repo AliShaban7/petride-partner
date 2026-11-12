@@ -103,6 +103,7 @@ src/
   - An app `ServiceRequest` becomes a partner `Appointment`. `toServiceRequestStatus()` maps the partner status back to what the app shows: requested→pending, confirmed / checked_in / completed / no_show→confirmed, declined, cancelled.
   - App ride statuses (`searching | onway | arrived | intrip | completed | cancelled`) are reused as they are, plus `scheduled` for rides booked ahead.
   - **Prices:** a service with `priceAZN: null` shows "Qiymət yerində / Priced on site" in the app. When the partner sets a price on the Services page, that price replaces "Priced on site".
+  - **Ride prices are PetRide's.** PetRide sets and bills rides; partners only hand over or receive the pet. The partner `Ride` type has no price and `getRideShare()` returns counts only. The internal mock record (`RideRecord.priceAZN`) keeps it, and the Supabase plan reads rides through a view without the price columns. Open question for the owner: a shop's courier `deliveryFeeAZN` equals the courier ride price and still shows on orders.
 - **IDEA facts:** these come from the app seed (name, address, phone, the six services). Hours are **not** known: the mock ships editable defaults with `hoursConfirmed: false`, and the partner confirms the real hours in Settings. Service prices and all generated numbers are demo data, and the top bar says so.
 
 ## Accessibility

@@ -300,12 +300,11 @@ export function computeRideShare(db: PartnerDb, period: StatsPeriod, now: number
     total += 1;
     if (a.withRide) withRide += 1;
   }
+  // Counted only: the ride price (RideRecord.priceAZN) is PetRide's and never leaves the backend.
   let rides = 0;
-  let revenue = 0;
   for (const r of db.rides) {
     if (!inWindow(r.arriveAt, w) || r.cancelledAt !== undefined) continue;
     rides += 1;
-    revenue += r.priceAZN;
   }
   if (!db.services.length) {
     // Shops: share of orders delivered by PetRide courier.
@@ -317,7 +316,7 @@ export function computeRideShare(db: PartnerDb, period: StatsPeriod, now: number
       if (o.fulfilment === "petride_courier") withRide += 1;
     }
   }
-  return { withRide, total, share: total ? withRide / total : 0, rides, rideRevenueAZN: Math.round(revenue * 100) / 100 };
+  return { withRide, total, share: total ? withRide / total : 0, rides };
 }
 
 export function computeRepeat(db: PartnerDb, period: StatsPeriod, now: number): RepeatStats {

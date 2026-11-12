@@ -146,6 +146,7 @@ export type RideRecord = {
   arriveAt: number;
   distanceKm: number;
   roundTrip: boolean;
+  /** PetRide's side only: resolveRide and the stats never hand it to a partner. */
   priceAZN: number;
   driverNote?: L;
   cancelledAt?: number;

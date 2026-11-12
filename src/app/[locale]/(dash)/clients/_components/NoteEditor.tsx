@@ -8,6 +8,8 @@ import { errorCode, useApiMutation } from "@/lib/api/hooks";
 import type { PartnerApi } from "@/lib/api";
 import { useT } from "@/lib/i18n/client";
 
+import { clearNoteDraft, readNoteDraft, writeNoteDraft } from "../_lib/stores";
+
 const MAX = 1000;
 /** The counter only shows near the limit (the textarea stops at MAX anyway), so the hint and Save share a line. */
 const COUNTER_FROM = 800;
@@ -16,7 +18,9 @@ const COUNTER_FROM = 800;
  * Internal (team-only) note with save/undo, compact: 3 rows, the privacy hint and the buttons share
  * one line (the character counter appears only near the limit). Used for pets (updatePetNote) and
  * owners (updateClientNote). The label is visually hidden by default because the surrounding section
- * already has the "Internal note" heading.
+ * already has the "Internal note" heading. With `draftKey`, unsaved text survives the editor
+ * unmounting (the owner modal closed by Esc, a click outside or Back) and comes back, still unsaved
+ * (Save and Undo on), when the same record opens again in this tab.
  */
 export function NoteEditor({
   label,
@@ -24,29 +28,37 @@ export function NoteEditor({
   save,
   invalidates,
   showLabel,
+  draftKey,
 }: {
   label: string;
   initial: string;
   save: (api: PartnerApi, note: string) => Promise<unknown>;
   invalidates: readonly string[];
   showLabel?: boolean;
+  /** Keeps unsaved text per record for this tab (e.g. `client:<id>`). */
+  draftKey?: string;
 }) {
   const hintId = useId();
   const t = useT("clients");
   const tc = useT("common");
   const { toast } = useToast();
-  const [value, setValue] = useState(initial);
+  const [value, setValueState] = useState(() => (draftKey ? readNoteDraft(draftKey) : undefined) ?? initial);
   const [base, setBase] = useState(initial);
   if (initial !== base) {
     // Fresh data from the server: take it unless the user is in the middle of editing.
     setBase(initial);
-    if (value === base) setValue(initial);
+    if (value === base) setValueState(initial);
   }
+  const setValue = (next: string) => {
+    setValueState(next);
+    if (draftKey) writeNoteDraft(draftKey, next, initial);
+  };
   const mutation = useApiMutation((api, note: string) => save(api, note), { invalidates });
   const dirty = value.trim() !== initial.trim();
   const onSave = async () => {
     try {
       await mutation.mutateAsync(value.trim());
+      if (draftKey) clearNoteDraft(draftKey);
       toast({ title: t("notes.saved") });
     } catch (error) {
       toast({ title: tc("states.errorTitle"), description: tc.dynamic(`errors.${errorCode(error)}`), tone: "error" });

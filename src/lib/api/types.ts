@@ -268,7 +268,7 @@ export type Ride = {
   progress: number;
   distanceKm: number;
   roundTrip: boolean;
-  priceAZN: number;
+  // No price: PetRide sets and bills rides (and shop courier deliveries); partners never see it.
   /** Owner's note for the driver. */
   driverNote?: string;
   /** Owner's travel notes for the pet(s), shown as warning chips. */
@@ -574,7 +574,8 @@ export type ServiceMixItem = {
 /** Visits/orders per weekday × hour (local), for the busiest-hours heatmap. */
 export type BusyHourCell = { day: IsoWeekday; hour: number; count: number };
 
-export type RideShareStats = { withRide: number; total: number; share: number; rides: number; rideRevenueAZN: number };
+/** Ride count only: ride prices are PetRide's, never part of a partner's stats. */
+export type RideShareStats = { withRide: number; total: number; share: number; rides: number };
 export type RepeatStats = { repeatClients: number; clients: number; rate: number };
 export type RatingStats = { average: number; count: number; distribution: Record<1 | 2 | 3 | 4 | 5, number> };
 
