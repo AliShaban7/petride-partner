@@ -1,5 +1,4 @@
 {
-  "brand": "PetRide",
   "partnerLabel": "Partner",
   "homeLink": "PetRide Partner — overview",
   "nav": {
@@ -31,7 +30,6 @@
     "expand": "Expand menu"
   },
   "partner": {
-    "cardLabel": "Partner",
     "switchLabel": "Demo: switch partner",
     "switchTo": "Switch to {{name}}",
     "switching": "Switching…"
@@ -55,8 +53,7 @@
     "markAllRead": "Mark all as read",
     "noNotificationsTitle": "No notifications yet",
     "noNotificationsBody": "We'll let you know about new requests, rides and reviews.",
-    "profile": "Profile menu",
-    "openMenu": "Open menu"
+    "profile": "Profile menu"
   },
   "profile": {
     "signedInAs": "Signed in as",

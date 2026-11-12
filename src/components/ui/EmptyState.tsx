@@ -17,7 +17,7 @@ export type EmptyStateProps = {
   /** Buttons (e.g. "Clear filters"). */
   action?: ReactNode;
   pet?: PawPet;
-  /** Smaller padding / paw for panels. */
+  /** Smaller padding / paw: use it inside panels, cards and charts (full size only for a whole empty page). */
   compact?: boolean;
   className?: string;
 };
@@ -26,11 +26,11 @@ export type EmptyStateProps = {
 export function EmptyState({ title, description, action, pet = "ginger", compact, className }: EmptyStateProps) {
   const t = useT("common");
   return (
-    <div className={cn("flex flex-col items-center text-center", compact ? "gap-2 px-4 py-6" : "gap-3 px-6 py-12", className)}>
-      <PawPeek size={compact ? 60 : 84} pet={pet} />
-      <p className={cn("mt-1 font-display font-extrabold text-fg", compact ? "text-title" : "text-h2")}>{title ?? t("states.emptyTitle")}</p>
+    <div className={cn("flex flex-col items-center text-center", compact ? "gap-1.5 px-4 py-4" : "gap-2 px-6 py-8", className)}>
+      <PawPeek size={compact ? 48 : 72} pet={pet} />
+      <p className={cn("mt-0.5 font-display font-extrabold text-fg", compact ? "text-title" : "text-h2")}>{title ?? t("states.emptyTitle")}</p>
       <p className="max-w-sm text-body-sm text-fg-secondary">{description ?? t("states.emptyBody")}</p>
-      {action ? <div className="mt-2 flex flex-wrap justify-center gap-2">{action}</div> : null}
+      {action ? <div className="mt-1.5 flex flex-wrap justify-center gap-2">{action}</div> : null}
     </div>
   );
 }
@@ -50,12 +50,12 @@ export function ErrorState({ error, title, description, onRetry, compact, classN
   const t = useT("common");
   const body = description ?? (error ? t.dynamic(`errors.${errorCode(error)}`) : t("states.errorBody"));
   return (
-    <div role="alert" className={cn("flex flex-col items-center text-center", compact ? "gap-2 px-4 py-6" : "gap-3 px-6 py-12", className)}>
-      <PawPeek size={compact ? 56 : 72} pet="tabby" />
-      <p className={cn("mt-1 font-display font-extrabold text-fg", compact ? "text-title" : "text-h2")}>{title ?? t("states.errorTitle")}</p>
+    <div role="alert" className={cn("flex flex-col items-center text-center", compact ? "gap-1.5 px-4 py-4" : "gap-2 px-6 py-8", className)}>
+      <PawPeek size={compact ? 48 : 64} pet="tabby" />
+      <p className={cn("mt-0.5 font-display font-extrabold text-fg", compact ? "text-title" : "text-h2")}>{title ?? t("states.errorTitle")}</p>
       <p className="max-w-sm text-body-sm text-fg-secondary">{body}</p>
       {onRetry ? (
-        <Button variant="secondary" size="sm" leftIcon={<RotateCcw size={16} aria-hidden="true" />} onClick={onRetry} className="mt-2">
+        <Button variant="secondary" size="sm" leftIcon={<RotateCcw size={16} aria-hidden="true" />} onClick={onRetry} className="mt-1.5">
           {t("actions.retry")}
         </Button>
       ) : null}

@@ -4,17 +4,11 @@
     "description": "PetRide tətbiqindən gələn sorğular, randevular və gedişlər."
   },
   "title": "Randevular",
-  "description": "Sorğulara cavab ver, vaxtı dəyiş, gələnləri qeyd et.",
   "newAppointment": "Yeni randevu",
   "gated": {
     "title": "Mağazada randevu yoxdur",
     "body": "Zoomağazaya müştərilər sifariş verir. Onları «Sifarişlər» bölməsində izlə.",
     "action": "Sifarişlərə keç"
-  },
-  "pendingBanner": {
-    "text_one": "{{count}} yeni sorğu cavabını gözləyir",
-    "text_other": "{{count}} yeni sorğu cavabını gözləyir",
-    "action": "Sorğulara bax"
   },
   "results_one": "{{count}} randevu",
   "results_other": "{{count}} randevu",

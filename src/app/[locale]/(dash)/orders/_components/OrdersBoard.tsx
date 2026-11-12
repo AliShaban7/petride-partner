@@ -124,14 +124,18 @@ export function OrdersBoard({ filters, selectedId, onOpen }: { filters: OrderFil
   }
 
   return (
-    <div className="space-y-3">
-      <p className="text-body-sm text-fg-secondary">{t("board.hint")}</p>
-      {/* `relative`: absolutely positioned sr-only text inside must be clipped by this scroller, or it widens the page. */}
+    <div className="space-y-2">
+      <p className="text-meta text-fg-secondary">{t("board.hint")}</p>
+      {/*
+        `relative`: absolutely positioned sr-only text inside must be clipped by this scroller, or it widens the page.
+        From 640px every column is as tall as the screen allows and its cards scroll inside it, so the
+        longest column doesn't make the whole page long.
+      */}
       <div
         role="group"
         aria-label={t("board.label")}
         aria-busy={query.isRefreshing || undefined}
-        className="relative -mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-3 sm:snap-none"
+        className="relative -mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 sm:snap-none"
       >
         {BOARD_STAGES.map((stage) => {
           const list = columns.get(stage) ?? [];
@@ -250,7 +254,7 @@ function BoardColumn({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={cn(
-        "flex w-[min(17rem,82vw)] shrink-0 snap-start flex-col rounded-panel p-3 transition-[opacity,box-shadow] duration-200 lg:w-auto lg:min-w-[15rem] lg:flex-1",
+        "flex w-[min(17rem,82vw)] shrink-0 snap-start flex-col rounded-panel p-2.5 transition-[opacity,box-shadow] duration-200 sm:max-h-[max(20rem,calc(100dvh-28.5rem))] lg:w-auto lg:min-w-[15rem] lg:flex-1",
         COLUMN_TONE[stage],
         dragActive && !accepts && "opacity-60",
         dragActive && accepts && "outline-2 outline-dashed outline-offset-2 outline-primary/50",
@@ -266,11 +270,13 @@ function BoardColumn({
           <span className="sr-only">{t.plural("board.count", orders.length)}</span>
         </span>
       </header>
-      <p className="mb-3 px-1 text-meta text-fg-tertiary">{t.dynamic(`board.hints.${stage}`)}</p>
+      {/* Only the hints that say something the column doesn't show (done / cancelled list today's only). */}
+      {stage === "done" || stage === "cancelled" ? <p className="px-1 text-meta text-fg-tertiary">{t(`board.hints.${stage}`)}</p> : null}
       {orders.length ? (
-        <ul className="flex flex-col gap-2.5">{children}</ul>
+        // Cards scroll inside the column; the padding keeps their focus rings and shadows inside the clip.
+        <ul className="-mx-1 mt-2 flex min-h-0 flex-col gap-2 overflow-y-auto overscroll-contain px-1 pb-1 pt-0.5">{children}</ul>
       ) : (
-        <p className={cn("flex min-h-24 items-center justify-center rounded-card border-2 border-dashed border-fg-tertiary/25 px-3 text-center text-meta text-fg-tertiary", over && "border-primary/60")}>
+        <p className={cn("mt-2 flex min-h-20 items-center justify-center rounded-card border-2 border-dashed border-fg-tertiary/25 px-3 text-center text-meta text-fg-tertiary", over && "border-primary/60")}>
           {over ? t("board.dropHere") : t("board.empty")}
         </p>
       )}
@@ -331,7 +337,7 @@ function BoardCard({
       }}
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
       className={cn(
-        "group relative animate-fade-up rounded-card border bg-surface p-3.5 shadow-thumb transition-[box-shadow,transform,opacity] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover",
+        "group relative shrink-0 animate-fade-up rounded-card border bg-surface p-3 shadow-thumb transition-[box-shadow,transform,opacity] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover",
         closed ? "cursor-pointer" : "cursor-grab active:cursor-grabbing",
         selected ? "border-primary" : "border-border",
         dragging && "opacity-50",
@@ -357,9 +363,17 @@ function BoardCard({
         {order.status === "cancelled" ? <StatusPill kind="order" status="cancelled" size="sm" /> : null}
       </div>
       {!closed ? (
-        <div className="mt-3 flex items-center justify-end gap-2">
+        <div className="mt-2.5 flex items-center justify-end gap-2">
           {step ? (
-            <Button size="sm" variant={order.status === "new" ? "accent" : "secondary"} loading={busy} onClick={() => onNext(step)} className="min-w-0 flex-1">
+            // The label may wrap onto two lines: ru "Готов, вызвать курьера" ran past both edges of the button
+            // in a 240px column (1280–1440px).
+            <Button
+              size="sm"
+              variant={order.status === "new" ? "accent" : "secondary"}
+              loading={busy}
+              onClick={() => onNext(step)}
+              className="min-w-0 flex-1 whitespace-normal py-1 text-center leading-tight"
+            >
               {t(actionKey(order, step))}
             </Button>
           ) : null}

@@ -4,12 +4,10 @@
     "description": "Qiymətləri və müddətləri təyin et — tətbiqdə «Qiymət yerində» əvəzinə görünəcək."
   },
   "title": "Xidmətlər və qiymətlər",
-  "description": "Qiymət, müddət və sıranı burada idarə et — müştərilər bunu PetRide tətbiqində görür.",
   "titleShop": "Məhsullar və qiymətlər",
   "descriptionShop": "Qiymətləri və qalığı yenilə — tətbiqdə müştərilər həmişə aktual qiyməti görəcək.",
   "add": "Xidmət əlavə et",
   "addShort": "Əlavə et",
-  "listTitle": "Xidmətlər",
   "listLabel": "{{category}}: xidmətlər",
   "asideLabel": "Tətbiqdə necə görünür",
   "categoryMeta": "{{count}} · {{active}} aktiv",
@@ -34,8 +32,6 @@
     "hidden_other": "{{count}} xidmət gizlidir",
     "allVisible": "Hamısı görünür",
     "withPrice": "Qiyməti görünən",
-    "withPriceNote": "Qalanlarında «Qiymət yerində» yazılır",
-    "onSiteNote": "Qiymət yaz ki, müştəri əvvəlcədən bilsin",
     "onSiteNone": "Bütün aktiv xidmətlərdə qiymət var",
     "bookings": "30 gündə randevular",
     "top": "Ən çox: {{name}}"
@@ -43,7 +39,6 @@
   "notice": {
     "onSite_one": "{{count}} aktiv xidmət tətbiqdə «{{label}}» kimi görünür",
     "onSite_other": "{{count}} aktiv xidmət tətbiqdə «{{label}}» kimi görünür",
-    "onSiteBody": "Qiyməti yazsan, müştəri nə qədər ödəyəcəyini əvvəlcədən biləcək. Qiymət ölçüdən asılıdırsa, «Başlanğıc qiymət» seç.",
     "setPrice": "Qiymət yaz"
   },
   "reorder": {
@@ -59,6 +54,7 @@
     "exactHint": "Tətbiqdə bu qiymət görünür.",
     "fromHint": "Tətbiqdə başlanğıc qiymət kimi görünür.",
     "onSiteHint": "Tətbiqdə «{{label}}» yazılır.",
+    "inApp": "Tətbiqdə: {{price}}",
     "active": "Aktiv",
     "hidden": "Gizlidir",
     "new": "Yeni",
@@ -117,6 +113,7 @@
     "body": "Hesabına xidmət və ya məhsul bağlanmayıb. PetRide komandasına yaz, birlikdə quraq."
   },
   "preview": {
+    "open": "Tətbiqdə bax",
     "label": "Tətbiqdə belə görünür",
     "caption": "Dəyişikliklər burada dərhal görünür, tətbiqə isə saxlayandan sonra düşür.",
     "services": "Xidmətlər",
@@ -194,11 +191,13 @@
   },
   "products": {
     "listTitle": "Məhsullar",
-    "listHint": "Qiyməti və qalığı burada dəyiş, sonra yadda saxla.",
     "search": "Məhsul və ya SKU axtar",
     "lowOnly": "Yalnız azalanlar",
     "categoryFilter": "Kateqoriya",
-    "all": "Hamısı",
+    "allCategories": "Bütün kateqoriyalar",
+    "columns": {
+      "product": "Məhsul"
+    },
     "stock": "Qalıq",
     "stockFor": "{{name}} — qalıq",
     "lowStockAt": "«Az qalıb» həddi",

@@ -65,7 +65,7 @@ export function Drawer({ open, onClose, title, description, children, footer, he
           {side === "bottom" || side === "auto" ? (
             <div aria-hidden="true" className={cn("mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-chip bg-border", side === "auto" && "sm:hidden")} />
           ) : null}
-          <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-4 sm:px-6 sm:pt-6">
+          <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-4 sm:px-6 sm:pt-5">
             <div className="min-w-0">
               <h2 id={titleId} className={cn("font-display text-h2 font-extrabold tracking-tight", hideTitle && "sr-only")}>
                 {title}

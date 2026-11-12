@@ -12,6 +12,7 @@ export type SegmentedControlProps<V extends string> = {
   onChange: (value: V) => void;
   /** Accessible name of the group ("Period"). */
   label: string;
+  /** md: 40px (36px from 1024px); sm: 36px (32px from 1024px). Both keep a 44px hit area on touch widths. */
   size?: "sm" | "md";
   fullWidth?: boolean;
   className?: string;
@@ -34,7 +35,7 @@ export function SegmentedControl<V extends string>({ options, value, onChange, l
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn("inline-flex max-w-full gap-1 overflow-x-auto rounded-chip bg-segment-track p-1 scrollbar-none", fullWidth && "flex w-full", className)}
+      className={cn("inline-flex max-w-full gap-1 overflow-x-auto overflow-y-hidden rounded-chip bg-segment-track p-1 scrollbar-none", fullWidth && "flex w-full", className)}
     >
       {options.map((opt, i) => {
         const checked = opt.value === value;
@@ -51,8 +52,11 @@ export function SegmentedControl<V extends string>({ options, value, onChange, l
             onClick={() => onChange(opt.value)}
             onKeyDown={(e) => onKey(e, i)}
             className={cn(
-              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-chip font-semibold transition-[background-color,color,box-shadow] duration-200",
-              size === "sm" ? "min-h-8 px-3 text-meta" : "min-h-10 px-4 text-body-sm",
+              // Below 1024px the invisible ::after reaches into the track's padding, so the hit area is 44px tall.
+              "relative inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-chip font-semibold transition-[background-color,color,box-shadow] duration-200 after:absolute after:inset-x-0 after:content-['']",
+              size === "sm"
+                ? "min-h-9 px-3 text-meta after:-inset-y-1 lg:min-h-8 lg:after:inset-y-0"
+                : "min-h-10 px-4 text-body-sm after:-inset-y-0.5 lg:min-h-9 lg:px-3.5 lg:after:inset-y-0",
               fullWidth && "flex-1",
               checked ? "bg-surface text-fg shadow-thumb" : "text-fg-secondary hover:text-fg",
             )}

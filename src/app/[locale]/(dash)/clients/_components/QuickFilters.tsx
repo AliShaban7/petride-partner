@@ -3,7 +3,6 @@
 import { Car, Check, Hourglass, PawPrint, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { CornerPaw, type PawPet } from "@/components/illustrations";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
@@ -18,8 +17,6 @@ const TONES: Record<QuickFilterId, string> = {
   ride: "bg-pastel-lilac",
 };
 
-const PAWS: Record<QuickFilterId, PawPet> = { all: "golden", overdue: "ginger", due_soon: "cream", ride: "tabby" };
-
 const ICONS: Record<QuickFilterId, ReactNode> = {
   all: <PawPrint size={16} />,
   overdue: <TriangleAlert size={16} />,
@@ -27,9 +24,12 @@ const ICONS: Record<QuickFilterId, ReactNode> = {
   ride: <Car size={16} />,
 };
 
+const IDS: QuickFilterId[] = ["all", "overdue", "due_soon", "ride"];
+
 /**
- * Big pastel counters that double as one-tap filters (Dribbble-style KPI row): all, overdue
- * vaccines, due soon, came with PetRide. Toggle buttons with aria-pressed + a check mark.
+ * The directory's counters, which are also one-tap filters: all, overdue vaccines, due soon and
+ * came with PetRide. Pastel chips with the count inside (toggle buttons: aria-pressed plus a check
+ * mark). One row: wraps from 640px, scrolls sideways on phones. 44px tall below 1024px, 40px above.
  */
 export function QuickFilters({
   counts,
@@ -37,19 +37,20 @@ export function QuickFilters({
   labels,
   onToggle,
   loading,
+  className,
 }: {
   counts: Record<QuickFilterId, number> | undefined;
   active: Record<QuickFilterId, boolean>;
   labels: Record<QuickFilterId, string>;
   onToggle: (id: QuickFilterId) => void;
   loading?: boolean;
+  className?: string;
 }) {
   const t = useT("clients");
   const locale = useLocale();
-  const ids: QuickFilterId[] = ["all", "overdue", "due_soon", "ride"];
   return (
-    <section aria-label={t("quick.label")} className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-      {ids.map((id, i) => {
+    <div role="group" aria-label={t("quick.label")} className={cn("flex gap-2", className)}>
+      {IDS.map((id) => {
         const pressed = active[id];
         return (
           <button
@@ -59,34 +60,26 @@ export function QuickFilters({
             disabled={loading}
             onClick={() => onToggle(id)}
             className={cn(
-              "group relative isolate min-h-28 animate-fade-up overflow-hidden rounded-panel p-4 text-left transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-card-hover disabled:pointer-events-none sm:min-h-32 sm:p-5",
+              // Text on pastel fills: text-fg only.
+              "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-chip pl-3 pr-1.5 text-body-sm font-semibold text-fg transition-[box-shadow] duration-150 disabled:pointer-events-none lg:min-h-10",
               TONES[id],
-              pressed && "ring-2 ring-primary-dark ring-offset-2 ring-offset-bg",
+              pressed ? "ring-2 ring-inset ring-primary-dark" : "hover:shadow-card-hover",
             )}
-            style={{ animationDelay: `${i * 60}ms` }}
           >
-            <span className="relative z-10 flex items-center gap-2 text-meta font-semibold text-fg-tertiary sm:text-body-sm">
-              <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-surface/75 text-fg">
-                {ICONS[id]}
-              </span>
-              <span className="min-w-0">{labels[id]}</span>
+            <span aria-hidden="true" className="inline-flex">
+              {pressed ? <Check size={16} strokeWidth={3} /> : ICONS[id]}
             </span>
+            <span className="whitespace-nowrap">{labels[id]}</span>{" "}
             {loading || !counts ? (
-              <Skeleton className="relative z-10 mt-3 h-8 w-16 bg-surface/60" />
+              <Skeleton className="h-7 w-9 rounded-chip bg-surface/60" />
             ) : (
-              <span className="relative z-10 mt-2 block font-display text-h1 font-extrabold tracking-tight text-fg tabular sm:text-[2.25rem] sm:leading-[2.5rem]">
+              <span className="inline-flex min-h-7 min-w-8 items-center justify-center rounded-chip bg-surface/80 px-2 text-meta font-bold tabular">
                 {formatNumber(counts[id], locale)}
               </span>
             )}
-            {pressed ? (
-              <span aria-hidden="true" className="absolute right-3 top-3 z-20 inline-flex size-6 items-center justify-center rounded-full bg-primary-dark text-on-primary">
-                <Check size={14} strokeWidth={3} />
-              </span>
-            ) : null}
-            <CornerPaw pet={PAWS[id]} width={40} reach={44} />
           </button>
         );
       })}
-    </section>
+    </div>
   );
 }

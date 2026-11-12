@@ -1,7 +1,7 @@
 "use client";
 
-import { Ban, BedDouble, Car, CheckCheck, CircleCheck, CircleX, Sparkles, UserCheck, UserX, type LucideIcon } from "lucide-react";
-import { useState, type MouseEvent } from "react";
+import { Ban, BedDouble, Car, CheckCheck, ChevronUp, CircleCheck, CircleX, Sparkles, UserCheck, UserX, type LucideIcon } from "lucide-react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 import type { Appointment, AppointmentStatus, OpeningHoursDay } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
@@ -14,7 +14,8 @@ import { CATEGORY_STYLE, CategoryDot } from "./bits";
 
 export const GRID_START = 8 * 60;
 export const GRID_END = 20 * 60;
-const HOUR_PX = 60;
+/** 48px per hour: 08:00–20:00 is 576px, so most of a working day fits a 900px-high screen. */
+const HOUR_PX = 48;
 /** Indent per cascade level (px), capped so deep stacks keep some width. */
 const indent = (depth: number) => Math.min(depth, 3) * 12;
 const PX_PER_MIN = HOUR_PX / 60;
@@ -49,6 +50,10 @@ export type WeekCalendarProps = {
   onOpen: (id: string) => void;
   /** Click on an empty part of the grid: new appointment at that time. */
   onCreateAt: (start: number) => void;
+  /** Note next to the legend (e.g. "cancelled are hidden"). */
+  footnote?: ReactNode;
+  /** Message for an empty week, shown on the empty grid. */
+  notice?: ReactNode;
 };
 
 /**
@@ -56,12 +61,27 @@ export type WeekCalendarProps = {
  * overlap, hotel stays in a band on top, closed hours shaded, a line at the current time.
  * Every block is a button with the full description as its accessible name.
  */
-export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, onCreateAt }: WeekCalendarProps) {
+export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, onCreateAt, footnote, notice }: WeekCalendarProps) {
   const t = useT("appointments");
   const locale = useLocale();
   const ts = useT("status");
   const [allStays, setAllStays] = useState(false);
   const today = now ? startOfDay(now) : 0;
+  const box = useRef<HTMLDivElement>(null);
+  const scrolledFor = useRef(0);
+  const weekStart = days[0] ?? 0;
+
+  // The grid scrolls inside its own box. Once per week shown: if "now" is below the visible part
+  // (late in the day), bring it to the upper third so the next visits are in view.
+  useEffect(() => {
+    const el = box.current;
+    if (!el || loading || !weekStart || scrolledFor.current === weekStart || !today || !days.includes(today)) return;
+    scrolledFor.current = weekStart;
+    const line = el.querySelector<HTMLElement>("[data-now-line]");
+    if (!line) return;
+    const top = line.getBoundingClientRect().top - el.getBoundingClientRect().top;
+    if (top > el.clientHeight - 48) el.scrollTop += top - el.clientHeight / 3;
+  }, [weekStart, today, days, now, loading]);
 
   const stays = placeStays(appointments.filter(isStay), days);
   const stayRows = stays.reduce((m, s) => Math.max(m, s.row + 1), 0);
@@ -79,20 +99,30 @@ export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, 
     }) + (a.withRide ? `, ${t("ride.badge")}` : "");
 
   return (
-    <div className="space-y-3">
-      <div className="overflow-x-auto rounded-card border border-border" role="region" aria-label={t("calendar.caption")} tabIndex={0}>
+    <div className="space-y-2">
+      {/*
+        Scroll box sized to the screen (the page itself doesn't scroll): the day header stays on top and
+        the time column on the left (narrow tablets scroll sideways). `isolate` keeps the z-indexes inside.
+      */}
+      <div
+        ref={box}
+        className="relative isolate max-h-[max(24rem,calc(100dvh-25rem))] overflow-auto overscroll-contain rounded-card border border-border"
+        role="region"
+        aria-label={t("calendar.caption")}
+        tabIndex={0}
+      >
         <div className="min-w-[46rem]">
           {/* Day headers */}
-          <div className={cn("grid border-b border-border bg-surface-muted", COLS)}>
-            <div />
+          <div className={cn("sticky top-0 z-50 grid border-b border-border bg-surface-muted", COLS)}>
+            <div className="sticky left-0 z-10 bg-surface-muted" />
             {days.map((day) => {
               const isToday = day === today;
               return (
-                <div key={day} className="flex flex-col items-center gap-0.5 border-l border-border px-1 py-2">
+                <div key={day} className="flex items-center justify-center gap-1.5 border-l border-border px-1 py-1.5">
                   <span className={cn("text-meta font-semibold", isToday ? "text-primary" : "text-fg-secondary")}>{formatWeekdayShort(day, locale)}</span>
                   <span
                     className={cn(
-                      "inline-flex size-8 items-center justify-center rounded-full font-display text-title font-extrabold tabular",
+                      "inline-flex size-7 items-center justify-center rounded-full font-display text-body font-extrabold tabular",
                       isToday ? "bg-primary text-on-primary" : "text-fg",
                     )}
                   >
@@ -107,9 +137,22 @@ export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, 
           {/* Hotel stays band */}
           {stays.length ? (
             <div className={cn("grid border-b border-border", COLS)}>
-              <div className="flex items-start justify-center pt-2 text-fg-secondary">
+              <div className="sticky left-0 z-[45] flex flex-col items-center gap-1 bg-surface pt-2 text-fg-secondary">
                 <BedDouble aria-hidden="true" size={18} />
                 <span className="sr-only">{t("calendar.stays")}</span>
+                {/* "+3" under the bed icon instead of a whole row for the toggle. */}
+                {stayRows > STAY_ROWS ? (
+                  <button
+                    type="button"
+                    onClick={() => setAllStays((v) => !v)}
+                    aria-expanded={allStays}
+                    aria-label={allStays ? t("calendar.fewerStays") : t.plural("calendar.moreStays", hiddenStays)}
+                    title={allStays ? t("calendar.fewerStays") : t.plural("calendar.moreStays", hiddenStays)}
+                    className="inline-flex min-h-11 w-11 items-center justify-center rounded-tile text-meta font-bold text-primary tabular hover:bg-primary-selected lg:min-h-9"
+                  >
+                    {allStays ? <ChevronUp aria-hidden="true" size={16} /> : `+${hiddenStays}`}
+                  </button>
+                ) : null}
               </div>
               <ul className="col-span-7 grid grid-cols-7 gap-y-1 py-1.5" style={{ gridAutoRows: "1.875rem" }} aria-label={t("calendar.stays")}>
                 {visibleStays.map((s) => {
@@ -145,17 +188,10 @@ export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, 
               </ul>
             </div>
           ) : null}
-          {stayRows > STAY_ROWS ? (
-            <div className="border-b border-border px-3 py-1.5 text-right">
-              <button type="button" onClick={() => setAllStays((v) => !v)} className="min-h-9 rounded-tile px-2 text-meta font-semibold text-primary hover:bg-primary-selected" aria-expanded={allStays}>
-                {allStays ? t("calendar.fewerStays") : t.plural("calendar.moreStays", hiddenStays)}
-              </button>
-            </div>
-          ) : null}
 
           {/* Time grid */}
           <div className={cn("relative grid", COLS)} style={{ height: GRID_H }} aria-busy={loading || undefined}>
-            <div aria-hidden="true" className="relative">
+            <div aria-hidden="true" className="sticky left-0 z-[45] bg-surface">
               {Array.from({ length: (GRID_END - GRID_START) / 60 + 1 }, (_, i) => (
                 <span key={i} className="absolute right-2 -translate-y-1/2 text-caption text-fg-secondary tabular" style={{ top: Math.max(7, Math.min(GRID_H - 7, i * HOUR_PX)) }}>
                   {String(GRID_START / 60 + i).padStart(2, "0")}:00
@@ -187,8 +223,20 @@ export function WeekCalendar({ days, appointments, now, hours, loading, onOpen, 
             ))}
           </div>
         </div>
+        {/*
+          Empty week: the message sits on the empty grid (it lets clicks through to "new appointment at this
+          time"), not in an extra row under it that would push the page past the screen.
+        */}
+        {notice ? (
+          <div className="pointer-events-none absolute inset-x-0 top-24 z-40 flex justify-center px-4">
+            <p className="rounded-chip bg-surface-muted px-4 py-1.5 text-body-sm font-semibold text-fg shadow-thumb">{notice}</p>
+          </div>
+        ) : null}
       </div>
-      <Legend />
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1.5">
+        <Legend />
+        {footnote ? <p className="text-meta text-fg-secondary">{footnote}</p> : null}
+      </div>
     </div>
   );
 }
@@ -320,7 +368,7 @@ function DayColumn({
       )}
 
       {nowMin >= GRID_START && nowMin <= GRID_END ? (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-accent-strong" style={{ top: (nowMin - GRID_START) * PX_PER_MIN }}>
+        <div data-now-line aria-hidden="true" className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-accent-strong" style={{ top: (nowMin - GRID_START) * PX_PER_MIN }}>
           <span className="absolute -left-1 -top-[5px] size-2 rounded-full bg-accent-strong" />
         </div>
       ) : null}

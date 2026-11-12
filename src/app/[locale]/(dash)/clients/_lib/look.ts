@@ -1,5 +1,5 @@
 import type { PawPet } from "@/components/illustrations";
-import type { AvatarTint, Pet, Species } from "@/lib/api/types";
+import type { AvatarTint, Pet } from "@/lib/api/types";
 
 /** Soft pastel band behind a pet (cards, profile hero). Text on it: text-fg / text-fg-tertiary only. */
 export const SOFT_BAND: Record<AvatarTint, string> = {
@@ -35,8 +35,4 @@ export function pawFor(pet: Pick<Pet, "species" | "breed" | "name">): PawPet {
   if (pet.species === "other") return "cream";
   if (/tabby|табби|zolaq/i.test(pet.breed)) return "tabby";
   return (["ginger", "cream", "tabby"] as const)[hash(pet.name) % 3];
-}
-
-export function pawForSpecies(species: Species): PawPet {
-  return species === "dog" ? "golden" : species === "cat" ? "ginger" : "cream";
 }

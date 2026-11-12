@@ -13,8 +13,8 @@ import { useT } from "@/lib/i18n/client";
  * text-fg / text-fg-tertiary because some cards sit on soft pastel fills.
  */
 
-/** Grid shared by rows and the "Now" marker: time column, rail column, content. */
-const ROW_GRID = "grid grid-cols-[3.25rem_1.25rem_minmax(0,1fr)] gap-x-2";
+/** Grid shared by rows and the "Now" marker: time column, rail column, content (narrow enough for a 260px dashboard column). */
+const ROW_GRID = "grid grid-cols-[2.75rem_1rem_minmax(0,1fr)] gap-x-2";
 
 export type TimelineState = "past" | "current" | "upcoming" | "attention";
 
@@ -37,8 +37,8 @@ export function TimelineList({ label, children, className }: { label: string; ch
     <ol
       aria-label={label}
       className={cn(
-        // rail: centre of the 1.25rem column = 3.25rem + 0.5rem gap + 0.625rem − 1px
-        "relative before:absolute before:bottom-4 before:left-[calc(4.375rem-1px)] before:top-4 before:w-0.5 before:rounded-chip before:bg-progress-track",
+        // rail: centre of the 1rem column = 2.75rem + 0.5rem gap + 0.5rem − 1px
+        "relative before:absolute before:bottom-4 before:left-[calc(3.75rem-1px)] before:top-4 before:w-0.5 before:rounded-chip before:bg-progress-track",
         className,
       )}
     >
@@ -61,9 +61,9 @@ export type TimelineRowProps = {
 export function TimelineRow({ href, time, sub, state, index = 0, children }: TimelineRowProps) {
   return (
     <li className="animate-fade-up" style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}>
-      <Link href={href} className={cn(ROW_GRID, "group rounded-card py-1.5 pr-1 transition-colors duration-150 hover:bg-primary-selected")}>
-        <div className="pt-2.5 text-right">
-          <time dateTime={time} className="block font-semibold text-fg tabular">
+      <Link href={href} className={cn(ROW_GRID, "group rounded-card py-1 pr-1 transition-colors duration-150 hover:bg-primary-selected")}>
+        <div className="pt-2 text-right">
+          <time dateTime={time} className="block text-body-sm font-semibold text-fg tabular">
             {formatTime(time)}
           </time>
           {sub ? <span className="block text-caption text-fg-secondary">{sub}</span> : null}
@@ -71,12 +71,12 @@ export function TimelineRow({ href, time, sub, state, index = 0, children }: Tim
         <div aria-hidden="true" className="relative flex justify-center">
           <span
             className={cn(
-              "relative mt-3.5 size-3 shrink-0 rounded-full ring-4 ring-surface transition-transform duration-200 group-hover:scale-125",
+              "relative mt-3 size-3 shrink-0 rounded-full ring-4 ring-surface transition-transform duration-200 group-hover:scale-125",
               DOT[state],
             )}
           />
         </div>
-        <div className={cn("min-w-0 rounded-card p-3 transition-shadow duration-200 group-hover:shadow-card", CARD[state])}>{children}</div>
+        <div className={cn("min-w-0 rounded-card px-3 py-2 transition-shadow duration-200 group-hover:shadow-card", CARD[state])}>{children}</div>
       </Link>
     </li>
   );
@@ -86,8 +86,9 @@ export function TimelineRow({ href, time, sub, state, index = 0, children }: Tim
 export function NowMarker({ now }: { now: number }) {
   const t = useT("overview");
   return (
-    <li className={cn(ROW_GRID, "items-center py-1.5")}>
-      <span className="text-right text-caption font-bold uppercase tracking-wide text-accent-strong">{t("schedule.now")}</span>
+    <li className={cn(ROW_GRID, "items-center py-1")}>
+      {/* justify-self-end: a label wider than the narrow time column ("СЕЙЧАС") grows to the left, not into the dot. */}
+      <span className="justify-self-end whitespace-nowrap text-right text-caption font-bold uppercase tracking-wide text-accent-strong">{t("schedule.now")}</span>
       <span aria-hidden="true" className="relative flex justify-center">
         <span className="relative size-3 animate-pop rounded-full bg-accent ring-4 ring-accent-tint" />
       </span>
@@ -102,19 +103,19 @@ export function NowMarker({ now }: { now: number }) {
 }
 
 /** Skeleton in the same shape as the timeline. */
-export function TimelineSkeleton({ rows = 5 }: { rows?: number }) {
+export function TimelineSkeleton({ rows = 4 }: { rows?: number }) {
   return (
-    <div aria-hidden="true" className="space-y-3">
+    <div aria-hidden="true" className="space-y-2">
       {Array.from({ length: rows }, (_, i) => (
         <div key={i} className={ROW_GRID}>
-          <div className="flex flex-col items-end gap-1.5 pt-2.5">
+          <div className="flex flex-col items-end gap-1.5 pt-2">
             <span className="h-3.5 w-10 animate-skeleton rounded-tile bg-segment-track" />
             <span className="h-3 w-8 animate-skeleton rounded-tile bg-segment-track" />
           </div>
           <div className="flex justify-center">
-            <span className="mt-3.5 size-3 animate-skeleton rounded-full bg-segment-track" />
+            <span className="mt-3 size-3 animate-skeleton rounded-full bg-segment-track" />
           </div>
-          <div className="h-[4.5rem] animate-skeleton rounded-card bg-segment-track" />
+          <div className="h-[4.25rem] animate-skeleton rounded-card bg-segment-track" />
         </div>
       ))}
     </div>

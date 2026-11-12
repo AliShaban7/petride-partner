@@ -180,34 +180,109 @@ function ProfileForm({ partner, extras, onDirtyChange }: { partner: PartnerProfi
     reader.readAsDataURL(file);
   };
 
+  const logoBlock = (
+    <div className="min-w-0">
+      <p className="text-body-sm font-semibold text-fg">{t("profile.logo.title")}</p>
+      <div className="mt-1.5 flex items-center gap-3">
+        {draft.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- local data URL preview
+          <img src={draft.logo} alt={t("profile.logo.alt", { name: draft.name })} className="size-14 shrink-0 rounded-card bg-surface object-cover shadow-card" />
+        ) : (
+          <span className="inline-flex size-14 shrink-0 items-center justify-center rounded-card bg-soft-mint">
+            <BrandTile size={38} />
+          </span>
+        )}
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <input
+            ref={fileRef}
+            type="file"
+            accept={LOGO_TYPES.join(",")}
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+            onChange={(e) => {
+              onLogo(e.target.files?.[0]);
+              e.target.value = "";
+            }}
+          />
+          <Button variant="secondary" size="sm" leftIcon={<ImagePlus aria-hidden="true" size={16} />} onClick={() => fileRef.current?.click()}>
+            {draft.logo ? t("profile.logo.replace") : t("profile.logo.upload")}
+          </Button>
+          {draft.logo ? (
+            <Button variant="ghost" size="sm" leftIcon={<Trash2 aria-hidden="true" size={16} />} onClick={() => set({ logo: null })}>
+              {t("profile.logo.remove")}
+            </Button>
+          ) : null}
+        </div>
+      </div>
+      <p className="mt-1.5 text-meta text-fg-secondary">{t("profile.logo.hint")}</p>
+      {logoError ? (
+        <p role="alert" className="mt-1 text-meta font-medium text-error-text">
+          {logoError}
+        </p>
+      ) : null}
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       {extras.profile.reviewPendingAt ? (
         <Notice tone="info" title={t("profile.reviewTitle")} role="status">
           {t("profile.reviewBody", { date: formatDate(extras.profile.reviewPendingAt, locale) })}
         </Notice>
       ) : null}
 
+      {/* Two columns on wide screens: name | logo, phone | e-mail, then the address and the map across both. */}
       <Panel title={t("profile.title")} description={t("profile.description")} icon={<Building2 size={20} />} bodyClassName="@container">
-        <div className="grid gap-6 @min-[46rem]:grid-cols-[minmax(0,1fr)_17rem]">
-          <div className="min-w-0 space-y-5">
-            <Input
-              data-field={`${formId}-name`}
-              label={t("profile.name")}
-              required
-              maxLength={80}
-              value={draft.name}
-              error={errors.name}
-              hint={t("profile.nameHint")}
-              onChange={(e) => set({ name: e.target.value })}
-            />
-            <fieldset className="space-y-3">
-              <legend className="text-body-sm font-semibold text-fg">{t("profile.address")}</legend>
-              <p className="text-meta text-fg-secondary">{t("profile.addressHint")}</p>
+        <div className="grid gap-x-5 gap-y-4 @min-[40rem]:grid-cols-2">
+          <Input
+            data-field={`${formId}-name`}
+            label={t("profile.name")}
+            required
+            maxLength={80}
+            value={draft.name}
+            error={errors.name}
+            hint={t("profile.nameHint")}
+            onChange={(e) => set({ name: e.target.value })}
+          />
+          {logoBlock}
+          <Input
+            data-field={`${formId}-phone`}
+            label={t("profile.phone")}
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            required
+            value={draft.phone}
+            error={errors.phone}
+            hint={t("profile.phoneHint")}
+            onChange={(e) => set({ phone: e.target.value })}
+            onBlur={() => {
+              const n = normalizeAzPhone(draft.phone);
+              if (n && formatPhone(n) !== draft.phone) set({ phone: formatPhone(n) });
+            }}
+          />
+          <Input
+            data-field={`${formId}-email`}
+            label={t("profile.email")}
+            type="email"
+            autoComplete="email"
+            required
+            value={draft.email}
+            error={errors.email}
+            hint={t("profile.emailHint")}
+            onChange={(e) => set({ email: e.target.value })}
+          />
+          <fieldset className="min-w-0 @min-[40rem]:col-span-2">
+            <legend className="text-body-sm font-semibold text-fg">{t("profile.address")}</legend>
+            <p className="text-meta text-fg-secondary">{t("profile.addressHint")}</p>
+            {/* az on its own line (it's required and the fallback), ru | en beside each other; three across only when there's room for long addresses. */}
+            <div className="mt-2 grid gap-3 @min-[40rem]:grid-cols-2 @min-[50rem]:grid-cols-3">
               {(["az", "ru", "en"] as const).map((l) => (
                 <Input
                   key={l}
                   lang={l}
+                  wrapperClassName={l === "az" ? "@min-[40rem]:col-span-2 @min-[50rem]:col-span-1" : undefined}
                   data-field={l === "az" ? `${formId}-addressAz` : undefined}
                   label={LOCALE_NAMES[l]}
                   required={l === "az"}
@@ -218,96 +293,28 @@ function ProfileForm({ partner, extras, onDirtyChange }: { partner: PartnerProfi
                   onChange={(e) => set({ address: { ...draft.address, [l]: e.target.value } })}
                 />
               ))}
-            </fieldset>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input
-                data-field={`${formId}-phone`}
-                label={t("profile.phone")}
-                type="tel"
-                autoComplete="tel"
-                inputMode="tel"
-                required
-                value={draft.phone}
-                error={errors.phone}
-                hint={t("profile.phoneHint")}
-                onChange={(e) => set({ phone: e.target.value })}
-                onBlur={() => {
-                  const n = normalizeAzPhone(draft.phone);
-                  if (n && formatPhone(n) !== draft.phone) set({ phone: formatPhone(n) });
-                }}
-              />
-              <Input
-                data-field={`${formId}-email`}
-                label={t("profile.email")}
-                type="email"
-                autoComplete="email"
-                required
-                value={draft.email}
-                error={errors.email}
-                hint={t("profile.emailHint")}
-                onChange={(e) => set({ email: e.target.value })}
-              />
             </div>
-          </div>
-
-          <div className="min-w-0 space-y-5">
-            <div>
-              <p className="text-body-sm font-semibold text-fg">{t("profile.logo.title")}</p>
-              <div className="mt-2 flex items-center gap-4">
-                {draft.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- local data URL preview
-                  <img src={draft.logo} alt={t("profile.logo.alt", { name: draft.name })} className="size-20 shrink-0 rounded-card bg-surface object-cover shadow-card" />
-                ) : (
-                  <span className="inline-flex size-20 shrink-0 items-center justify-center rounded-card bg-soft-mint">
-                    <BrandTile size={52} />
-                  </span>
-                )}
-                <div className="flex min-w-0 flex-col items-start gap-2">
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept={LOGO_TYPES.join(",")}
-                    className="sr-only"
-                    tabIndex={-1}
-                    aria-hidden="true"
-                    onChange={(e) => {
-                      onLogo(e.target.files?.[0]);
-                      e.target.value = "";
-                    }}
-                  />
-                  <Button variant="secondary" size="sm" leftIcon={<ImagePlus aria-hidden="true" size={16} />} onClick={() => fileRef.current?.click()}>
-                    {draft.logo ? t("profile.logo.replace") : t("profile.logo.upload")}
-                  </Button>
-                  {draft.logo ? (
-                    <Button variant="ghost" size="sm" leftIcon={<Trash2 aria-hidden="true" size={16} />} onClick={() => set({ logo: null })}>
-                      {t("profile.logo.remove")}
-                    </Button>
-                  ) : null}
-                </div>
-              </div>
-              <p className="mt-2 text-meta text-fg-secondary">{t("profile.logo.hint")}</p>
-              {logoError ? (
-                <p role="alert" className="mt-1 text-meta font-medium text-error-text">
-                  {logoError}
-                </p>
-              ) : null}
-            </div>
-
+          </fieldset>
+          <div className="@min-[40rem]:col-span-2">
             <MapPlaceholder lat={partner.lat} lng={partner.lng} />
           </div>
         </div>
       </Panel>
 
-      <Panel title={t("profile.categories.title")} description={t("profile.categories.description")}>
+      <Panel title={t("profile.categories.title")} description={t("profile.categories.description")} bodyClassName="@container">
         <fieldset aria-describedby={errors.categories ? `${formId}-cat-error` : undefined}>
           <legend className="sr-only">{t("profile.categories.title")}</legend>
-          <div className="grid gap-3 sm:grid-cols-2" data-field={`${formId}-categories`} tabIndex={-1}>
+          <div className="grid gap-3 @min-[30rem]:grid-cols-2 @min-[52rem]:grid-cols-4" data-field={`${formId}-categories`} tabIndex={-1}>
             {CATEGORIES.map(({ id, icon: Icon }) => {
               const checked = draft.categories.includes(id);
               return (
-                <ChoiceCard key={id} checked={checked}>
-                  <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-tile bg-soft-mint text-fg">
-                    <Icon size={20} />
+                <ChoiceCard key={id} checked={checked} className="p-3">
+                  {/* Decorative; four across on a medium-wide panel it would squeeze the name onto two lines. */}
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-tile bg-soft-mint text-fg @min-[52rem]:hidden @min-[68rem]:inline-flex"
+                  >
+                    <Icon size={16} />
                   </span>
                   <Checkbox
                     className="min-w-0 flex-1"
@@ -326,7 +333,7 @@ function ProfileForm({ partner, extras, onDirtyChange }: { partner: PartnerProfi
             </p>
           ) : null}
         </fieldset>
-        <p className="mt-4 text-meta text-fg-secondary">{t("profile.reviewHint")}</p>
+        <p className="mt-3 text-meta text-fg-secondary">{t("profile.reviewHint")}</p>
       </Panel>
 
       <SaveBar
@@ -348,14 +355,13 @@ function ProfileForm({ partner, extras, onDirtyChange }: { partner: PartnerProfi
   );
 }
 
-/** Map placeholder with the pin's coordinates (the map picker comes later). */
+/** Map placeholder with the pin's coordinates (the map picker comes later): a small tile beside the text. */
 function MapPlaceholder({ lat, lng }: { lat: number; lng: number }) {
   const t = useT("settings");
   const locale = useLocale();
   return (
-    <div>
-      <p className="text-body-sm font-semibold text-fg">{t("profile.map.title")}</p>
-      <div className="relative mt-2 h-36 overflow-hidden rounded-card bg-soft-mint" role="img" aria-label={t("profile.map.alt")}>
+    <div className="flex flex-col gap-3 @min-[30rem]:flex-row @min-[30rem]:items-center">
+      <div className="relative h-24 shrink-0 overflow-hidden rounded-card bg-soft-mint @min-[30rem]:w-48" role="img" aria-label={t("profile.map.alt")}>
         <svg aria-hidden="true" className="absolute inset-0 size-full" viewBox="0 0 240 144" preserveAspectRatio="xMidYMid slice">
           <g stroke="var(--color-ill-blob-mint)" strokeWidth="1">
             {Array.from({ length: 12 }, (_, i) => (
@@ -370,15 +376,18 @@ function MapPlaceholder({ lat, lng }: { lat: number; lng: number }) {
           <path d="M150 144 C 180 110, 210 120, 250 96" stroke="var(--color-pastel-sky)" strokeWidth="14" fill="none" strokeLinecap="round" />
         </svg>
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full animate-paw-bob">
-          <span className="inline-flex size-10 items-center justify-center rounded-full rounded-bl-none bg-primary text-on-primary shadow-floating -rotate-45">
-            <MapPin aria-hidden="true" size={18} className="rotate-45" />
+          <span className="inline-flex size-9 items-center justify-center rounded-full rounded-bl-none bg-primary text-on-primary shadow-floating -rotate-45">
+            <MapPin aria-hidden="true" size={16} className="rotate-45" />
           </span>
         </span>
       </div>
-      <p className="mt-2 text-meta text-fg-secondary tabular">
-        {t("profile.map.coords", { lat: formatFixed(lat, 4, locale), lng: formatFixed(lng, 4, locale) })}
-      </p>
-      <p className="mt-1 text-meta text-fg-secondary">{t("profile.map.hint")}</p>
+      <div className="min-w-0">
+        <p className="text-body-sm font-semibold text-fg">{t("profile.map.title")}</p>
+        <p className="mt-0.5 text-meta text-fg-secondary tabular">
+          {t("profile.map.coords", { lat: formatFixed(lat, 4, locale), lng: formatFixed(lng, 4, locale) })}
+        </p>
+        <p className="mt-0.5 text-meta text-fg-secondary">{t("profile.map.hint")}</p>
+      </div>
     </div>
   );
 }

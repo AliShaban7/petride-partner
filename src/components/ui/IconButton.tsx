@@ -21,7 +21,8 @@ const VARIANTS = {
   onDark: "text-on-primary hover:bg-primary-dark-raised",
 } as const;
 
-const SIZES = { sm: "size-9", md: "size-11", lg: "size-12" } as const;
+// sm is 36px; below 1024px an invisible ::after grows its hit area to 44px.
+const SIZES = { sm: "size-9 max-lg:after:absolute max-lg:after:-inset-1 max-lg:after:content-['']", md: "size-11", lg: "size-12" } as const;
 
 /** Icon-only button (≥ 44×44 at md). Always pass `label`; it becomes aria-label and the tooltip title. */
 export function IconButton({ label, icon, variant = "ghost", size = "md", badge, className, type = "button", ...rest }: IconButtonProps) {

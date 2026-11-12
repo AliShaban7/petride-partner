@@ -37,7 +37,6 @@ export const RatingPanel = memo(function RatingPanel({ report, deltaLabel, index
       index={index}
       tone="softLilac"
       title={t("rating.title")}
-      description={t("rating.description")}
       summary={t("rating.summary", {
         average: formatFixed(average, 1, locale),
         reviews: t.plural("count.reviews", count),
@@ -46,24 +45,25 @@ export const RatingPanel = memo(function RatingPanel({ report, deltaLabel, index
       table={table}
       empty={count === 0 ? { title: t("rating.emptyTitle"), description: t("rating.emptyBody"), pet: "cream" } : null}
       content={
-        <div className="grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center xl:grid-cols-1">
-          <div className="flex flex-col items-start gap-1.5">
+        // Average on one line above the bars in a narrow card; side by side when the card is wide.
+        <div className="grid gap-3 @min-[34rem]:grid-cols-[auto_1fr] @min-[34rem]:items-center @min-[34rem]:gap-6">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 @min-[34rem]:flex-col @min-[34rem]:items-start">
             <p className="flex items-baseline gap-1.5 font-display font-extrabold text-fg">
               <span className="sr-only">{t("rating.average")}:</span>
-              <span className="text-kpi tabular">{formatFixed(average, 1, locale)}</span>
-              <span className="text-title text-fg-tertiary">{t("kpi.outOf")}</span>
+              <span className="text-kpi-md tabular">{formatFixed(average, 1, locale)}</span>
+              <span className="text-body-sm text-fg-tertiary">{t("kpi.outOf")}</span>
             </p>
             <div aria-hidden="true" className="flex gap-0.5 text-fg">
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} size={18} strokeWidth={2} className={s <= Math.round(average) ? "fill-current" : "opacity-40"} />
+                <Star key={s} size={16} strokeWidth={2} className={s <= Math.round(average) ? "fill-current" : "opacity-40"} />
               ))}
             </div>
             <p className="text-body-sm text-fg-tertiary">{t.plural("count.reviews", count)}</p>
             {report.showChange ? <DeltaChip value={delta} label={deltaLabel} /> : null}
           </div>
-          <ul className="min-w-0 space-y-2.5">
+          <ul className="min-w-0 space-y-1.5">
             {STARS.map((s) => (
-              <li key={s} className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 text-body-sm">
+              <li key={s} className="grid grid-cols-[2.25rem_1fr_auto] items-center gap-3 text-body-sm">
                 <span aria-hidden="true" className="inline-flex items-center gap-1 font-semibold text-fg tabular">
                   {s}
                   <Star size={13} strokeWidth={2.2} className="fill-current" />

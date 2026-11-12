@@ -8,22 +8,22 @@ import { useLocale, useT } from "@/lib/i18n/client";
 import { customRange, parseDay, presetRange, PRESETS, type CustomRangeError, type PeriodKind, type StatsRange } from "../_lib/range";
 import { rangeLabel, windowLabel } from "../_lib/labels";
 
-export type StatsToolbarProps = {
+export type PeriodControlsProps = {
   range: StatsRange;
-  previous: StatsRange;
   compare: boolean;
-  /** False when the previous period starts before the partner's history (nothing to compare). */
-  comparable: boolean;
   today: string;
   onRangeChange: (range: StatsRange) => void;
   onCompareChange: (compare: boolean) => void;
 };
 
-/** Period picker (7 / 30 / 90 days / custom dates) + "compare with previous period" switch. */
-export function StatsToolbar({ range, previous, compare, comparable, today, onRangeChange, onCompareChange }: StatsToolbarProps) {
+/**
+ * Period picker (7 / 30 / 90 days / custom dates) + "compare with previous period" switch, made
+ * to sit in the PageHeader actions (the title's row). The custom date fields render separately
+ * (`CustomRangeFields`) under the header, only while "Custom" is picked.
+ */
+export function PeriodControls({ range, compare, today, onRangeChange, onCompareChange }: PeriodControlsProps) {
   const t = useT("stats");
   const tc = useT("common");
-  const locale = useLocale();
   const options = [
     ...PRESETS.map((p) => ({ value: p as PeriodKind, label: tc(`periods.${p}`) })),
     { value: "custom" as PeriodKind, label: t("toolbar.custom") },
@@ -35,34 +35,46 @@ export function StatsToolbar({ range, previous, compare, comparable, today, onRa
   };
 
   return (
-    <section aria-label={t("toolbar.label")} className="animate-fade-up rounded-panel border border-border bg-surface p-3 shadow-card sm:p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between">
-        <div className="flex min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
-          {/* Phones: native select (44 px, no squeezed labels). Wider: segmented control. */}
-          <Select
-            wrapperClassName="sm:hidden"
-            label={tc("periods.label")}
-            hideLabel
-            value={range.kind}
-            onChange={(e) => choose(e.target.value as PeriodKind)}
-            options={options}
-          />
-          <div className="hidden sm:block">
-            <SegmentedControl label={tc("periods.label")} value={range.kind} onChange={choose} options={options} />
-          </div>
-          {range.kind === "custom" ? <CustomRangeFields from={range.from} to={range.to} today={today} onApply={onRangeChange} /> : null}
-        </div>
-        <Switch checked={compare} onCheckedChange={onCompareChange} label={t("toolbar.compare")} className="lg:items-center" />
+    <div role="group" aria-label={t("toolbar.label")} className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+      {/* Phones: native select (44 px, no squeezed labels). Wider: segmented control. */}
+      <Select
+        wrapperClassName="w-40 sm:hidden"
+        label={tc("periods.label")}
+        hideLabel
+        value={range.kind}
+        onChange={(e) => choose(e.target.value as PeriodKind)}
+        options={options}
+      />
+      <div className="hidden sm:block">
+        <SegmentedControl label={tc("periods.label")} value={range.kind} onChange={choose} options={options} />
       </div>
-      <p aria-live="polite" className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-body-sm text-fg-secondary">
-        <span className="font-semibold text-fg">
-          {t("toolbar.range", { range: rangeLabel(range, t, locale), days: t.plural("count.days", range.days) })}
-        </span>
-        {compare ? (
-          <span>{comparable ? t("toolbar.comparedWith", { range: windowLabel(previous, t, locale) }) : t("toolbar.noHistory")}</span>
-        ) : null}
-      </p>
-    </section>
+      <Switch
+        checked={compare}
+        onCheckedChange={onCompareChange}
+        // Short visible word; the full phrase is the accessible name (it contains the visible word).
+        label={
+          <span className="text-body-sm">
+            <span aria-hidden="true">{t("toolbar.compareShort")}</span>
+            <span className="sr-only">{t("toolbar.compare")}</span>
+          </span>
+        }
+        className="items-center gap-2.5"
+      />
+    </div>
+  );
+}
+
+/** The dates on screen and what they're compared with (PageHeader description; read out when it changes). */
+export function RangeLine({ range, previous, compare, comparable }: { range: StatsRange; previous: StatsRange; compare: boolean; comparable: boolean }) {
+  const t = useT("stats");
+  const locale = useLocale();
+  return (
+    <span aria-live="polite" className="inline-flex flex-wrap gap-x-3 gap-y-0.5">
+      <span className="font-semibold text-fg">
+        {t("toolbar.range", { range: rangeLabel(range, t, locale), days: t.plural("count.days", range.days) })}
+      </span>
+      {compare ? <span>{comparable ? t("toolbar.comparedWith", { range: windowLabel(previous, t, locale) }) : t("toolbar.noHistory")}</span> : null}
+    </span>
   );
 }
 
@@ -72,7 +84,7 @@ type Draft = { from: string; to: string };
  * Two native date fields. A valid pair applies at once (the URL updates); while the pair is
  * invalid the last valid range stays on screen and the field says what's wrong.
  */
-function CustomRangeFields({ from, to, today, onApply }: { from: string; to: string; today: string; onApply: (range: StatsRange) => void }) {
+export function CustomRangeFields({ from, to, today, onApply }: { from: string; to: string; today: string; onApply: (range: StatsRange) => void }) {
   const t = useT("stats");
   const [draft, setDraft] = useState<Draft>({ from, to });
   const [applied, setApplied] = useState<Draft>({ from, to });

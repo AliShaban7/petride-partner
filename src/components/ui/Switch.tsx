@@ -15,7 +15,7 @@ export type SwitchProps = {
   className?: string;
 };
 
-/** On/off toggle (role="switch"), 52×32 like the app. The whole row is clickable. */
+/** On/off toggle (role="switch"), 52×32 like the app (44px hit area). The whole row is clickable. */
 export function Switch({ checked, onCheckedChange, label, description, disabled, hideLabel, className }: SwitchProps) {
   const id = useId();
   const descId = description ? `${id}-d` : undefined;
@@ -43,7 +43,8 @@ export function Switch({ checked, onCheckedChange, label, description, disabled,
         disabled={disabled}
         onClick={() => onCheckedChange(!checked)}
         className={cn(
-          "relative inline-flex h-8 w-13 shrink-0 items-center rounded-chip border-2 transition-colors duration-200 disabled:opacity-50",
+          // 32px track with an invisible 44px hit area (::after), so a switch without a visible label is still a full touch target.
+          "relative inline-flex h-8 w-13 shrink-0 items-center rounded-chip border-2 transition-colors duration-200 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-[''] disabled:opacity-50",
           checked ? "border-primary bg-primary" : "border-control-border bg-segment-track",
         )}
       >

@@ -9,10 +9,21 @@ import { formatDateTime, formatDuration, formatRelative } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { LIVE_RIDE_STATUSES } from "@/lib/status";
 
-/** "PetRide courier" / "Pickup" with an icon (text always present). */
-export function FulfilmentTag({ fulfilment, className }: { fulfilment: Fulfilment; className?: string }) {
+/**
+ * "PetRide courier" / "Pickup" with an icon (text always present). `variant="text"` is a plain meta
+ * line (no chip), for a second line under a status pill that shouldn't make the row taller.
+ */
+export function FulfilmentTag({ fulfilment, variant = "tag", className }: { fulfilment: Fulfilment; variant?: "tag" | "text"; className?: string }) {
   const ts = useT("status");
   const Icon = fulfilment === "petride_courier" ? Car : Store;
+  if (variant === "text") {
+    return (
+      <span className={cn("inline-flex items-center gap-1 whitespace-nowrap text-meta text-fg-secondary", className)}>
+        <Icon aria-hidden="true" size={13} className="shrink-0" />
+        {ts.dynamic(`fulfilment.${fulfilment}`)}
+      </span>
+    );
+  }
   return (
     <Tag className={className} icon={<Icon aria-hidden="true" size={13} />}>
       {ts.dynamic(`fulfilment.${fulfilment}`)}

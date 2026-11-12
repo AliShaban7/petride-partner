@@ -20,11 +20,13 @@ import {
 } from "@/components/ui";
 import { useApiQuery } from "@/lib/api/hooks";
 import type { Fulfilment, Order, OrderSort } from "@/lib/api/types";
+import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 
 import { FulfilmentTag, RideStatus, TimeAgo } from "./bits";
 import { CountTabs } from "./CountTabs";
+import { FiltersPopover } from "./FiltersPopover";
 import { useDebouncedParam, useNow, useUrlState } from "./hooks";
 import {
   ATTENTION_TABS,
@@ -43,7 +45,10 @@ import { OrderDrawer } from "./OrderDrawer";
 import { OrdersBoard } from "./OrdersBoard";
 import { useOrderActions } from "./useOrderActions";
 
-const PAGE_SIZE = 15;
+/** Rows a page; every dashboard list uses 12 so one page fits a laptop screen. */
+const PAGE_SIZE = 12;
+/** Body cells (td and the row-header th) from 1024px: 6px instead of 8px top and bottom. Header cells keep theirs. */
+const DENSE = "lg:[tbody_&]:py-1.5";
 const TABS_ID = "orders-status";
 const SORTS: OrderSort[] = ["created_desc", "created_asc", "total_desc"];
 const FULFILMENTS: Fulfilment[] = ["petride_courier", "pickup"];
@@ -59,6 +64,7 @@ function toSortState(sort: OrderSort): SortState {
  */
 export function OrdersSection() {
   const t = useT("orders");
+  const tc = useT("common");
   const ts = useT("status");
   const url = useUrlState();
   const { set } = url;
@@ -81,28 +87,38 @@ export function OrdersSection() {
   const counts = useApiQuery(["orders", "counts", filters.search ?? "", fulfilment ?? ""], (api) => fetchOrderCounts(api, filters), { refreshMs: 30_000 });
 
   const open = useCallback((o: Order) => set({ id: o.id }), [set]);
+  // Inline from 640px (label hidden: the placeholder says it); in the phones' Filters popover with its label.
+  const fulfilmentSelect = (inlineClassName?: string) => (
+    <Select
+      label={t("filters.fulfilment")}
+      hideLabel={inlineClassName !== undefined}
+      value={fulfilment ?? ""}
+      onChange={(e) => set({ fulfilment: e.target.value, page: null })}
+      placeholder={t("filters.fulfilmentAll")}
+      options={FULFILMENTS.map((f) => ({ value: f, label: ts.dynamic(`fulfilment.${f}`) }))}
+      wrapperClassName={inlineClassName}
+    />
+  );
   const filtered = Boolean(filters.search || fulfilment);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {/* Phones: search + a Filters button on one row (delivery method inside), then the view switch. */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-        <SearchField
-          label={t("filters.searchLabel")}
-          placeholder={t("filters.search")}
-          value={search}
-          onValueChange={setSearch}
-          wrapperClassName="w-full lg:max-w-sm"
-        />
-        <div className="flex flex-wrap items-end gap-3 lg:contents">
-          <Select
-            label={t("filters.fulfilment")}
-            hideLabel
-            value={fulfilment ?? ""}
-            onChange={(e) => set({ fulfilment: e.target.value, page: null })}
-            placeholder={t("filters.fulfilmentAll")}
-            options={FULFILMENTS.map((f) => ({ value: f, label: ts.dynamic(`fulfilment.${f}`) }))}
-            wrapperClassName="min-w-40 flex-1 sm:w-56 sm:flex-none"
+        <div className="flex items-center gap-2 lg:contents">
+          <SearchField
+            label={t("filters.searchLabel")}
+            placeholder={t("filters.search")}
+            value={search}
+            onValueChange={setSearch}
+            wrapperClassName="min-w-0 flex-1 lg:max-w-sm"
           />
+          <FiltersPopover label={tc("actions.filter")} count={fulfilment ? 1 : 0} className="sm:hidden">
+            {fulfilmentSelect()}
+          </FiltersPopover>
+        </div>
+        <div className="flex flex-wrap items-end gap-3 lg:contents">
+          {fulfilmentSelect("max-sm:hidden sm:w-56")}
           <SegmentedControl
             label={t("view.label")}
             value={view}
@@ -183,14 +199,13 @@ function OrdersTable({
   const more = (first: string, count: number) => t("itemsMore", { first, count });
   const caption = t("table.caption", { tab: t.dynamic(`tabs.${tab}`) });
 
-  const quick = (o: Order, fullWidth = false) => {
+  const quick = (o: Order) => {
     const step = nextStatus(o);
     if (!step) return null;
     return (
       <Button
         size="sm"
         variant={o.status === "new" ? "accent" : "secondary"}
-        fullWidth={fullWidth}
         loading={actions.busyId === o.id}
         onClick={async () => {
           const ok = await actions.advance(o, step);
@@ -214,6 +229,7 @@ function OrdersTable({
       header: t("table.order"),
       rowHeader: true,
       sortable: true,
+      className: DENSE,
       cell: (o) => (
         <span className="block whitespace-nowrap">
           <span className="block tabular">{o.code}</span>
@@ -224,19 +240,23 @@ function OrdersTable({
     {
       id: "customer",
       header: t("table.customer"),
+      className: DENSE,
       cell: (o) => (
         <div className="min-w-36">
-          <p className="font-medium text-fg">{o.clientName}</p>
-          {o.petNames.length ? <p className="text-meta text-fg-secondary">{o.petNames.join(", ")}</p> : null}
-          {/* The items column only fits from 2xl; narrower tables show the basket summary here. */}
-          <p className="max-w-64 truncate text-meta text-fg-secondary 2xl:hidden">{itemsSummary(o, more)}</p>
+          {/* Pets on the name's line: two lines per row instead of three. */}
+          <p className="font-medium text-fg">
+            {o.clientName}
+            {o.petNames.length ? <span className="text-meta font-normal text-fg-secondary"> · {o.petNames.join(", ")}</span> : null}
+          </p>
+          {/* The items column only fits from 1728px (all seven columns); narrower tables show the basket summary here. */}
+          <p className="max-w-48 truncate text-meta text-fg-secondary xl:max-w-64 min-[108rem]:hidden">{itemsSummary(o, more)}</p>
         </div>
       ),
     },
     {
       id: "items",
       header: t("table.items"),
-      className: "hidden 2xl:table-cell",
+      className: cn("hidden min-[108rem]:table-cell", DENSE),
       cell: (o) => (
         <div className="max-w-60">
           <p className="truncate text-fg">{itemsSummary(o, more)}</p>
@@ -249,12 +269,15 @@ function OrdersTable({
       header: t("table.total"),
       align: "end",
       sortable: true,
+      className: DENSE,
       cell: (o) => <span className="whitespace-nowrap font-semibold tabular">{formatMoney(o.totalAZN, locale)}</span>,
     },
     {
       id: "delivery",
       header: t("table.delivery"),
-      className: "hidden xl:table-cell",
+      // Its own column only from 1440px: at 1280px next to the full sidebar the table would be wider than
+      // the card and the "next step" buttons would end up behind a sideways scroll.
+      className: cn("hidden min-[90rem]:table-cell", DENSE),
       cell: (o) => (
         <div className="flex flex-col items-start gap-1">
           <FulfilmentTag fulfilment={o.fulfilment} />
@@ -265,43 +288,50 @@ function OrdersTable({
     {
       id: "status",
       header: t("table.status"),
+      className: DENSE,
       cell: (o) => (
-        <div className="flex flex-col items-start gap-1">
+        <div className="flex flex-col items-start gap-0.5">
           <StatusPill kind="order" status={o.status} size="sm" />
-          {/* Narrower tables fold the delivery column in here. */}
-          <div className="flex flex-col items-start gap-1 xl:hidden">
-            <FulfilmentTag fulfilment={o.fulfilment} />
+          {/* Narrower tables fold the delivery column in here, as a plain line so the row stays two lines tall. */}
+          <div className="flex flex-col items-start gap-1 min-[90rem]:hidden">
+            <FulfilmentTag fulfilment={o.fulfilment} variant="text" />
             {courierLine(o)}
           </div>
         </div>
       ),
     },
-    { id: "next", header: t("table.next"), align: "end", className: "hidden xl:table-cell", cell: (o) => quick(o) },
+    { id: "next", header: t("table.next"), align: "end", className: cn("hidden xl:table-cell", DENSE), cell: (o) => quick(o) },
   ];
 
+  // Phone card: code + "5 min ago" and the status; customer and total; basket; delivery with the next
+  // step on its right (it wraps under the tags only when they don't leave room), instead of a
+  // full-width button on a row of its own.
   const mobileCard = (o: Order) => (
     <div className="min-w-0">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <p className="flex min-w-0 flex-wrap items-baseline gap-x-2">
           <button type="button" onClick={() => onOpen(o)} className="text-body font-semibold text-fg underline-offset-4 hover:underline">
             {o.code}
           </button>
-          <p className="text-meta text-fg-secondary">
-            <TimeAgo value={o.createdAt} now={now} />
-          </p>
-        </div>
+          <TimeAgo value={o.createdAt} now={now} className="text-meta text-fg-secondary" />
+        </p>
         <StatusPill kind="order" status={o.status} size="sm" />
       </div>
-      <p className="mt-2 font-semibold text-fg">{o.clientName}</p>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="min-w-0 font-semibold text-fg">{o.clientName}</p>
+        <span className="shrink-0 font-display text-title font-extrabold tabular">
+          <span className="sr-only">{t("table.total")}: </span>
+          {formatMoney(o.totalAZN, locale)}
+        </span>
+      </div>
       <p className="line-clamp-2 text-meta text-fg-secondary">{itemsSummary(o, more)}</p>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1.5">
           <FulfilmentTag fulfilment={o.fulfilment} />
           {courierLine(o)}
         </div>
-        <span className="font-display text-title font-extrabold tabular">{formatMoney(o.totalAZN, locale)}</span>
+        {nextStatus(o) ? <div className="ml-auto">{quick(o)}</div> : null}
       </div>
-      {nextStatus(o) ? <div className="mt-3 border-t border-border pt-3">{quick(o, true)}</div> : null}
     </div>
   );
 
@@ -320,7 +350,7 @@ function OrdersTable({
       empty={emptyState}
     >
       {(data) => (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <ResponsiveTable
             caption={caption}
             columns={columns}

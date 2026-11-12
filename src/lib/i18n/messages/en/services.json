@@ -4,12 +4,10 @@
     "description": "Set prices and durations — they replace “Priced on site” in the app."
   },
   "title": "Services & prices",
-  "description": "Prices, durations and the order of your services — exactly what clients see in the PetRide app.",
   "titleShop": "Products & prices",
   "descriptionShop": "Keep prices and stock up to date — clients always see the current price in the app.",
   "add": "Add service",
   "addShort": "Add",
-  "listTitle": "Services",
   "listLabel": "{{category}}: services",
   "asideLabel": "How it looks in the app",
   "categoryMeta": "{{count}} · {{active}} active",
@@ -34,8 +32,6 @@
     "hidden_other": "{{count}} services hidden",
     "allVisible": "All visible",
     "withPrice": "Showing a price",
-    "withPriceNote": "The rest say “Priced on site”",
-    "onSiteNote": "Add a price so clients know upfront",
     "onSiteNone": "Every active service has a price",
     "bookings": "Appointments, 30 days",
     "top": "Most booked: {{name}}"
@@ -43,7 +39,6 @@
   "notice": {
     "onSite_one": "{{count}} active service shows “{{label}}” in the app",
     "onSite_other": "{{count}} active services show “{{label}}” in the app",
-    "onSiteBody": "Add a price and clients will know what they'll pay before they book. If it depends on size, tick “Starting price”.",
     "setPrice": "Add a price"
   },
   "reorder": {
@@ -59,6 +54,7 @@
     "exactHint": "The app shows this price.",
     "fromHint": "The app shows it as a starting price.",
     "onSiteHint": "The app says “{{label}}”.",
+    "inApp": "In the app: {{price}}",
     "active": "Active",
     "hidden": "Hidden",
     "new": "New",
@@ -117,6 +113,7 @@
     "body": "There are no services or products on your account yet. Message the PetRide team and we'll set it up together."
   },
   "preview": {
+    "open": "App preview",
     "label": "How it looks in the app",
     "caption": "Changes show here right away and reach the app once you save.",
     "services": "Services",
@@ -194,11 +191,13 @@
   },
   "products": {
     "listTitle": "Products",
-    "listHint": "Change prices and stock here, then save.",
     "search": "Search products or SKU",
     "lowOnly": "Running low only",
     "categoryFilter": "Category",
-    "all": "All",
+    "allCategories": "All categories",
+    "columns": {
+      "product": "Product"
+    },
     "stock": "Stock",
     "stockFor": "Stock of {{name}}",
     "lowStockAt": "“Running low” at",

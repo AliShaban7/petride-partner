@@ -57,7 +57,7 @@ export function DayChips({
                 aria-label={`${formatWeekday(day, locale)}, ${formatDayMonth(day, locale)}${count !== undefined ? `, ${t.plural("calendar.count", count)}` : ""}`}
                 onClick={() => onSelect(day)}
                 className={cn(
-                  "flex min-h-16 w-12 flex-col items-center justify-center gap-0.5 rounded-card border text-center transition-colors duration-150",
+                  "flex min-h-14 w-12 flex-col items-center justify-center gap-0.5 rounded-card border text-center transition-colors duration-150",
                   isSelected ? "border-primary bg-primary text-on-primary" : "border-border bg-surface text-fg hover:bg-surface-muted",
                 )}
               >

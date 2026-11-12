@@ -42,9 +42,10 @@ export function SettingsView() {
   const confirmLeave = useCallback(() => !anyDirty || window.confirm(t("leaveConfirm")), [anyDirty, t]);
 
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
-      <div className="grid gap-6 2xl:grid-cols-[15rem_minmax(0,1fr)] 2xl:items-start">
+    <div className="space-y-section">
+      <PageHeader title={t("title")} />
+      {/* From 1280px the sections are a left sub-nav beside the content; narrower, one row of pills above it. */}
+      <div className="grid gap-4 xl:grid-cols-[13rem_minmax(0,1fr)] xl:items-start">
         <SettingsNav active={active} dirty={dirty} />
         <div className="min-w-0">
           <div hidden={active !== "profile"}>

@@ -25,7 +25,7 @@ type Card = {
 
 const ICON = { size: 16, "aria-hidden": true } as const;
 
-/** Six big pastel KPI cards; change chips only when there is a previous period to compare with. */
+/** Six compact pastel KPI cards in one row on desktops; change chips only when there is a previous period to compare with. */
 export const KpiRow = memo(function KpiRow({ report, deltaLabel }: { report: StatsReport; deltaLabel: string }) {
   const t = useT("stats");
   const locale = useLocale();
@@ -106,18 +106,22 @@ export const KpiRow = memo(function KpiRow({ report, deltaLabel }: { report: Sta
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {cards.map((card, i) => (
         <KpiCard
           key={card.id}
+          size="sm"
           index={i}
           label={card.label}
           icon={card.icon}
           value={card.value}
           unit={card.unit}
+          // "vs the previous 30 days" is said once in the page header (the compared dates); on these
+          // narrow cards it is read out with the change chip but not shown.
           footnote={card.footnote}
-          delta={card.delta}
           deltaLabel={deltaLabel}
+          deltaLabelVisible={false}
+          delta={card.delta}
           tone={card.tone}
           pet={card.pet}
         />
@@ -130,9 +134,9 @@ export const KpiRow = memo(function KpiRow({ report, deltaLabel }: { report: Sta
 export function KpiRowSkeleton() {
   const tones: KpiTone[] = ["mint", "peach", "lilac", "sand", "mint", "peach"];
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {tones.map((tone, i) => (
-        <KpiCard key={i} index={i} loading label="" value="" tone={tone} pet={null} />
+        <KpiCard key={i} size="sm" index={i} loading label="" value="" tone={tone} pet={null} />
       ))}
     </div>
   );

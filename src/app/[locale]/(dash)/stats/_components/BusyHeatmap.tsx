@@ -81,7 +81,7 @@ export const BusyHeatmap = memo(function BusyHeatmap({ report, index }: { report
               <span
                 key={h}
                 className={cn(
-                  "pb-1 text-center text-caption text-fg-tertiary tabular",
+                  "pb-0.5 text-center text-caption text-fg-tertiary tabular",
                   !showHourLabel(h, i) && "invisible sm:visible",
                 )}
               >
@@ -99,7 +99,7 @@ export const BusyHeatmap = memo(function BusyHeatmap({ report, index }: { report
                       key={h}
                       title={t("busy.cell", { day: weekdayName(d, locale), time: hourSlot(h), count: num(count) })}
                       className={cn(
-                        "flex aspect-square min-h-5 items-center justify-center rounded-[6px] text-caption font-semibold tabular transition-transform duration-150 hover:scale-105 md:aspect-auto md:h-9 xl:h-10",
+                        "flex aspect-square min-h-5 items-center justify-center rounded-[6px] text-caption font-semibold tabular transition-transform duration-150 hover:scale-105 md:aspect-auto md:h-7",
                         lvl === 4 ? "text-on-primary" : "text-fg",
                       )}
                       style={cellStyle(lvl)}
@@ -111,7 +111,7 @@ export const BusyHeatmap = memo(function BusyHeatmap({ report, index }: { report
               </div>
             ))}
           </div>
-          <div aria-hidden="true" className="mt-4 flex items-center justify-end gap-1.5 text-caption text-fg-tertiary">
+          <div aria-hidden="true" className="mt-2 flex items-center justify-end gap-1.5 text-caption text-fg-tertiary">
             <span className="mr-1">{t("busy.less")}</span>
             {LEVELS.map((_, lvl) => (
               <span key={lvl} className="size-3.5 rounded-[4px]" style={cellStyle(lvl)} />

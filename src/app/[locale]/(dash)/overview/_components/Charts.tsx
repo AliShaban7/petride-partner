@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, Label, Pie, PieChart, Tooltip, XAxis, YAxis } from "recharts";
 
 import { CHART_COLORS, ChartCard, ChartTooltipContent, chartAxisProps, chartGridProps, type LegendItem } from "@/components/ui";
@@ -12,6 +12,26 @@ import { useLocale, useT } from "@/lib/i18n/client";
 export type ChartMode = "visits" | "orders";
 
 const DAYS = 14;
+/**
+ * Bar chart height. One value for every width: on phones the two charts share a swipeable row whose
+ * height the donut card (with its longer legend) sets, so a shorter bar chart would only leave a gap,
+ * and a fixed number keeps the server render and the first client render the same height.
+ */
+const DAILY_HEIGHT = 220;
+
+/**
+ * "Randevular  son 14 gün": what the chart counts, with the period as a small aside (no separate
+ * description line). The real space keeps the heading's accessible name "Randevular son 14 gün"
+ * (a margin alone would read as "Randevularson").
+ */
+function ChartTitle({ children, period }: { children: ReactNode; period: string }) {
+  return (
+    <>
+      {children}{" "}
+      <span className="ml-1 align-middle font-sans text-meta font-semibold tracking-normal text-fg-secondary">{period}</span>
+    </>
+  );
+}
 
 // ---- Appointments / orders per day (last 14 days) ------------------------------------------------
 
@@ -56,11 +76,10 @@ export function DailyChart({ query, mode, className }: { query: QueryResult<Dail
   return (
     <ChartCard
       className={className}
-      title={t("charts.dailyTitle")}
-      description={mode === "visits" ? t("charts.dailyDescription") : t("charts.ordersDescription")}
+      title={<ChartTitle period={t("charts.period14")}>{mode === "visits" ? t("charts.visits") : t("charts.orders")}</ChartTitle>}
       summary={summary}
       legend={legend}
-      height={200}
+      height={DAILY_HEIGHT}
       loading={query.isLoading}
       error={query.data ? undefined : query.error}
       onRetry={query.refetch}
@@ -134,11 +153,10 @@ export function MixChart({ query, mode, className }: { query: QueryResult<Servic
   return (
     <ChartCard
       className={className}
-      title={mode === "visits" ? t("charts.mixTitle") : t("charts.mixTitleShop")}
-      description={t("charts.mixDescription")}
+      title={<ChartTitle period={t("charts.period30")}>{mode === "visits" ? t("charts.mixTitle") : t("charts.mixTitleShop")}</ChartTitle>}
       summary={summary}
       legend={legend}
-      height={200}
+      height={160}
       loading={query.isLoading}
       error={query.data ? undefined : query.error}
       onRetry={query.refetch}

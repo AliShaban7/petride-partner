@@ -4,7 +4,6 @@
     "description": "İş saatları, əlaqə məlumatları və PetRide ayarları."
   },
   "title": "Ayarlar",
-  "description": "Profil, iş saatları, komanda və PetRide ilə iş qaydası — hamısı burada.",
   "leaveConfirm": "Saxlanmamış dəyişikliklər var. Səhifədən çıxsan, onlar itəcək. Çıxırsan?",
   "nav": {
     "label": "Ayarlar bölmələri",
@@ -93,16 +92,12 @@
   },
   "hours": {
     "title": "İş saatları",
-    "appTitle": "Bu saatlar PetRide tətbiqində görünür",
-    "appBody": "Müştərilər iş saatlarını tətbiqdə görür və gəliş vaxtını buna görə seçir. Saatları dəqiq yaz.",
     "unconfirmedTitle": "İş saatlarını təsdiqlə",
     "unconfirmedBody": "Bunlar nümunə saatlardır. Təsdiqləyənə qədər tətbiq müştərilərə iş saatlarını göstərmir.",
     "confirm": "Bu saatları təsdiqlə",
     "saveAndConfirm": "Saxla və təsdiqlə",
     "weekTitle": "Həftəlik cədvəl",
-    "weekDescription": "Hər gün üçün açılış, bağlanış və fasilələr.",
     "alwaysOpen": "Gecə-gündüz açıq (24/7)",
-    "alwaysOpenHint": "Yalnız gecə də həqiqətən kimsə işləyirsə yandır.",
     "alwaysOpenOn": "Tətbiqdə «Gecə-gündüz açıqdır» yazılacaq. Həftəlik cədvəl yadda qalır — 24/7-ni söndürsən, geri qayıdacaq.",
     "confirm247": {
       "title": "Həqiqətən gecə-gündüz açıqsan?",

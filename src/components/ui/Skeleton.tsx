@@ -21,7 +21,7 @@ export function SkeletonRows({ rows = 5, className }: { rows?: number; className
   return (
     <div aria-hidden="true" className={cn("divide-y divide-border", className)}>
       {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="flex items-center gap-3 py-3">
+        <div key={i} className="flex items-center gap-3 py-2.5">
           <Skeleton className="size-10 shrink-0 rounded-full" />
           <div className="min-w-0 flex-1 space-y-2">
             <Skeleton className="h-3.5 w-2/5" />
@@ -37,7 +37,7 @@ export function SkeletonRows({ rows = 5, className }: { rows?: number; className
 /** Card-sized placeholder (KPI / chart). */
 export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div aria-hidden="true" className={cn("rounded-panel bg-surface p-5 shadow-card", className)}>
+    <div aria-hidden="true" className={cn("rounded-panel bg-surface p-4 shadow-card lg:p-5", className)}>
       <Skeleton className="h-4 w-1/3" />
       <Skeleton className="mt-4 h-9 w-1/2" />
       <Skeleton className="mt-6 h-28 w-full" />

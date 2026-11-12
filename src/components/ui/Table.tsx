@@ -64,8 +64,8 @@ export function Th({ className, align = "start", scope = "col", ...rest }: Omit<
       scope={scope}
       className={cn(
         scope === "row"
-          ? "border-b border-border px-4 py-3 align-middle text-body-sm font-medium text-fg"
-          : "whitespace-nowrap border-b border-border bg-surface-muted px-4 py-3 text-meta font-semibold text-fg-secondary first:rounded-tl-tile last:rounded-tr-tile",
+          ? "border-b border-border px-4 py-3 align-middle text-body-sm font-medium text-fg lg:py-2"
+          : "whitespace-nowrap border-b border-border bg-surface-muted px-4 py-3 text-meta font-semibold text-fg-secondary first:rounded-tl-tile last:rounded-tr-tile lg:py-2.5",
         ALIGN[align],
         className,
       )}
@@ -75,7 +75,8 @@ export function Th({ className, align = "start", scope = "col", ...rest }: Omit<
 }
 
 export function Td({ className, align = "start", ...rest }: Omit<ComponentProps<"td">, "align"> & { align?: keyof typeof ALIGN }) {
-  return <td className={cn("border-b border-border px-4 py-3 align-middle text-fg", ALIGN[align], className)} {...rest} />;
+  // Dense rows on desktops (36px for a line of text), roomier on touch widths.
+  return <td className={cn("border-b border-border px-4 py-3 align-middle text-fg lg:py-2", ALIGN[align], className)} {...rest} />;
 }
 
 export type SortDirection = "asc" | "desc";
@@ -100,12 +101,12 @@ export function SortableTh({
   const t = useT("common");
   const Icon = !active ? ArrowUpDown : direction === "asc" ? ArrowUp : ArrowDown;
   return (
-    <Th align={align} aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"} className={cn("p-0", className)}>
+    <Th align={align} aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"} className={cn("p-0 lg:p-0", className)}>
       <button
         type="button"
         onClick={onSort}
         className={cn(
-          "inline-flex w-full items-center gap-1.5 px-4 py-3 font-semibold hover:text-fg",
+          "inline-flex w-full items-center gap-1.5 px-4 py-3 font-semibold hover:text-fg lg:py-2.5",
           align === "end" && "justify-end",
           active && "text-fg",
         )}
@@ -325,10 +326,10 @@ export function ResponsiveTable<T>({
       </div>
 
       {/* < 640px: stacked cards */}
-      <ul className="space-y-3 sm:hidden" aria-label={caption} aria-busy={loading || undefined}>
+      <ul className="space-y-2 sm:hidden" aria-label={caption} aria-busy={loading || undefined}>
         {loading
           ? Array.from({ length: Math.min(4, skeletonRows) }, (_, i) => (
-              <li key={`s${i}`} className="rounded-card border border-border bg-surface p-4">
+              <li key={`s${i}`} className="rounded-card border border-border bg-surface p-3.5">
                 <Skeleton className="h-4 w-1/2" />
                 <Skeleton className="mt-3 h-3 w-3/4" />
                 <Skeleton className="mt-2 h-3 w-2/3" />
@@ -341,7 +342,7 @@ export function ResponsiveTable<T>({
                   key={id}
                   onClick={onRowMouse(row)}
                   className={cn(
-                    "rounded-card border border-border bg-surface p-4 shadow-thumb",
+                    "rounded-card border border-border bg-surface p-3.5 shadow-thumb",
                     clickable && "cursor-pointer active:bg-primary-selected",
                     selectedId === id && "border-primary bg-primary-selected",
                   )}
@@ -384,7 +385,7 @@ function DefaultMobileCard<T>({ row, columns, primary }: { row: T; columns: Colu
         </div>
       </div>
       {by("meta").length ? (
-        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-meta">
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-meta">
           {by("meta").map((c) => (
             <div key={c.id} className="contents">
               <dt className="text-fg-secondary">{c.header}</dt>
@@ -394,7 +395,7 @@ function DefaultMobileCard<T>({ row, columns, primary }: { row: T; columns: Colu
         </dl>
       ) : null}
       {footers.length ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-border pt-2.5">
           {footers.map(({ id, node }) => (
             <div key={id}>{node}</div>
           ))}

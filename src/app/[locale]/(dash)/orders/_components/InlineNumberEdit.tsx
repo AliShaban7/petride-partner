@@ -114,7 +114,7 @@ export function InlineNumberEdit({
   if (!editing) {
     return (
       <span className={cn("inline-flex items-center gap-1", className)}>
-        <span className="tabular">{display}</span>
+        <span className="whitespace-nowrap tabular">{display}</span>
         <IconButton
           ref={pencil}
           label={editLabel}

@@ -64,8 +64,8 @@ import { useApiQuery, useApiMutation } from "@/lib/api/hooks";
 import { useLocale, useT } from "@/lib/i18n/client";
 ```
 
-- **One `<h1>` per page.** It comes from `PageHeader`. Overview uses `size="hero"`, which gives the huge uppercase greeting.
-- Sections are `Panel`s (an `h2` inside a `<section aria-labelledby>`). Lay them out with CSS grid: `grid gap-4 sm:grid-cols-2 xl:grid-cols-4`, `lg:grid-cols-[2fr_1fr]`.
+- **One `<h1>` per page.** It comes from `PageHeader`. Overview uses `size="hero"`, the friendly uppercase greeting (40px on desktops).
+- Sections are `Panel`s (an `h2` inside a `<section aria-labelledby>`). Lay them out with CSS grid: `grid gap-4 sm:grid-cols-2 xl:grid-cols-4`, `lg:grid-cols-[2fr_1fr]`. Stack page blocks with `space-y-section` (16px). See **Density** below before you add anything tall.
 - Don't add page padding. `AppShell`'s `<main>` already has it, with `max-w-[1440px]`.
 - Anything that depends on "now" (greetings, "in 12 min", today's date) renders in Client Components. The dashboard data is client-side anyway.
 - **Feature gating:** call `partnerFeatures(useSession())` from `@/components/shell` and `@/lib/auth/client`. The pet shop has no appointments and the clinic has no orders. If someone opens a route their partner doesn't have, show an `EmptyState` that explains it. Don't crash.
@@ -118,11 +118,11 @@ Open `/az/ui-kit` to see every component working on real mock data.
 
 | Need | Use |
 |---|---|
-| Page title / greeting | `PageHeader title description eyebrow actions size="page"\|"hero"` |
-| Section | `Panel title description actions icon tone padding` (`tone`: white, muted, mint, peach, lilac, sand, sky, rose, softMint, softPeach, softLilac, softSand, dark) |
-| Plain surface | `Card tone padding interactive` |
-| KPI | `KpiCard label icon value unit delta deltaLabel positiveIsGood tone="mint"\|"peach"\|"lilac"\|"sand"\|"sky"\|"rose" pet="golden"\|"ginger"\|"tabby"\|"cream"\|null href loading index size="md"\|"sm"`, with `deltaLabel={tc(\`delta.vs_${period}\`)}` |
-| Change chip alone | `DeltaChip value label positiveIsGood` |
+| Page title / greeting | `PageHeader title description eyebrow actions size="page"\|"hero" descriptionOnMobile` — title and `actions` share one row from 640px; `description` is optional and small; `descriptionOnMobile={false}` hides it below 640px |
+| Section | `Panel title description actions icon tone padding="none"\|"xs"\|"sm"\|"md"\|"lg"` (`tone`: white, muted, mint, peach, lilac, sand, sky, rose, softMint, softPeach, softLilac, softSand, dark). Title and `actions` share the first row; `description` runs under them. The `icon` tile is hidden while the header is narrower than 21rem (phones, three panels across), so title and "View all" fit on one row |
+| Plain surface | `Card tone padding interactive` (padding: xs 12px · sm 16px · md 16px, 20px from 1024px · lg 20px, 24px from 1024px) |
+| KPI | `KpiCard label icon value unit delta deltaLabel positiveIsGood tone="mint"\|"peach"\|"lilac"\|"sand"\|"sky"\|"rose" pet="golden"\|"ginger"\|"tabby"\|"cream"\|null href loading index size="md"\|"sm"\|"lg"`, with `deltaLabel={tc(\`delta.vs_${period}\`)}`. `md` (default) ≈ 130px tall; `sm` puts value and change chip on one line with the "vs …" label and `footnote` under them (≈ 90–110px); `lg` is the old big card. `deltaLabelVisible={false}` keeps the label for screen readers only (when the page header already states the comparison) |
+| Change chip alone | `DeltaChip value label positiveIsGood showLabel` |
 | Status | `StatusPill kind="appointment"\|"order"\|"ride"\|"health"\|"vaccine"\|"payment"\|"availability"\|"stock" status=… size="sm"\|"md"`. Generic chip: `Pill tone`. Metadata: `Tag`. Counts: `CountBadge` |
 | Person / pet | `Avatar name tint species size="xs"\|"sm"\|"md"\|"lg"\|"xl" shape="circle"\|"tile" src` |
 | Table / list | `ResponsiveTable caption columns rows getRowId rowHref\|onRowClick selectedId sort onSortChange defaultSort loading empty mobileCard stickyHeader`. Columns: `{ id, header, cell, sortable, sortValue, align, className, rowHeader, mobile: "title"\|"subtitle"\|"badge"\|"meta"\|"footer"\|"hidden" }`. It turns into cards under 640px. For custom tables use the `Table/THead/TBody/Tr/Th/Td/SortableTh` primitives. |
@@ -130,11 +130,11 @@ Open `/az/ui-kit` to see every component working on real mock data.
 | Loading / empty / error | `AsyncView query loading empty isEmpty compact>{(data) => …}</AsyncView>`, `Skeleton`, `SkeletonRows`, `SkeletonText`, `SkeletonCard`, `EmptyState title description action pet compact`, `ErrorState error onRetry compact` |
 | Tabs | `Tabs tabs value onChange label idPrefix variant="underline"\|"pills"` + `TabPanel idPrefix value`. A tab's `count` is a coral `CountBadge` by default; `countTone: "neutral"` shows a grey count (also 0) for history tabs. |
 | Single choice | `SegmentedControl options value onChange label size fullWidth` (period switcher) |
-| Forms | `Input label hint error leftIcon rightSlot`, `Select options placeholder`, `Textarea`, `DateInput kind="date"\|"time"\|"datetime-local"`, `SearchField label value onValueChange`, `Switch checked onCheckedChange label description`, `Checkbox`, `Field` (custom controls) |
+| Forms | `Input label hint error leftIcon rightSlot`, `Select options placeholder`, `Textarea`, `DateInput kind="date"\|"time"\|"datetime-local"`, `SearchField label value onValueChange` (a `search` landmark named by `label`), `Switch checked onCheckedChange label description hideLabel` (32px track with a built-in 44px hit area), `Checkbox`, `Field` (custom controls) |
 | Buttons | `Button variant="primary"\|"secondary"\|"ghost"\|"accent"\|"danger"\|"outline" size loading leftIcon`, `ButtonLink href`, `IconButton label icon badge` |
 | Overlays | `Drawer open onClose title description footer side="auto"\|"right"\|"bottom"` (a bottom sheet on phones), `Dialog`, `ConfirmDialog tone="danger"` for destructive actions, `Menu items trigger` (row "…" actions; renders in a portal with fixed position, so table scroll boxes and drawer footers don't clip it, and flips upwards near the bottom; Esc closes only the menu, not a Drawer under it), `Popover`, `Tooltip content` |
 | Feedback | `const { toast } = useToast(); toast({ title, description, tone: "success"\|"error"\|"info", action: { label, onClick } })` |
-| Charts | `ChartCard title summary legend actions height loading error onRetry empty`, wrapping **one** Recharts chart. Also: `CHART_COLORS`, `chartAxisProps`, `chartGridProps`, `ChartTooltipContent valueFormatter labelFormatter`. `summary` is required: one plain sentence that a screen reader reads out. |
+| Charts | `ChartCard title summary legend actions height loading error onRetry empty` (`height` defaults to 220), wrapping **one** Recharts chart. Also: `CHART_COLORS`, `chartAxisProps`, `chartGridProps`, `ChartTooltipContent valueFormatter labelFormatter`. `summary` is required: one plain sentence that a screen reader reads out. |
 | Misc | `DetailList items`, `ProgressBar value label`, `Spinner`, `VisuallyHidden` |
 | Art (`@/components/illustrations`) | `PawPeek pet size` (empty states), `CornerPaw` (corners of cards), `PeekingPaws height density`, `PawArt pet width`, `PawMark`, `SoftBackground` |
 
@@ -153,6 +153,18 @@ Open `/az/ui-kit` to see every component working on real mock data.
   - Every input needs a `label`.
   - Live regions are already handled for toasts.
   - Use `aria-busy` while loading (AsyncView does it for you).
+
+### Density / no-scroll
+
+The product owner's rule: **cut scrolling as much as possible, without losing information or actions.** The important things on a page should fit on a 1280×800 / 1440×900 screen with little or no scrolling, and phones should scroll clearly less.
+
+- **No prose that repeats the screen.** Don't write a sentence that restates numbers already in KPI cards or lists ("Today you have 17 appointments, 8 requests…"), a description that restates the title, or helper text that says the obvious ("Updates every 10 seconds", "Here you can see…"). Keep text that tells people something they can't see. `PageHeader`/`Panel` descriptions are optional: leave them out by default.
+- **Use the width.** Put filters, period switchers and the main action in `PageHeader actions` or `Panel actions` (they share the title's row). Put panels side by side on `lg`/`xl` (2–3 columns). Move secondary filters into one "Filters" `Popover`/`Drawer`, and turn stacked sections into `Tabs` or a `SegmentedControl`.
+- **Cap dashboard lists** at 3–5 items with a "see all" link (`tc("actions.viewAll")`: Hamısına bax / Смотреть все / View all) to the full page; full pages keep the whole list with `Pagination`.
+- **Rhythm:** `space-y-section` / `gap-4` between page blocks (not `space-y-6`/`8`), default `Panel` padding, `KpiCard` default size (`size="sm"` in strips and side panels), `ChartCard` height 160–220 (no taller than 260), `EmptyState compact` / `ErrorState compact` inside panels, cards and charts.
+- **Sticky toolbars** are fine where they save scrolling back up: add `sticky-toolbar` (sticks under the top bar on every width, z-20) plus a background such as `bg-bg/90 backdrop-blur-md`.
+- **Targets:** below 1024px every pressable stays ≥ 44px (the kit's `Button sm`, `IconButton sm`, `SegmentedControl`, `Pagination` and `Switch` already reach 44px with an invisible hit area). From 1024px dense desktop controls (table row actions, small icon buttons) may be 36px. Never go below `text-caption` (12px) and keep the contrast rules above.
+- **Measure it.** Compare `document.documentElement.scrollHeight` before and after at 1440×900, 1280×800 and 390×844 (the foundation's `measure.mjs` does this with a pinned clock so runs are comparable).
 
 ## 5. Copy and i18n
 

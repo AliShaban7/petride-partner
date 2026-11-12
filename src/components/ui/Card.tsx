@@ -24,7 +24,8 @@ export const TONE_CLASSES: Record<CardTone, string> = {
   dark: "bg-primary-dark text-on-primary",
 };
 
-const PADDING = { none: "", sm: "p-4", md: "p-5 sm:p-6", lg: "p-6 sm:p-8" } as const;
+/** Inner padding. md (default) is 16px, 20px from 1024px; xs is for dense side lists. */
+const PADDING = { none: "", xs: "p-3", sm: "p-4", md: "p-4 lg:p-5", lg: "p-5 lg:p-6" } as const;
 
 export type CardProps = ComponentProps<"div"> & {
   tone?: CardTone;
@@ -55,9 +56,9 @@ export function Card({ tone = "white", padding = "md", interactive, as: Tag = "d
 export type PanelProps = Omit<ComponentProps<"section">, "title"> & {
   /** Section heading (h2 by default). */
   title: ReactNode;
-  /** Small line under the title. */
+  /** Small line under the title. Only for what the panel doesn't already show (no "updates every 10 s", no restated title). */
   description?: ReactNode;
-  /** Buttons / links on the right of the header ("View all"). */
+  /** Buttons / links on the right of the header ("View all"). Share the title row, so put filters here too. */
   actions?: ReactNode;
   /** Icon before the title. */
   icon?: ReactNode;
@@ -97,21 +98,33 @@ export function Panel({
       className={cn("relative min-w-0 rounded-panel", TONE_CLASSES[tone], tone === "white" && "shadow-card", PADDING[padding], className)}
       {...rest}
     >
-      <header className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="flex min-w-0 items-center gap-3">
-          {icon ? (
-            <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-tile bg-surface/70 text-primary-dark">
-              {icon}
-            </span>
+      {/*
+        Title and actions share the first row (the actions wrap only when the title runs out of room) and
+        the description runs under both, so a long description doesn't push "View all" onto its own row.
+        Phones keep title → description → actions. The header is a size container: when it is narrower
+        than 21rem (phones, three panels across on a desktop) the decorative icon tile drops out, so the
+        title and "View all" can share one row.
+      */}
+      <header className="@container mb-3 flex items-start gap-2.5">
+        {icon ? (
+          <span
+            aria-hidden="true"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-tile bg-surface/70 text-primary-dark @max-[21rem]:hidden"
+          >
+            {icon}
+          </span>
+        ) : null}
+        <div className={cn("flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-3 gap-y-0.5 max-sm:gap-y-1.5", icon && "min-h-9 @max-[21rem]:min-h-0")}>
+          <Heading id={id} className="min-w-0 font-display text-h2 font-extrabold tracking-tight">
+            {title}
+          </Heading>
+          {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2 max-sm:order-last">{actions}</div> : null}
+          {description ? (
+            <p className={cn("basis-full text-body-sm", tone === "white" || tone === "muted" ? "text-fg-secondary" : tone === "dark" ? "text-on-primary/80" : "text-fg-tertiary")}>
+              {description}
+            </p>
           ) : null}
-          <div className="min-w-0">
-            <Heading id={id} className="font-display text-h2 font-extrabold tracking-tight">
-              {title}
-            </Heading>
-            {description ? <p className={cn("mt-0.5 text-body-sm", tone === "white" || tone === "muted" ? "text-fg-secondary" : tone === "dark" ? "text-on-primary/80" : "text-fg-tertiary")}>{description}</p> : null}
-          </div>
         </div>
-        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
       </header>
       <div className={cn("min-w-0", bodyClassName)}>{children}</div>
     </section>

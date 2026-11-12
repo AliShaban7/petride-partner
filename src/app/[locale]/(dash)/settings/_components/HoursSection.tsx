@@ -182,10 +182,7 @@ function HoursForm({ partner, extras, onDirtyChange }: { partner: PartnerProfile
   const saveMessage = showErrors && errors.count ? t.plural("saveBar.fix", errors.count) : t("saveBar.message");
 
   return (
-    <div className="space-y-6 @container" data-hours-form={instructionsId}>
-      <Notice tone="app" title={t("hours.appTitle")}>
-        {t("hours.appBody")}
-      </Notice>
+    <div className="space-y-section @container" data-hours-form={instructionsId}>
       {!partner.hoursConfirmed ? (
         <Notice
           tone="warning"
@@ -201,86 +198,90 @@ function HoursForm({ partner, extras, onDirtyChange }: { partner: PartnerProfile
         </Notice>
       ) : null}
 
-          <Panel title={t("hours.weekTitle")} description={t("hours.weekDescription")} icon={<Clock size={20} />} bodyClassName="@container">
-            <div className="mb-5 rounded-card bg-surface-muted p-4">
-              <Switch
-                checked={draft.alwaysOpen}
-                onCheckedChange={(on) => (on ? setConfirm247(true) : setDraft((d) => ({ ...d, alwaysOpen: false })))}
-                label={t("hours.alwaysOpen")}
-                description={t("hours.alwaysOpenHint")}
-              />
+      {/* One dense line per day on wide screens (day · open · hours with breaks · copy menu). */}
+      <Panel
+        title={t("hours.weekTitle")}
+        icon={<Clock size={20} />}
+        bodyClassName="@container"
+        actions={
+          <Switch
+            checked={draft.alwaysOpen}
+            onCheckedChange={(on) => (on ? setConfirm247(true) : setDraft((d) => ({ ...d, alwaysOpen: false })))}
+            label={<span className="text-body-sm">{t("hours.alwaysOpen")}</span>}
+            className="items-center gap-2.5"
+          />
+        }
+      >
+        {draft.alwaysOpen ? (
+          <p className="rounded-card border border-dashed border-border px-4 py-4 text-center text-body-sm text-fg-secondary">{t("hours.alwaysOpenOn")}</p>
+        ) : (
+          <>
+            <div
+              aria-hidden="true"
+              className="hidden grid-cols-[8.5rem_6.5rem_minmax(0,1fr)_2.75rem] gap-x-3 border-b border-border pb-1.5 text-meta font-semibold text-fg-secondary @min-[42rem]:grid @min-[50rem]:grid-cols-[12rem_6.5rem_minmax(0,1fr)_2.75rem]"
+            >
+              <span>{t("hours.columns.day")}</span>
+              <span>{t("hours.columns.status")}</span>
+              <span>{t("hours.columns.hours")}</span>
+              <span />
             </div>
+            <ul className="space-y-2 @min-[42rem]:space-y-0">
+              {draft.days.map((d) => (
+                <DayRow
+                  key={d.day}
+                  day={d}
+                  isToday={d.day === todayIso}
+                  errors={errors.days[d.day]}
+                  onChange={(patch) => setDay(d.day, patch)}
+                  onCopy={(targets) => copyDay(d, targets)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </Panel>
 
-            {draft.alwaysOpen ? (
-              <p className="rounded-card border border-dashed border-border px-4 py-6 text-center text-body-sm text-fg-secondary">{t("hours.alwaysOpenOn")}</p>
-            ) : (
-              <>
-                <div
-                  aria-hidden="true"
-                  className="hidden grid-cols-[9.5rem_8rem_minmax(0,1fr)_2.75rem] gap-x-3 border-b border-border pb-2 text-meta font-semibold text-fg-secondary @min-[42rem]:grid"
-                >
-                  <span>{t("hours.columns.day")}</span>
-                  <span>{t("hours.columns.status")}</span>
-                  <span>{t("hours.columns.hours")}</span>
-                  <span />
-                </div>
-                <ul className="space-y-3 @min-[42rem]:space-y-0">
-                  {draft.days.map((d) => (
-                    <DayRow
-                      key={d.day}
-                      day={d}
-                      isToday={d.day === todayIso}
-                      errors={errors.days[d.day]}
-                      onChange={(patch) => setDay(d.day, patch)}
-                      onCopy={(targets) => copyDay(d, targets)}
-                    />
-                  ))}
-                </ul>
-              </>
-            )}
-          </Panel>
-
-        <div className="grid gap-6 @min-[52rem]:grid-cols-[minmax(0,1fr)_20rem] @min-[52rem]:items-start">
-          <Panel
-            title={t("hours.exceptions.title")}
-            description={t("hours.exceptions.description")}
-            icon={<CalendarX2 size={20} />}
-            bodyClassName="@container"
-            actions={
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<CalendarPlus aria-hidden="true" size={16} />}
-                onClick={() =>
-                  setDraft((d) => ({ ...d, exceptions: [...d.exceptions, { id: uid("ex"), date: "", closed: true, from: "10:00", to: "16:00", note: "" }] }))
-                }
-              >
-                {t("hours.exceptions.add")}
-              </Button>
-            }
-          >
-            {draft.exceptions.length === 0 ? (
-              <p className="rounded-card bg-surface-muted px-4 py-6 text-center text-body-sm text-fg-secondary">{t("hours.exceptions.empty")}</p>
-            ) : (
-              <ul className="space-y-3">
-                {draft.exceptions.map((ex) => (
-                  <ExceptionRow
-                    key={ex.id}
-                    ex={ex}
-                    min={today}
-                    past={Boolean(today && ex.date && ex.date < today)}
-                    errors={errors.exceptions[ex.id]}
-                    onChange={(patch) => setException(ex.id, patch)}
-                    onRemove={() => setDraft((d) => ({ ...d, exceptions: d.exceptions.filter((e) => e.id !== ex.id) }))}
-                  />
-                ))}
-              </ul>
-            )}
-          </Panel>
-          <div className="min-w-0 @min-[52rem]:sticky @min-[52rem]:top-[calc(var(--topbar-h)+1.5rem)]">
-            <HoursPreview partner={partner} draft={draft} confirmed={partner.hoursConfirmed} now={now} />
-          </div>
+      <div className="grid gap-4 @min-[52rem]:grid-cols-[minmax(0,1fr)_18rem] @min-[52rem]:items-start">
+        <Panel
+          title={t("hours.exceptions.title")}
+          description={t("hours.exceptions.description")}
+          icon={<CalendarX2 size={20} />}
+          bodyClassName="@container"
+          actions={
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<CalendarPlus aria-hidden="true" size={16} />}
+              onClick={() =>
+                setDraft((d) => ({ ...d, exceptions: [...d.exceptions, { id: uid("ex"), date: "", closed: true, from: "10:00", to: "16:00", note: "" }] }))
+              }
+            >
+              {t("hours.exceptions.add")}
+            </Button>
+          }
+        >
+          {draft.exceptions.length === 0 ? (
+            <p className="rounded-card bg-surface-muted px-4 py-4 text-center text-body-sm text-fg-secondary">{t("hours.exceptions.empty")}</p>
+          ) : (
+            <ul className="space-y-3">
+              {draft.exceptions.map((ex) => (
+                <ExceptionRow
+                  key={ex.id}
+                  ex={ex}
+                  min={today}
+                  past={Boolean(today && ex.date && ex.date < today)}
+                  errors={errors.exceptions[ex.id]}
+                  onChange={(patch) => setException(ex.id, patch)}
+                  onRemove={() => setDraft((d) => ({ ...d, exceptions: d.exceptions.filter((e) => e.id !== ex.id) }))}
+                />
+              ))}
+            </ul>
+          )}
+        </Panel>
+        <div className="min-w-0 @min-[52rem]:sticky @min-[52rem]:top-[calc(var(--topbar-h)+1.5rem)]">
+          <HoursPreview partner={partner} draft={draft} confirmed={partner.hoursConfirmed} now={now} />
         </div>
+      </div>
 
       <SaveBar
         visible={dirty}
@@ -321,7 +322,7 @@ function TimeField({
   onChange,
   invalid,
   describedBy,
-  visibleLabelClass = "@min-[42rem]:sr-only",
+  visibleLabelClass = "sr-only",
 }: {
   label: string;
   srPrefix: string;
@@ -332,7 +333,7 @@ function TimeField({
   visibleLabelClass?: string;
 }) {
   return (
-    <label className="flex min-w-0 flex-col gap-1">
+    <label className={cn("flex min-w-0 flex-col", visibleLabelClass !== "sr-only" && "gap-1")}>
       <span className="text-meta font-semibold text-fg-secondary">
         <span className="sr-only">{srPrefix}: </span>
         <span className={visibleLabelClass}>{label}</span>
@@ -345,7 +346,7 @@ function TimeField({
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(controlClass, "w-[7.75rem] px-3 tabular")}
+        className={cn(controlClass, "w-[6.75rem] px-2.5 tabular lg:min-h-10")}
       />
     </label>
   );
@@ -373,20 +374,22 @@ function DayRow({
   const id = useId();
   const name = weekdayName(day.day, locale);
   const rangeErrorId = `${id}-range`;
+  const addBreak = () => onChange({ breaks: [...day.breaks, { id: uid("b"), from: "13:00", to: "14:00" }] });
 
   return (
     <li
       className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto_2.75rem] items-center gap-x-3 gap-y-3 rounded-card border border-border p-3",
-        "@min-[42rem]:grid-cols-[9.5rem_8rem_minmax(0,1fr)_2.75rem] @min-[42rem]:items-start @min-[42rem]:rounded-none @min-[42rem]:border-0 @min-[42rem]:border-b @min-[42rem]:px-0 @min-[42rem]:py-3",
+        "grid grid-cols-[minmax(0,1fr)_auto_2.75rem] items-center gap-x-3 gap-y-2 rounded-card border border-border p-3",
+        // Wider panels give the day room for "Thursday" plus the "Today" tag on one line.
+        "@min-[42rem]:grid-cols-[8.5rem_6.5rem_minmax(0,1fr)_2.75rem] @min-[50rem]:grid-cols-[12rem_6.5rem_minmax(0,1fr)_2.75rem] @min-[42rem]:rounded-none @min-[42rem]:border-0 @min-[42rem]:border-b @min-[42rem]:px-0 @min-[42rem]:py-1.5",
         !day.open && "bg-surface-muted @min-[42rem]:bg-transparent",
       )}
     >
-      <div className="col-start-1 row-start-1 flex min-w-0 flex-wrap items-center gap-2 @min-[42rem]:pt-2.5">
+      <div className="col-start-1 row-start-1 flex min-w-0 flex-wrap items-center gap-2">
         <p className="text-body font-semibold text-fg">{name}</p>
         {isToday ? <Tag tone="white">{t("hours.today")}</Tag> : null}
       </div>
-      <div className="col-start-2 row-start-1 @min-[42rem]:pt-1.5">
+      <div className="col-start-2 row-start-1">
         <Switch
           checked={day.open}
           onCheckedChange={(open) => onChange({ open })}
@@ -401,8 +404,9 @@ function DayRow({
       </div>
       <div className="col-span-3 col-start-1 row-start-2 min-w-0 @min-[42rem]:col-span-1 @min-[42rem]:col-start-3 @min-[42rem]:row-start-1">
         {day.open ? (
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-end gap-2">
+          <div className="space-y-1.5">
+            {/* Opening hours and the "add break" button on one line; breaks follow as compact lines. */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
               <TimeField
                 label={t("hours.from")}
                 srPrefix={name}
@@ -411,7 +415,7 @@ function DayRow({
                 describedBy={errors?.range ? rangeErrorId : undefined}
                 onChange={(from) => onChange({ from })}
               />
-              <span aria-hidden="true" className="pb-3 text-fg-secondary">
+              <span aria-hidden="true" className="text-fg-secondary">
                 –
               </span>
               <TimeField
@@ -422,6 +426,15 @@ function DayRow({
                 describedBy={errors?.range ? rangeErrorId : undefined}
                 onChange={(to) => onChange({ to })}
               />
+              {day.breaks.length < MAX_BREAKS ? (
+                <>
+                  <IconButton className="@min-[30rem]:hidden" label={`${t("hours.addBreak")}: ${name}`} icon={<Plus size={18} />} onClick={addBreak} />
+                  <Button variant="ghost" size="sm" className="hidden @min-[30rem]:inline-flex" leftIcon={<Plus aria-hidden="true" size={16} />} onClick={addBreak}>
+                    {t("hours.addBreak")}
+                    <span className="sr-only">: {name}</span>
+                  </Button>
+                </>
+              ) : null}
             </div>
             {errors?.range ? (
               <p id={rangeErrorId} className="text-meta font-medium text-error-text">
@@ -430,36 +443,35 @@ function DayRow({
             ) : null}
 
             {day.breaks.length ? (
-              <ul className="space-y-2" aria-label={t("hours.breaksLabel", { day: name })}>
+              <ul className="flex flex-wrap gap-1.5" aria-label={t("hours.breaksLabel", { day: name })}>
                 {day.breaks.map((b, i) => {
                   const err = errors?.breaks[b.id];
                   const errId = `${id}-b${i}`;
                   return (
-                    <li key={b.id} className="rounded-tile bg-soft-sand p-2.5">
-                      <p className="mb-1.5 text-meta font-semibold text-fg-tertiary">{t("hours.breakN", { n: i + 1 })}</p>
-                      <div className="flex flex-wrap items-end gap-2">
+                    <li key={b.id} className="rounded-tile bg-soft-sand px-2 py-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="text-meta font-semibold text-fg-tertiary">{t("hours.breakN", { n: i + 1 })}</span>
                         <TimeField
                           label={t("hours.breakFrom")}
                           srPrefix={`${name}, ${t("hours.breakN", { n: i + 1 })}`}
-                          visibleLabelClass="sr-only"
                           value={b.from}
                           invalid={Boolean(err)}
                           describedBy={err ? errId : undefined}
                           onChange={(from) => onChange({ breaks: day.breaks.map((x) => (x.id === b.id ? { ...x, from } : x)) })}
                         />
-                        <span aria-hidden="true" className="pb-3 text-fg-tertiary">
+                        <span aria-hidden="true" className="text-fg-tertiary">
                           –
                         </span>
                         <TimeField
                           label={t("hours.breakTo")}
                           srPrefix={`${name}, ${t("hours.breakN", { n: i + 1 })}`}
-                          visibleLabelClass="sr-only"
                           value={b.to}
                           invalid={Boolean(err)}
                           describedBy={err ? errId : undefined}
                           onChange={(to) => onChange({ breaks: day.breaks.map((x) => (x.id === b.id ? { ...x, to } : x)) })}
                         />
                         <IconButton
+                          size="sm"
                           label={t("hours.removeBreak", { day: name, n: i + 1 })}
                           icon={<X size={18} />}
                           onClick={() => onChange({ breaks: day.breaks.filter((x) => x.id !== b.id) })}
@@ -475,23 +487,12 @@ function DayRow({
                 })}
               </ul>
             ) : null}
-            {day.breaks.length < MAX_BREAKS ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                leftIcon={<Plus aria-hidden="true" size={16} />}
-                onClick={() => onChange({ breaks: [...day.breaks, { id: uid("b"), from: "13:00", to: "14:00" }] })}
-              >
-                {t("hours.addBreak")}
-                <span className="sr-only">: {name}</span>
-              </Button>
-            ) : null}
           </div>
         ) : (
-          <p className="text-body-sm text-fg-secondary @min-[42rem]:pt-2.5">{t("hours.closedAllDay")}</p>
+          <p className="text-body-sm text-fg-secondary">{t("hours.closedAllDay")}</p>
         )}
       </div>
-      <div className="col-start-3 row-start-1 flex justify-end @min-[42rem]:col-start-4 @min-[42rem]:pt-0.5">
+      <div className="col-start-3 row-start-1 flex justify-end @min-[42rem]:col-start-4">
         <Menu
           label={t("hours.copyMenu", { day: name })}
           items={[
@@ -499,7 +500,7 @@ function DayRow({
             { id: "weekdays", label: t("hours.copyWeekdays"), icon: <Copy aria-hidden="true" size={16} />, onSelect: () => onCopy(WEEKDAYS_ONLY) },
             { id: "weekend", label: t("hours.copyWeekend"), icon: <Copy aria-hidden="true" size={16} />, onSelect: () => onCopy(WEEKEND) },
           ]}
-          trigger={(props) => <IconButton {...props} label={t("hours.copyMenu", { day: name })} icon={<MoreHorizontal size={20} />} />}
+          trigger={(props) => <IconButton {...props} size="sm" label={t("hours.copyMenu", { day: name })} icon={<MoreHorizontal size={20} />} />}
         />
       </div>
     </li>

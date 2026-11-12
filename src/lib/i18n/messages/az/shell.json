@@ -1,5 +1,4 @@
 {
-  "brand": "PetRide",
   "partnerLabel": "Partner",
   "homeLink": "PetRide Partner — ümumi baxış",
   "nav": {
@@ -31,7 +30,6 @@
     "expand": "Menyunu aç"
   },
   "partner": {
-    "cardLabel": "Tərəfdaş",
     "switchLabel": "Demo: tərəfdaşı dəyiş",
     "switchTo": "Keç: {{name}}",
     "switching": "Keçirik…"
@@ -55,8 +53,7 @@
     "markAllRead": "Hamısını oxunmuş et",
     "noNotificationsTitle": "Hələ bildiriş yoxdur",
     "noNotificationsBody": "Yeni sorğu, gediş və ya rəy gələndə xəbər verəcəyik.",
-    "profile": "Profil menyusu",
-    "openMenu": "Menyunu aç"
+    "profile": "Profil menyusu"
   },
   "profile": {
     "signedInAs": "Daxil olmusan",

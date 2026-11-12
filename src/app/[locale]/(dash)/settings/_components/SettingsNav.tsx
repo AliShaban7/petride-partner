@@ -10,7 +10,7 @@ import { localizedHref, ROUTES } from "@/lib/i18n/navigation";
 import { SECTION_ICONS, SECTION_IDS, type SectionId } from "./sections";
 
 /**
- * Settings sub-navigation: a vertical list from 1536px (sticky beside the content), a horizontal
+ * Settings sub-navigation: a vertical list from 1280px (sticky beside the content), a horizontal
  * scroller above it on smaller screens. Plain links (`?tab=`), so back/forward and sharing work;
  * a dot (plus hidden text) marks sections with unsaved edits.
  */
@@ -36,8 +36,8 @@ export function SettingsNav({ active, dirty }: { active: SectionId; dirty: Parti
   }, [active]);
 
   return (
-    <nav aria-label={t("nav.label")} className="min-w-0 2xl:sticky 2xl:top-[calc(var(--topbar-h)+1.5rem)]">
-      <ul ref={listRef} className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 2xl:flex-col 2xl:gap-1 2xl:overflow-visible 2xl:rounded-panel 2xl:bg-surface 2xl:p-2 2xl:shadow-card">
+    <nav aria-label={t("nav.label")} className="min-w-0 xl:sticky xl:top-[calc(var(--topbar-h)+1.5rem)]">
+      <ul ref={listRef} className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 xl:flex-col xl:gap-0.5 xl:overflow-visible xl:rounded-panel xl:bg-surface xl:p-2 xl:shadow-card">
         {SECTION_IDS.map((id) => {
           const Icon = SECTION_ICONS[id];
           const current = id === active;
@@ -49,14 +49,14 @@ export function SettingsNav({ active, dirty }: { active: SectionId; dirty: Parti
                 scroll={false}
                 aria-current={current ? "page" : undefined}
                 className={cn(
-                  "relative flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-chip px-4 text-body-sm font-semibold transition-colors 2xl:rounded-button 2xl:px-3.5",
+                  "relative flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-chip px-4 text-body-sm font-semibold transition-colors xl:min-h-10 xl:whitespace-normal xl:rounded-button xl:px-3 xl:py-1.5",
                   current
                     ? "bg-primary-dark text-on-primary shadow-thumb"
-                    : "border border-border bg-surface text-fg hover:bg-surface-muted 2xl:border-transparent 2xl:bg-transparent",
+                    : "border border-border bg-surface text-fg hover:bg-surface-muted xl:border-transparent xl:bg-transparent",
                 )}
               >
                 <Icon aria-hidden="true" size={18} className={current ? "text-live-accent" : "text-fg-secondary"} />
-                <span className="2xl:flex-1">{t(`nav.${id}`)}</span>
+                <span className="xl:flex-1">{t(`nav.${id}`)}</span>
                 {dirty[id] ? (
                   <>
                     <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-accent" />

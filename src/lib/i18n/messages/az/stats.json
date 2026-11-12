@@ -4,10 +4,6 @@
     "description": "Gəlir, randevular, xidmətlər, ən sıx saatlar və PetRide gedişləri."
   },
   "title": "Statistika",
-  "subtitle": {
-    "visits": "Seçdiyin dövr üzrə gəlir, randevular, xidmətlər və PetRide ilə gələnlər.",
-    "orders": "Seçdiyin dövr üzrə gəlir, sifarişlər, məhsullar və anbar."
-  },
   "loading": "Rəqəmləri hesablayırıq…",
   "toolbar": {
     "label": "Dövr və müqayisə",
@@ -15,6 +11,7 @@
     "from": "Başlanğıc",
     "to": "Son",
     "compare": "Əvvəlki dövrlə müqayisə",
+    "compareShort": "Müqayisə",
     "range": "{{range}} · {{days}}",
     "comparedWith": "Müqayisə: {{range}}",
     "noHistory": "Əvvəlki dövr üçün hələ məlumat yoxdur, ona görə müqayisə göstərmirik.",
@@ -109,6 +106,8 @@
   "revenue": {
     "title": "Gəlirin dinamikası",
     "description": "{{granularity}} · tamamlanan randevu və sifarişlərdən",
+    "descriptionVisits": "{{granularity}} · tamamlanan randevulardan",
+    "descriptionOrders": "{{granularity}} · tamamlanan sifarişlərdən",
     "summary": "{{range}} ərzində gəlir {{total}} olub. Ən yüksək: {{best}}, {{bestValue}}.",
     "summaryPrevious": "Əvvəlki dövrdə: {{total}}.",
     "emptyTitle": "Bu dövrdə gəlir yoxdur",
@@ -164,18 +163,20 @@
   },
   "topServices": {
     "title": "Xidmətlər üzrə nəticələr",
-    "description": "Randevular, gəlir və orta çek",
     "caption": "Xidmətlər üzrə nəticələr, {{range}}",
     "emptyTitle": "Bu dövrdə randevu yoxdur"
   },
   "topProducts": {
-    "title": "Ən çox satılan məhsullar",
     "description": "Gəlirə görə ilk 10 məhsul",
     "caption": "Ən çox satılan məhsullar, {{range}}",
     "emptyTitle": "Bu dövrdə satış yoxdur"
   },
+  "productsPanel": {
+    "title": "Məhsullar",
+    "top": "Ən çox satılan",
+    "stock": "Anbar"
+  },
   "stock": {
-    "title": "Anbar dövriyyəsi",
     "description": "İndiki satış tempi ilə qalıq neçə günə çatar",
     "caption": "Anbar dövriyyəsi, {{range}}",
     "noSales": "Satış yoxdur",
@@ -186,7 +187,6 @@
   },
   "rating": {
     "title": "Reytinq və rəylər",
-    "description": "Müştərilərin PetRide-da qoyduğu qiymətlər",
     "average": "Orta qiymət",
     "row": "{{stars}}: {{reviews}} ({{share}})",
     "summary": "Orta qiymət 5 üzərindən {{average}}, {{reviews}}. Beş ulduz: {{share}}.",

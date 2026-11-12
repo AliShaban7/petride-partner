@@ -24,10 +24,11 @@ const VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  // every size keeps a ≥ 40px hit area (sm grows to 44 on touch via min-h)
-  sm: "min-h-10 px-3.5 text-body-sm gap-1.5 rounded-tile",
-  md: "min-h-11 px-4.5 text-body gap-2 rounded-button",
-  lg: "min-h-13 px-6 text-title gap-2.5 rounded-button",
+  // Touch widths (< 1024px): every size has a ≥ 44px hit area (sm: 40px plus an invisible ::after
+  // reaching 2px above and below). From 1024px (mouse) sm and md are 4px denser.
+  sm: "min-h-10 px-3.5 text-body-sm gap-1.5 rounded-tile relative max-lg:after:absolute max-lg:after:inset-x-0 max-lg:after:-inset-y-0.5 max-lg:after:content-[''] lg:min-h-9 lg:px-3",
+  md: "min-h-11 px-4.5 text-body gap-2 rounded-button lg:min-h-10 lg:px-4",
+  lg: "min-h-13 px-6 text-title gap-2.5 rounded-button lg:min-h-12",
 };
 
 /** Shared classes so links and other elements can look like buttons. */
@@ -63,7 +64,7 @@ export type ButtonProps = ComponentProps<"button"> &
 
 /**
  * Buttons: primary (teal), secondary (mint tint), ghost, accent (coral fill + dark text), danger,
- * outline, onDark. Sizes sm (40px), md (44px), lg (52px). Labels start with a verb (TONE.md).
+ * outline, onDark. Sizes sm (40px; 36px from 1024px), md (44px; 40px), lg (52px; 48px). Labels start with a verb (TONE.md).
  */
 export function Button({
   variant = "primary",

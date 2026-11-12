@@ -1,5 +1,4 @@
 {
-  "brand": "PetRide",
   "partnerLabel": "Partner",
   "homeLink": "PetRide Partner — обзор",
   "nav": {
@@ -31,7 +30,6 @@
     "expand": "Развернуть меню"
   },
   "partner": {
-    "cardLabel": "Партнёр",
     "switchLabel": "Демо: сменить партнёра",
     "switchTo": "Перейти: {{name}}",
     "switching": "Переключаем…"
@@ -55,8 +53,7 @@
     "markAllRead": "Прочитать все",
     "noNotificationsTitle": "Пока нет уведомлений",
     "noNotificationsBody": "Сообщим, когда придёт заявка, поездка или отзыв.",
-    "profile": "Меню профиля",
-    "openMenu": "Открыть меню"
+    "profile": "Меню профиля"
   },
   "profile": {
     "signedInAs": "Ты вошёл как",

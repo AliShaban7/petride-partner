@@ -62,8 +62,7 @@
     "page": "Page {{page}}",
     "pageOf": "Page {{page}} of {{count}}",
     "previous": "Previous page",
-    "next": "Next page",
-    "rowActions": "Actions"
+    "next": "Next page"
   },
   "delta": {
     "up": "up {{value}}",
@@ -84,8 +83,7 @@
   },
   "money": {
     "pricedOnSite": "Priced on site",
-    "from": "from {{price}}",
-    "notSet": "No price set"
+    "from": "from {{price}}"
   },
   "species": {
     "dog": "Dog",
@@ -103,17 +101,13 @@
   },
   "a11y": {
     "skipToContent": "Skip to content",
-    "loading": "Loading content",
     "required": "required",
-    "optional": "optional",
     "closeDialog": "Close dialog",
     "dismiss": "Dismiss",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "chartSummary": "Chart summary",
     "newTab": "opens in a new tab",
-    "toasts": "Notifications",
-    "chartData": "Chart data"
+    "toasts": "Notifications"
   },
   "demo": {
     "badge": "Demo data",

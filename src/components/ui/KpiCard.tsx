@@ -21,11 +21,13 @@ export type DeltaChipProps = {
   label?: string;
   /** For "cancellations" or "no-shows" a rise is bad. Default true. */
   positiveIsGood?: boolean;
+  /** false = the label is read out but not shown next to the chip (the caller shows it elsewhere, or not at all). */
+  showLabel?: boolean;
   className?: string;
 };
 
 /** "↑ 12% vs last week" chip. Direction is shown by arrow + sign + words, not by colour alone. */
-export function DeltaChip({ value, label, positiveIsGood = true, className }: DeltaChipProps) {
+export function DeltaChip({ value, label, positiveIsGood = true, showLabel = true, className }: DeltaChipProps) {
   const t = useT("common");
   const locale = useLocale();
   const rounded = value === null ? null : Math.round(value * 100);
@@ -50,7 +52,7 @@ export function DeltaChip({ value, label, positiveIsGood = true, className }: De
         <Icon aria-hidden="true" size={14} strokeWidth={2.4} />
         <span aria-hidden="true">{direction === "none" ? "—" : pct}</span>
       </span>
-      {label && direction !== "none" ? (
+      {showLabel && label && direction !== "none" ? (
         <span aria-hidden="true" className="text-caption font-medium text-fg-tertiary">
           {label}
         </span>
@@ -73,6 +75,11 @@ export type KpiCardProps = {
   unit?: ReactNode;
   delta?: number | null;
   deltaLabel?: string;
+  /**
+   * false = `deltaLabel` is read out with the change but not shown (for narrow cards whose page already
+   * states the comparison, e.g. in the header). Default true.
+   */
+  deltaLabelVisible?: boolean;
   positiveIsGood?: boolean;
   tone?: KpiTone;
   /** Paw reaching in from the corner; null hides it. */
@@ -85,16 +92,49 @@ export type KpiCardProps = {
   /** Stagger index for the entrance animation. */
   index?: number;
   /**
-   * "md" (default) shrinks itself under 640px so two cards fit side by side at 360px;
-   * "sm" is always compact (dense strips, side panels).
+   * "md" (default): compact card, about 130px tall (32px number, small paw); two fit side by side at 360px.
+   * "sm": dense card, value and change chip on one line with the "vs …" label and footnote under them
+   *   (about 90–110px tall), for strips and side panels.
+   * "lg": the old big card (40px number, big paw, 160px min height) for a page's single hero metric.
    */
-  size?: "md" | "sm";
+  size?: "lg" | "md" | "sm";
   className?: string;
 };
 
+/** Per-size classes. Text on pastels is text-fg / text-fg-tertiary only. */
+const KPI_SIZES = {
+  lg: {
+    card: "min-h-32 p-4 sm:min-h-40 sm:p-5",
+    label: "text-meta sm:text-body-sm",
+    icon: "size-7 sm:size-8",
+    value: "mt-3 text-[1.75rem] sm:text-kpi",
+    unit: "text-body-sm sm:text-title",
+    foot: "mt-3 pr-8 sm:pr-[4.75rem]",
+    paw: { width: 58, reach: 64, className: "max-sm:translate-x-4 max-sm:translate-y-5 max-sm:scale-[0.62]" },
+  },
+  md: {
+    card: "p-4",
+    label: "text-meta sm:text-body-sm",
+    icon: "size-7",
+    value: "mt-2 text-[1.75rem] sm:text-kpi-md",
+    unit: "text-body-sm",
+    foot: "mt-2 pr-12",
+    paw: { width: 40, reach: 44, className: "" },
+  },
+  sm: {
+    card: "rounded-card px-4 py-3",
+    label: "text-meta",
+    icon: "size-6 [&_svg]:size-3.5",
+    value: "text-kpi-sm",
+    unit: "text-meta",
+    foot: "pr-10",
+    paw: { width: 32, reach: 34, className: "" },
+  },
+} as const;
+
 /**
- * Big pastel KPI card: label with icon, huge number, "↑ 10% vs last week" chip and a pet paw
- * peeking from the corner. Text on pastels is text-fg / text-fg-tertiary only.
+ * Pastel KPI card: label with icon, big number, "↑ 10% vs last week" chip and a pet paw peeking
+ * from the corner. Text on pastels is text-fg / text-fg-tertiary only.
  */
 export function KpiCard({
   label,
@@ -103,6 +143,7 @@ export function KpiCard({
   unit,
   delta,
   deltaLabel,
+  deltaLabelVisible = true,
   positiveIsGood,
   tone = "mint",
   pet = "golden",
@@ -113,16 +154,25 @@ export function KpiCard({
   size = "md",
   className,
 }: KpiCardProps) {
-  const compact = size === "sm";
+  const z = KPI_SIZES[size];
+  const inline = size === "sm";
+  // "sm": the chip sits next to the value and its "vs yesterday" label moves to the line under them, so a
+  // narrow card (4 or 6 across) keeps value + chip on one line instead of wrapping into three.
+  const chip =
+    delta !== undefined ? (
+      <DeltaChip value={delta} label={deltaLabel} positiveIsGood={positiveIsGood} showLabel={!inline && deltaLabelVisible} />
+    ) : null;
+  const smLabel = inline && deltaLabelVisible && deltaLabel && delta !== undefined && delta !== null ? deltaLabel : null;
+  const smBottom = inline && (smLabel || footnote);
   const body = (
     <>
-      <div className={cn("relative z-10 flex items-center gap-2 font-semibold text-fg-tertiary", compact ? "text-meta" : "text-meta sm:text-body-sm")}>
+      <div className={cn("relative z-10 flex items-center gap-2 font-semibold text-fg-tertiary", z.label)}>
         {icon ? (
           <span
             aria-hidden="true"
             className={cn(
               "inline-flex shrink-0 items-center justify-center rounded-full bg-surface/75 text-fg transition-transform duration-200 ease-out group-hover:-rotate-6 group-hover:scale-110",
-              compact ? "size-7" : "size-7 sm:size-8",
+              z.icon,
             )}
           >
             {icon}
@@ -131,44 +181,45 @@ export function KpiCard({
         <span className="line-clamp-2 min-w-0 break-words">{label}</span>
       </div>
       {loading ? (
-        <div className="relative z-10 mt-4 space-y-3">
-          <Skeleton className="h-10 w-28 bg-surface/60" />
-          <Skeleton className="h-5 w-36 bg-surface/60" />
+        <div className={cn("relative z-10 space-y-2", inline ? "mt-1.5" : "mt-2.5")}>
+          <Skeleton className={cn("bg-surface/60", inline ? "h-6 w-24" : "h-8 w-28")} />
+          {inline ? null : <Skeleton className="h-5 w-36 bg-surface/60" />}
         </div>
       ) : (
         <>
-          <p
-            className={cn(
-              "relative z-10 mt-3 flex flex-wrap items-baseline gap-x-1.5 font-display font-extrabold leading-none tracking-tight text-fg tabular",
-              compact ? "text-[1.75rem]" : "text-[1.75rem] sm:text-kpi",
-            )}
-          >
-            <span className="whitespace-nowrap">{value}</span>
-            {unit ? <span className={cn("font-bold text-fg-tertiary", compact ? "text-body-sm" : "text-body-sm sm:text-title")}>{unit}</span> : null}
-          </p>
-          <div className={cn("relative z-10 mt-3 flex min-h-6 flex-wrap items-center gap-2", compact ? "pr-8" : "pr-8 sm:pr-[4.75rem]")}>
-            {delta !== undefined ? <DeltaChip value={delta} label={deltaLabel} positiveIsGood={positiveIsGood} /> : null}
-            {footnote ? <span className="text-meta text-fg-tertiary">{footnote}</span> : null}
+          {/* The paw art sits in the bottom-right corner: reserve room for it on whichever line is last. */}
+          <div className={cn("relative z-10 flex flex-wrap items-center gap-x-2 gap-y-1", inline && "mt-1.5", inline && !smBottom && "pr-10")}>
+            <p className={cn("flex flex-wrap items-baseline gap-x-1.5 font-display font-extrabold leading-none tracking-tight text-fg tabular", z.value)}>
+              <span className="whitespace-nowrap">{value}</span>
+              {unit ? <span className={cn("font-bold text-fg-tertiary", z.unit)}>{unit}</span> : null}
+            </p>
+            {inline ? chip : null}
           </div>
+          {inline ? (
+            smBottom ? (
+              <div className={cn("relative z-10 mt-1 text-meta text-fg-tertiary", z.foot)}>
+                {smLabel ? (
+                  <p aria-hidden="true" className="text-caption font-medium">
+                    {smLabel}
+                  </p>
+                ) : null}
+                {footnote ? <p>{footnote}</p> : null}
+              </div>
+            ) : null
+          ) : (
+            <div className={cn("relative z-10 flex min-h-6 flex-wrap items-center gap-x-2 gap-y-1", z.foot)}>
+              {chip}
+              {footnote ? <span className="text-meta text-fg-tertiary">{footnote}</span> : null}
+            </div>
+          )}
         </>
       )}
-      {pet ? (
-        <CornerPaw
-          pet={pet}
-          width={58}
-          reach={64}
-          // Compact cards: a smaller paw tucked further into the corner so it never covers the delta text.
-          className={cn(
-            "transition-[scale,translate] duration-300",
-            compact ? "translate-x-4 translate-y-5 scale-[0.62]" : "max-sm:translate-x-4 max-sm:translate-y-5 max-sm:scale-[0.62]",
-          )}
-        />
-      ) : null}
+      {pet ? <CornerPaw pet={pet} width={z.paw.width} reach={z.paw.reach} className={cn("transition-[scale,translate] duration-300", z.paw.className)} /> : null}
     </>
   );
   const classes = cn(
     "group relative isolate block overflow-hidden rounded-panel animate-fade-up",
-    compact ? "min-h-32 p-4" : "min-h-32 p-4 sm:min-h-40 sm:p-5",
+    z.card,
     TONE_CLASSES[tone],
     href && "transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0 active:scale-[0.99]",
     className,

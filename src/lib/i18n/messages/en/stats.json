@@ -4,10 +4,6 @@
     "description": "Revenue, bookings, services, busiest hours and PetRide rides."
   },
   "title": "Statistics",
-  "subtitle": {
-    "visits": "Revenue, appointments, services and PetRide rides for the period you pick.",
-    "orders": "Revenue, orders, products and stock for the period you pick."
-  },
   "loading": "Crunching the numbers…",
   "toolbar": {
     "label": "Period and comparison",
@@ -15,6 +11,7 @@
     "from": "From",
     "to": "To",
     "compare": "Compare with previous period",
+    "compareShort": "Compare",
     "range": "{{range}} · {{days}}",
     "comparedWith": "Compared with {{range}}",
     "noHistory": "There's no data for the previous period yet, so there's nothing to compare with.",
@@ -109,6 +106,8 @@
   "revenue": {
     "title": "Revenue over time",
     "description": "{{granularity}} · from completed appointments and orders",
+    "descriptionVisits": "{{granularity}} · from completed appointments",
+    "descriptionOrders": "{{granularity}} · from completed orders",
     "summary": "Revenue for {{range}}: {{total}}. Highest: {{best}}, {{bestValue}}.",
     "summaryPrevious": "Previous period: {{total}}.",
     "emptyTitle": "No revenue in this period",
@@ -164,18 +163,20 @@
   },
   "topServices": {
     "title": "Results by service",
-    "description": "Appointments, revenue and average ticket",
     "caption": "Results by service, {{range}}",
     "emptyTitle": "No appointments in this period"
   },
   "topProducts": {
-    "title": "Top products",
     "description": "Top 10 by revenue",
     "caption": "Top products, {{range}}",
     "emptyTitle": "No sales in this period"
   },
+  "productsPanel": {
+    "title": "Products",
+    "top": "Best sellers",
+    "stock": "Stock"
+  },
   "stock": {
-    "title": "Stock turnover",
     "description": "How long current stock lasts at this pace of sales",
     "caption": "Stock turnover, {{range}}",
     "noSales": "No sales",
@@ -186,7 +187,6 @@
   },
   "rating": {
     "title": "Rating and reviews",
-    "description": "What clients rated you in PetRide",
     "average": "Average rating",
     "row": "{{stars}}: {{reviews}} ({{share}})",
     "summary": "Average {{average}} out of 5 from {{reviews}}. Five stars: {{share}}.",

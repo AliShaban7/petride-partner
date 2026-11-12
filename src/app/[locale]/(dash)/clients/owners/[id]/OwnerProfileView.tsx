@@ -1,10 +1,11 @@
 "use client";
 
-import { CalendarPlus, Car, ClipboardList, MessageCircle, PawPrint, Phone, ReceiptText, ShoppingBag, Star, Stethoscope, Wallet } from "lucide-react";
-import { useState } from "react";
+import { CalendarPlus, Car, Languages, MapPin, MessageCircle, NotebookPen, PawPrint, Phone, ReceiptText, ShoppingBag, Star, Stethoscope, Wallet } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState, type ReactNode } from "react";
 
 import { partnerFeatures } from "@/components/shell";
-import { Avatar, Button, DetailList, EmptyState, PageHeader, Panel, StatusPill } from "@/components/ui";
+import { Avatar, Button, Card, EmptyState, PageHeader, Panel, StatusPill, TabPanel, Tabs } from "@/components/ui";
 import { useApiQuery } from "@/lib/api/hooks";
 import type { Review, Ride } from "@/lib/api/types";
 import { useSession } from "@/lib/auth/client";
@@ -13,16 +14,25 @@ import { formatDate, formatDateLong, formatDateTime, formatMoney, formatNumber, 
 import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 
-import { BackLink, CallLink, MiniStat, PetLinkRow, SourcePill } from "../../_components/bits";
+import { BackLink, CallLink, PetLinkRow, ProfileBand, SourcePill, type BandFact } from "../../_components/bits";
 import { OrdersTable, VisitsTable } from "../../_components/HistoryTables";
 import { SendMessageDialog } from "../../_components/MessageDialogs";
 import { NewAppointmentDialog } from "../../_components/NewAppointmentDialog";
 import { NoteEditor } from "../../_components/NoteEditor";
 import { ProfileError, ProfileSkeleton } from "../../_components/ProfileStates";
 import { useNow, useOutbox } from "../../_lib/stores";
-import { useMockParam } from "../../_lib/url";
+import { useMockParam, useQueryUpdater } from "../../_lib/url";
 
-/** Owner profile: contact, pets, visits / orders, spend, PetRide rides, reviews and quick actions. */
+type TabId = "visits" | "orders" | "rides" | "reviews";
+
+const RIDES_STEP = 5;
+const REVIEWS_STEP = 3;
+
+/**
+ * Owner profile. One band on top (name, contact, source, vaccine status, actions and the key
+ * numbers), then two columns on desktop: history tabs (visits / orders / rides / reviews) on the
+ * left, pets and the internal note on the right. Phones: band, pets, history, note.
+ */
 export function OwnerProfileView({ clientId }: { clientId: string }) {
   const t = useT("clients");
   const tc = useT("common");
@@ -30,6 +40,8 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
   const session = useSession();
   const mode = partnerFeatures(session).appointments ? "visits" : "orders";
   const now = useNow();
+  const params = useSearchParams();
+  const update = useQueryUpdater();
   const linkQuery = useMockParam();
   const backHref = localizedHref(locale, ROUTES.clients, { view: "owners", ...linkQuery });
   const query = useApiQuery(["clients", clientId], (api) => api.getClient(clientId));
@@ -39,9 +51,16 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
 
   if (!query.data) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-2">
         <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>
-        {query.error ? <ProfileError error={query.error} onRetry={query.refetch} backHref={backHref} kind="owner" /> : <ProfileSkeleton />}
+        {query.error ? (
+          <div className="space-y-section">
+            <PageHeader title={t("meta.ownerTitle")} />
+            <ProfileError error={query.error} onRetry={query.refetch} backHref={backHref} kind="owner" />
+          </div>
+        ) : (
+          <ProfileSkeleton title={t("meta.ownerTitle")} />
+        )}
       </div>
     );
   }
@@ -56,88 +75,142 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
     .filter((a) => (a.status === "requested" || a.status === "confirmed") && new Date(a.start).getTime() > now)
     .sort((a, b) => a.start.localeCompare(b.start))[0];
   const petHref = (id: string) => localizedHref(locale, `${ROUTES.clients}/pets/${id}`, linkQuery);
+  const canBook = mode === "visits" && pets.length > 0;
+
+  // ---- History tabs ----
+  const tabIds: TabId[] = [
+    ...(mode === "visits" ? (["visits"] as const) : []),
+    ...(mode === "orders" || orders.length ? (["orders"] as const) : []),
+    "rides",
+    ...(reviews.length ? (["reviews"] as const) : []),
+  ];
+  const tabParam = params.get("tab");
+  const tab: TabId = (tabIds as string[]).includes(tabParam ?? "") ? (tabParam as TabId) : tabIds[0];
+  const ridesTitle = mode === "visits" ? t("owner.ridesTitle") : t("owner.courierTitle");
+  const TAB_META: Record<TabId, { label: string; count: number; icon: ReactNode }> = {
+    visits: { label: t("owner.visitsTitle"), count: appointments.length, icon: <Stethoscope aria-hidden="true" size={16} className="max-sm:hidden" /> },
+    orders: { label: t("owner.ordersTitle"), count: orders.length, icon: <ShoppingBag aria-hidden="true" size={16} className="max-sm:hidden" /> },
+    rides: { label: ridesTitle, count: rides.length, icon: <Car aria-hidden="true" size={16} className="max-sm:hidden" /> },
+    reviews: { label: t("owner.reviewsTitle"), count: reviews.length, icon: <Star aria-hidden="true" size={16} className="max-sm:hidden" /> },
+  };
+  const tabs = tabIds.map((id) => ({ id, label: TAB_META[id].label, count: TAB_META[id].count, countTone: "neutral" as const, icon: TAB_META[id].icon }));
+
+  // ---- Key facts ----
+  const facts: BandFact[] = [
+    {
+      id: "visits",
+      tone: "mint",
+      pet: "golden",
+      icon: mode === "visits" ? <Stethoscope size={14} /> : <ShoppingBag size={14} />,
+      label: mode === "visits" ? t("owners.visits") : t("owners.orders"),
+      value: formatNumber(mode === "visits" ? client.visitsCount : client.ordersCount, locale),
+      footnote: client.lastVisitAt
+        ? t(mode === "visits" ? "pet.lastVisitValue" : "pet.lastOrderValue", { date: formatDate(client.lastVisitAt, locale, today) })
+        : mode === "visits"
+          ? t("pet.noVisits")
+          : t("owner.noOrders"),
+    },
+    {
+      id: "spent",
+      tone: "peach",
+      icon: <Wallet size={14} />,
+      label: t("owners.spent"),
+      value: formatMoney(client.totalSpentAZN, locale, { decimals: 0 }),
+      footnote: mode === "visits" && client.ordersCount ? t.plural("owner.withOrders", client.ordersCount) : undefined,
+    },
+    { id: "average", tone: "lilac", icon: <ReceiptText size={14} />, label: t("owner.averageTicket"), value: tickets ? formatMoney(average, locale, { decimals: 0 }) : "—" },
+    {
+      id: "rides",
+      tone: "sand",
+      icon: <Car size={14} />,
+      label: mode === "visits" ? t("owner.petrideRides") : t("owner.courierDeliveries"),
+      value: formatNumber(mode === "visits" ? client.rideVisits : courierRides, locale),
+      footnote: mode === "visits" && client.visitsCount ? t("owner.rideShare", { share: formatPercent(client.rideVisits / client.visitsCount, locale) }) : undefined,
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>
+    <div className="space-y-section">
+      <div className="space-y-1">
+        <BackLink href={backHref}>{t("profile.backToOwners")}</BackLink>
 
-      {/* ---- Header ---- */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-        <Avatar name={client.fullName} size="xl" className="animate-fade-up" />
-        <PageHeader
-          className="min-w-0 flex-1 sm:flex-col sm:items-start 2xl:flex-row 2xl:items-end"
-          eyebrow={client.firstVisitAt ? t("owner.since", { date: formatDateLong(client.firstVisitAt, locale) }) : t("owner.newClient")}
-          title={client.fullName}
-          description={
-            <span className="flex flex-wrap items-center gap-2">
-              <span>{client.area}</span>
-              <SourcePill source={client.source} />
-              <StatusPill kind="health" status={client.vaccineAlert} size="sm" />
-            </span>
+        <ProfileBand
+          avatar={<Avatar name={client.fullName} size="lg" className="animate-fade-up" />}
+          header={
+            <PageHeader
+              eyebrow={
+                // Source and vaccine status ride on the eyebrow's line (no row of their own).
+                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span>{client.firstVisitAt ? t("owner.since", { date: formatDateLong(client.firstVisitAt, locale) }) : t("owner.newClient")}</span>
+                  <SourcePill source={client.source} />
+                  <StatusPill kind="health" status={client.vaccineAlert} size="sm" />
+                </span>
+              }
+              title={client.fullName}
+            />
+          }
+          details={
+            <>
+              <span className="inline-flex items-center gap-1">
+                <MapPin aria-hidden="true" size={14} className="shrink-0" />
+                <span className="sr-only">{t("owner.area")}: </span>
+                {client.area}
+              </span>
+              <a href={phoneHref(client.phone)} className="inline-flex items-center gap-1 tabular underline-offset-4 hover:text-fg hover:underline">
+                <Phone aria-hidden="true" size={14} className="shrink-0" />
+                <span className="sr-only">{t("owners.phone")}: </span>
+                {formatPhone(client.phone)}
+              </a>
+              <span className="inline-flex items-center gap-1">
+                <Languages aria-hidden="true" size={14} className="shrink-0" />
+                {t("owner.languageValue", { language: LOCALE_NAMES[client.locale] })}
+              </span>
+              {lastMessage ? (
+                <span className="inline-flex items-center gap-1">
+                  <MessageCircle aria-hidden="true" size={14} className="shrink-0" />
+                  {t("owner.lastMessage")}: {formatRelative(lastMessage.at, locale, today)}
+                </span>
+              ) : null}
+            </>
           }
           actions={
             <>
-              {mode === "visits" && pets.length ? (
-                <Button leftIcon={<CalendarPlus aria-hidden="true" size={18} />} onClick={() => setBookingKey((k) => k + 1)}>
+              {canBook ? (
+                <Button leftIcon={<CalendarPlus aria-hidden="true" size={18} />} onClick={() => setBookingKey((k) => k + 1)} className="max-sm:flex-1">
                   {t("owner.newAppointment")}
                 </Button>
               ) : null}
-              <Button variant="secondary" leftIcon={<MessageCircle aria-hidden="true" size={18} />} onClick={() => setMessageKey((k) => k + 1)}>
-                {t("owner.sendMessage")}
+              <Button
+                variant="secondary"
+                leftIcon={<MessageCircle aria-hidden="true" size={18} />}
+                onClick={() => setMessageKey((k) => k + 1)}
+                className={canBook ? undefined : "max-sm:flex-1"}
+              >
+                {/* Phones: icon only next to the main action (the name stays for screen readers). */}
+                <span className={canBook ? "max-sm:sr-only" : undefined}>{t("owner.sendMessage")}</span>
               </Button>
-              <CallLink phone={client.phone} label={tc("actions.call")} />
+              <CallLink phone={client.phone} label={tc("actions.call")} compactOnPhone />
             </>
           }
+          factsLabel={t("owner.summary")}
+          facts={facts}
         />
       </div>
 
-      {/* ---- Spend & visits ---- */}
-      <section aria-label={t("owner.summary")} className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        <MiniStat
-          index={0}
-          tone="mint"
-          pet="golden"
-          icon={mode === "visits" ? <Stethoscope size={16} /> : <ShoppingBag size={16} />}
-          label={mode === "visits" ? t("owners.visits") : t("owners.orders")}
-          value={formatNumber(mode === "visits" ? client.visitsCount : client.ordersCount, locale)}
-          footnote={
-            client.lastVisitAt
-              ? t(mode === "visits" ? "pet.lastVisitValue" : "pet.lastOrderValue", { date: formatDate(client.lastVisitAt, locale, today) })
-              : mode === "visits"
-                ? t("pet.noVisits")
-                : t("owner.noOrders")
-          }
-        />
-        <MiniStat
-          index={1}
-          tone="peach"
-          pet="ginger"
-          icon={<Wallet size={16} />}
-          label={t("owners.spent")}
-          value={formatMoney(client.totalSpentAZN, locale, { decimals: 0 })}
-          footnote={mode === "visits" && client.ordersCount ? t.plural("owner.withOrders", client.ordersCount) : undefined}
-        />
-        <MiniStat index={2} tone="lilac" icon={<ReceiptText size={16} />} label={t("owner.averageTicket")} value={tickets ? formatMoney(average, locale, { decimals: 0 }) : "—"} />
-        <MiniStat
-          index={3}
-          tone="sand"
-          pet="tabby"
-          icon={<Car size={16} />}
-          label={mode === "visits" ? t("owner.petrideRides") : t("owner.courierDeliveries")}
-          value={formatNumber(mode === "visits" ? client.rideVisits : courierRides, locale)}
-          footnote={
-            mode === "visits" && client.visitsCount
-              ? t("owner.rideShare", { share: formatPercent(client.rideVisits / client.visitsCount, locale) })
-              : undefined
-          }
-        />
-      </section>
-
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-6">
-        <div className="min-w-0 space-y-4 lg:space-y-6">
-          <Panel title={t.plural("owner.petsCount", pets.length)} icon={<PawPrint size={20} />}>
+      {/*
+        Laid out by the space the page gets (container queries), not the window: at 1024px with the
+        sidebar open two columns would squeeze the history table.
+         - narrow (phones): pets, history, note stacked.
+         - ≥ 36rem: pets | note side by side, the history under them at full width.
+         - ≥ 56rem (1280px with the sidebar): history on the left across both rows; pets (row 1) and
+           the note (row 2) in a fixed 22rem column on the right, wide enough for the note's hint and
+           Save on one line.
+      */}
+      <div className="@container">
+        <div className="grid items-start gap-4 @xl:grid-cols-2 @4xl:grid-cols-[minmax(0,1fr)_22rem] @4xl:grid-rows-[auto_1fr]">
+          <Panel title={t.plural("owner.petsCount", pets.length)} icon={<PawPrint size={18} />} className="@xl:col-start-1 @xl:row-start-1 @4xl:col-start-2">
             {pets.length ? (
-              <ul className="grid gap-2 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+              <ul className="grid gap-2">
                 {pets.map((pet) => (
                   <li key={pet.id} className="min-w-0">
                     <PetLinkRow pet={pet} href={petHref(pet.id)} now={now} />
@@ -149,52 +222,50 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
             )}
           </Panel>
 
-          {mode === "visits" ? (
-            <Panel title={t("owner.visitsTitle")} description={t.plural("owner.visitsTotal", appointments.length)} icon={<ClipboardList size={20} />}>
-              {appointments.length ? (
-                <VisitsTable rows={appointments} caption={t("owner.visitsCaption", { name: client.fullName })} showPet now={now} />
-              ) : (
-                <EmptyState compact pet="golden" title={t("owner.noVisits")} description={t("owner.noVisitsBody")} />
-              )}
-            </Panel>
-          ) : null}
-
-          {mode === "orders" || orders.length ? (
-            <Panel title={t("owner.ordersTitle")} icon={<ShoppingBag size={20} />}>
-              {orders.length ? (
-                <OrdersTable rows={orders} caption={t("orders.caption", { name: client.fullName })} now={now} />
-              ) : (
-                <EmptyState compact pet="ginger" title={t("owner.noOrders")} description={t("pet.ordersEmptyBody")} />
-              )}
-            </Panel>
-          ) : null}
-        </div>
-
-        <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:gap-6">
-          <Panel title={t("owner.contact")} icon={<Phone size={20} />}>
-            <DetailList
-              items={[
-                {
-                  label: t("owners.phone"),
-                  value: (
-                    <a href={phoneHref(client.phone)} className="tabular underline-offset-4 hover:underline">
-                      {formatPhone(client.phone)}
-                    </a>
-                  ),
-                },
-                { label: t("owner.area"), value: client.area },
-                { label: t("owner.language"), value: LOCALE_NAMES[client.locale] },
-                { label: t("owner.firstVisit"), value: client.firstVisitAt ? formatDateLong(client.firstVisitAt, locale) : "—" },
-                {
-                  label: mode === "visits" ? t("owners.lastVisit") : t("owners.lastOrder"),
-                  value: client.lastVisitAt ? formatDateLong(client.lastVisitAt, locale) : "—",
-                },
-                ...(lastMessage ? [{ label: t("owner.lastMessage"), value: formatRelative(lastMessage.at, locale, today) }] : []),
-              ]}
+          <Card padding="none" className="min-w-0 overflow-hidden @xl:col-span-2 @xl:row-start-2 @4xl:col-span-1 @4xl:col-start-1 @4xl:row-span-2 @4xl:row-start-1">
+            <Tabs
+              tabs={tabs}
+              value={tab}
+              onChange={(id) => update({ tab: id === tabIds[0] ? null : id })}
+              label={t("owner.historyLabel", { name: client.fullName })}
+              idPrefix="owner"
+              className="px-2 pt-1 sm:px-4"
             />
-          </Panel>
+            <TabPanel idPrefix="owner" value={tab} className="p-4 lg:p-5">
+              {tab === "visits" ? (
+                appointments.length ? (
+                  <VisitsTable rows={appointments} caption={t("owner.visitsCaption", { name: client.fullName })} showPet now={now} />
+                ) : (
+                  <EmptyState
+                    compact
+                    pet="golden"
+                    title={t("owner.noVisits")}
+                    description={t("owner.noVisitsBody")}
+                    action={
+                      canBook ? (
+                        <Button variant="secondary" size="sm" onClick={() => setBookingKey((k) => k + 1)}>
+                          {t("owner.newAppointment")}
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                )
+              ) : null}
+              {tab === "orders" ? (
+                orders.length ? (
+                  <OrdersTable rows={orders} caption={t("orders.caption", { name: client.fullName })} now={now} />
+                ) : (
+                  <EmptyState compact pet="ginger" title={t("owner.noOrders")} description={t("pet.ordersEmptyBody")} />
+                )
+              ) : null}
+              {tab === "rides" ? (
+                rides.length ? <RideList rides={rides} now={now} /> : <p className="text-body-sm text-fg-secondary">{t("owner.noRides")}</p>
+              ) : null}
+              {tab === "reviews" ? <ReviewList reviews={reviews} now={now} /> : null}
+            </TabPanel>
+          </Card>
 
-          <Panel title={t("notes.internal")} icon={<ClipboardList size={20} />}>
+          <Panel title={t("notes.internal")} icon={<NotebookPen size={18} />} className="@xl:col-start-2 @xl:row-start-1 @4xl:row-start-2">
             <NoteEditor
               label={t("notes.internalOwnerLabel", { name: client.firstName })}
               initial={client.partnerNote ?? ""}
@@ -202,16 +273,6 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
               invalidates={["clients"]}
             />
           </Panel>
-
-          <Panel title={mode === "visits" ? t("owner.ridesTitle") : t("owner.courierTitle")} icon={<Car size={20} />}>
-            {rides.length ? <RideList rides={rides.slice(0, 5)} now={now} /> : <p className="text-body-sm text-fg-secondary">{t("owner.noRides")}</p>}
-          </Panel>
-
-          {reviews.length ? (
-            <Panel title={t("owner.reviewsTitle")} icon={<Star size={20} />}>
-              <ReviewList reviews={reviews} now={now} />
-            </Panel>
-          ) : null}
         </div>
       </div>
 
@@ -232,29 +293,44 @@ export function OwnerProfileView({ clientId }: { clientId: string }) {
   );
 }
 
+/** "Show more" for capped history lists (focus stays on the button, the new rows appear above it). */
+function ShowMore({ shown, total, onMore }: { shown: number; total: number; onMore: () => void }) {
+  const tc = useT("common");
+  if (shown >= total) return null;
+  return (
+    <Button variant="ghost" size="sm" onClick={onMore} className="mt-2">
+      {tc("actions.showMore")}
+    </Button>
+  );
+}
+
 function RideList({ rides, now }: { rides: Ride[]; now: number }) {
   const t = useT("clients");
   const ts = useT("status");
   const locale = useLocale();
   const today = new Date(now);
+  const [limit, setLimit] = useState(RIDES_STEP);
   return (
-    <ul className="divide-y divide-border">
-      {rides.map((r) => (
-        <li key={r.id} className="space-y-1 py-3 first:pt-0 last:pb-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className="min-w-0 text-body-sm font-semibold text-fg">
-              {ts.dynamic(`direction.${r.direction}`)}
-              {r.petNames.length ? <span className="font-normal text-fg-secondary"> · {r.petNames.join(", ")}</span> : null}
-            </p>
+    <div>
+      <ul className="divide-y divide-border">
+        {rides.slice(0, limit).map((r) => (
+          <li key={r.id} className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 py-2.5 first:pt-0">
+            <div className="min-w-0">
+              <p className="text-body-sm font-semibold text-fg">
+                {ts.dynamic(`direction.${r.direction}`)}
+                {r.petNames.length ? <span className="font-normal text-fg-secondary"> · {r.petNames.join(", ")}</span> : null}
+              </p>
+              <p className="text-meta text-fg-secondary">
+                {formatDateTime(r.pickupAt, locale, today)}
+                {r.driver ? ` · ${t("owner.driver", { name: r.driver.name, plate: r.driver.car.plate })}` : ""}
+              </p>
+            </div>
             <StatusPill kind="ride" status={r.status} size="sm" />
-          </div>
-          <p className="text-meta text-fg-secondary">
-            {formatDateTime(r.pickupAt, locale, today)}
-            {r.driver ? ` · ${t("owner.driver", { name: r.driver.name, plate: r.driver.car.plate })}` : ""}
-          </p>
-        </li>
-      ))}
-    </ul>
+          </li>
+        ))}
+      </ul>
+      <ShowMore shown={Math.min(limit, rides.length)} total={rides.length} onMore={() => setLimit((l) => l + RIDES_STEP)} />
+    </div>
   );
 }
 
@@ -262,22 +338,29 @@ function ReviewList({ reviews, now }: { reviews: Review[]; now: number }) {
   const t = useT("clients");
   const locale = useLocale();
   const today = new Date(now);
+  const [limit, setLimit] = useState(REVIEWS_STEP);
   return (
-    <ul className="space-y-3">
-      {reviews.slice(0, 3).map((r) => (
-        <li key={r.id} className="rounded-card bg-surface-muted px-4 py-3">
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-0.5" role="img" aria-label={t("owner.rating", { rating: r.rating })}>
-              {Array.from({ length: 5 }, (_, i) => (
-                <Star key={i} aria-hidden="true" size={14} className={i < r.rating ? "fill-warning text-warning" : "text-control-border"} />
-              ))}
-            </span>
-            <span className="text-meta text-fg-secondary">{formatDate(r.createdAt, locale, today)}</span>
-          </div>
-          <p className="mt-1 text-body-sm text-fg">{r.text}</p>
-          {r.serviceName || r.petName ? <p className="mt-1 text-meta text-fg-secondary">{[r.petName, r.serviceName].filter(Boolean).join(" · ")}</p> : null}
-        </li>
-      ))}
-    </ul>
+    <div>
+      <ul className="space-y-2">
+        {reviews.slice(0, limit).map((r) => (
+          <li key={r.id} className="rounded-card bg-surface-muted px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+              <span className="inline-flex items-center gap-0.5" role="img" aria-label={t("owner.rating", { rating: r.rating })}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <Star key={i} aria-hidden="true" size={14} className={i < r.rating ? "fill-warning text-warning" : "text-control-border"} />
+                ))}
+              </span>
+              <span className="text-meta text-fg-secondary">
+                {[r.petName, r.serviceName].filter(Boolean).join(" · ")}
+                {r.petName || r.serviceName ? " · " : ""}
+                {formatDate(r.createdAt, locale, today)}
+              </span>
+            </div>
+            <p className="mt-1 text-body-sm text-fg">{r.text}</p>
+          </li>
+        ))}
+      </ul>
+      <ShowMore shown={Math.min(limit, reviews.length)} total={reviews.length} onMore={() => setLimit((l) => l + REVIEWS_STEP)} />
+    </div>
   );
 }

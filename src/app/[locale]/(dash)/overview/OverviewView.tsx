@@ -20,7 +20,7 @@ import { LiveRidesPanel, isLiveRide, ridesFor } from "./_components/LiveRidesPan
 import { minutesLeft, nextDay, ratioDelta, startOfDay, useNow } from "./_components/now";
 import { RequestsPanel } from "./_components/RequestsPanel";
 import { ReviewsPanel } from "./_components/ReviewsPanel";
-import { SchedulePanel, todaysAppointments } from "./_components/SchedulePanel";
+import { SchedulePanel } from "./_components/SchedulePanel";
 import { NewOrdersPanel, OrdersTodayPanel } from "./_components/ShopPanels";
 
 /**
@@ -34,16 +34,22 @@ export function OverviewView() {
 
 // ---- Shared bits ----------------------------------------------------------------------------------
 
-/** Grid under the KPI row. xl: 7/5 columns (requests | rides, timeline | charts, reviews). */
-const GRID = "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12";
-const SPAN = {
-  wide: "md:col-span-2 xl:col-span-7",
-  side: "md:col-span-2 xl:col-span-5",
-  timeline: "md:col-span-2 xl:col-span-7",
-  /** Two charts: side by side on tablets, stacked next to the timeline on desktops (the second one fills the height). */
-  charts: "grid min-w-0 grid-cols-1 gap-4 md:col-span-2 md:grid-cols-2 xl:col-span-5 xl:grid-cols-1 xl:grid-rows-[auto_1fr]",
-  full: "md:col-span-2 xl:col-span-12",
-} as const;
+/**
+ * Grid under the KPI row. Phones: one column in priority order (requests, today, rides, the two
+ * charts side by side in a swipeable row, reviews). From 768px: two columns. From 1280px: three equal columns, so requests, today's
+ * agenda and live rides share the first screen; the charts and reviews share the second row.
+ */
+const GRID = "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3";
+/** Rides and reviews take the full width on tablets (their lists go 2–4 across there). */
+const WIDE_ON_TABLET = "md:col-span-2 xl:col-span-1";
+/**
+ * Phones: the two charts share one swipeable row (the second peeks in, like the KPI strip) instead
+ * of stacking, which saves a whole chart's height. From 640px the wrapper is `display: contents`, so
+ * the charts are ordinary grid items again. `relative` keeps the charts' sr-only summaries inside.
+ */
+const CHARTS_ROW =
+  "relative -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:contents";
+const CHART_ITEM = "w-[86%] shrink-0 snap-start sm:w-auto";
 
 function KpiSection({ children }: { children: ReactNode }) {
   const t = useT("overview");
@@ -54,7 +60,7 @@ function KpiSection({ children }: { children: ReactNode }) {
         {t("kpi.label")}
       </h2>
       {/* Phones: a swipeable row (the next card peeks in); from 640px: 2 × 2, from 1280px: 4 in a row. */}
-      <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4">
+      <div className="relative -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4">
         {children}
       </div>
     </section>
@@ -62,7 +68,7 @@ function KpiSection({ children }: { children: ReactNode }) {
 }
 
 /** KPI card width in the phone carousel. */
-const KPI_ITEM = "w-[80%] max-w-80 shrink-0 snap-start sm:w-auto sm:max-w-none";
+const KPI_ITEM = "w-[72%] max-w-72 shrink-0 snap-start sm:w-auto sm:max-w-none";
 
 type KpiState = { value: ReactNode; delta?: number | null; footnote?: ReactNode; loading: boolean };
 
@@ -144,20 +150,11 @@ function ClinicOverview() {
     }
   }
 
-  // Summary line + hero button
+  // Hero button and the rides KPI footnote. No summary sentence: the KPI cards and the panels already show those numbers.
   const data = overview.data;
   const pending = data ? data.pending.filter((a) => !optimistic[a.id]).length : 0;
   const liveRides = rides.data ? ridesFor(rides.data, "clinic").filter(isLiveRide) : [];
   const inbound = liveRides.filter((r) => r.direction === "to_partner").length;
-  let summary: string[] | null = null;
-  if (data && schedule.data) {
-    const visits = todaysAppointments(schedule.data.items, dayStart, optimistic).filter((a) => a.status !== "cancelled").length;
-    summary = [visits > 0 ? t.plural("summary.visits", visits) : t("summary.noVisits")];
-    if (pending > 0) summary.push(t.plural("summary.requests", pending));
-    if (liveRides.length > 0) summary.push(t.plural("summary.rides", liveRides.length));
-  } else if (overview.error || schedule.error) {
-    summary = [];
-  }
 
   const points = daily.data ?? [];
   const lastTwo = points.slice(-2);
@@ -180,7 +177,8 @@ function ClinicOverview() {
       pet: "ginger",
       icon: <Car size={18} />,
       label: t("kpi.rideArrivals"),
-      href: appointmentsHref,
+      // The PetRide rides page (today's rides, the ones still on the way first).
+      href: localizedHref(locale, ROUTES.orders),
       deltaLabel: tc("delta.vs_today"),
       ...kpi(daily, () => {
         const [yesterday, todayPoint] = lastTwo.length === 2 ? lastTwo : [undefined, lastTwo[0]];
@@ -215,10 +213,9 @@ function ClinicOverview() {
   ] as const;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <OverviewHero
         name={session.partnerShortName}
-        summary={summary}
         actions={
           !data ? null : pending > 0 ? (
             <ButtonLink
@@ -240,25 +237,24 @@ function ClinicOverview() {
 
       <KpiSection>
         {cards.map(({ key, ...card }, index) => (
-          <KpiCard key={key} index={index} className={KPI_ITEM} {...card} />
+          <KpiCard key={key} index={index} size="sm" className={KPI_ITEM} {...card} />
         ))}
       </KpiSection>
 
       <div className={GRID}>
         <RequestsPanel
-          className={SPAN.wide}
           query={overview}
           optimistic={optimistic}
           onAccept={(a) => answer(a, "confirmed", () => confirm.mutateAsync(a.id))}
           onDecline={(a, reason) => answer(a, "declined", () => decline.mutateAsync(a.id, reason))}
         />
-        <LiveRidesPanel className={SPAN.side} query={rides} variant="clinic" />
-        <SchedulePanel className={SPAN.timeline} query={schedule} dayStart={dayStart} rides={rides.data} optimistic={optimistic} />
-        <div className={SPAN.charts}>
-          <DailyChart query={daily} mode="visits" />
-          <MixChart query={mix} mode="visits" />
+        <SchedulePanel query={schedule} dayStart={dayStart} rides={rides.data} optimistic={optimistic} />
+        <LiveRidesPanel className={WIDE_ON_TABLET} query={rides} variant="clinic" />
+        <div className={CHARTS_ROW}>
+          <DailyChart className={CHART_ITEM} query={daily} mode="visits" />
+          <MixChart className={CHART_ITEM} query={mix} mode="visits" />
         </div>
-        <ReviewsPanel className={SPAN.full} query={overview} />
+        <ReviewsPanel className={WIDE_ON_TABLET} query={overview} />
       </div>
     </div>
   );
@@ -311,15 +307,6 @@ function ShopOverview() {
   const data = overview.data;
   const newCount = data ? data.openOrders.filter((o) => o.status === "new" && !optimistic[o.id]).length : 0;
   const couriers = rides.data ? ridesFor(rides.data, "shop").filter(isLiveRide) : [];
-  let summary: string[] | null = null;
-  if (data && today.data) {
-    const orders = today.data.orders.value;
-    summary = [orders > 0 ? t.plural("summary.orders", orders) : t("summary.noOrders")];
-    if (newCount > 0) summary.push(t.plural("summary.newOrders", newCount));
-    if (couriers.length > 0) summary.push(t.plural("summary.couriers", couriers.length));
-  } else if (overview.error || today.error) {
-    summary = [];
-  }
 
   const ordersHref = localizedHref(locale, ROUTES.orders);
   const nextEta = now === null || couriers.length === 0 ? null : Math.max(0, Math.min(...couriers.map((r) => minutesLeft(r.arriveAt, now))));
@@ -377,10 +364,9 @@ function ShopOverview() {
   ] as const;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <OverviewHero
         name={session.partnerShortName}
-        summary={summary}
         actions={
           !data ? null : newCount > 0 ? (
             <ButtonLink
@@ -402,19 +388,19 @@ function ShopOverview() {
 
       <KpiSection>
         {cards.map(({ key, ...card }, index) => (
-          <KpiCard key={key} index={index} className={KPI_ITEM} {...card} />
+          <KpiCard key={key} index={index} size="sm" className={KPI_ITEM} {...card} />
         ))}
       </KpiSection>
 
       <div className={GRID}>
-        <NewOrdersPanel className={SPAN.wide} query={overview} optimistic={optimistic} onStart={startPreparing} />
-        <LiveRidesPanel className={SPAN.side} query={rides} variant="shop" />
-        <OrdersTodayPanel className={SPAN.timeline} query={todayOrders} rides={rides.data} optimistic={optimistic} />
-        <div className={SPAN.charts}>
-          <DailyChart query={daily} mode="orders" />
-          <MixChart query={mix} mode="orders" />
+        <NewOrdersPanel query={overview} optimistic={optimistic} onStart={startPreparing} />
+        <OrdersTodayPanel query={todayOrders} rides={rides.data} optimistic={optimistic} />
+        <LiveRidesPanel className={WIDE_ON_TABLET} query={rides} variant="shop" />
+        <div className={CHARTS_ROW}>
+          <DailyChart className={CHART_ITEM} query={daily} mode="orders" />
+          <MixChart className={CHART_ITEM} query={mix} mode="orders" />
         </div>
-        <ReviewsPanel className={SPAN.full} query={overview} />
+        <ReviewsPanel className={WIDE_ON_TABLET} query={overview} />
       </div>
     </div>
   );

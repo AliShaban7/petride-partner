@@ -63,7 +63,7 @@ export function StatsFigure({
   summary,
   legend,
   actions,
-  height = 260,
+  height = 200,
   chart,
   content,
   table,
@@ -77,22 +77,23 @@ export function StatsFigure({
   const id = `fig${useId().replace(/[^A-Za-z0-9_-]/g, "")}`;
   const asTable = view === "table" && !empty;
   const onPastel = tone !== "white" && tone !== "muted";
+  // Narrow cards (3 across on desktops, phones) show the Chart / Table switch as icons; the words
+  // stay for screen readers and come back when the card is wide enough.
+  const switchText = "sr-only @min-[30rem]:not-sr-only";
   return (
+    // A <figure> already has the "figure" role (named by the title); role="group" isn't allowed on it.
     <figure
-      role="group"
       aria-labelledby={`${id}-t`}
       aria-describedby={`${id}-s`}
-      className={cn("relative m-0 flex min-w-0 animate-fade-up flex-col rounded-panel p-5 sm:p-6", TONE_CLASSES[tone], tone === "white" && "shadow-card", className)}
+      className={cn("@container relative m-0 flex min-w-0 animate-fade-up flex-col rounded-panel p-4 lg:p-5", TONE_CLASSES[tone], tone === "white" && "shadow-card", className)}
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 id={`${id}-t`} className="font-display text-h2 font-extrabold tracking-tight">
-            {title}
-          </h2>
-          {description ? <p className={cn("mt-0.5 text-body-sm", onPastel ? "text-fg-tertiary" : "text-fg-secondary")}>{description}</p> : null}
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+      {/* Title and the switch share the first row (a long title wraps beside it); the description runs under both. */}
+      <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5">
+        <h2 id={`${id}-t`} className="min-w-0 font-display text-h2 font-extrabold tracking-tight">
+          {title}
+        </h2>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
           {actions}
           {empty ? null : (
             <SegmentedControl
@@ -100,21 +101,42 @@ export function StatsFigure({
               label={`${t("view.label")}: ${title}`}
               value={view}
               onChange={setView}
+              // Icon-only below 1024px still needs a 44px-wide target.
+              className="[&>button]:min-w-11 lg:[&>button]:min-w-9"
               options={[
-                { value: "chart", label: t("view.chart"), icon: <ChartColumnBig aria-hidden="true" size={14} /> },
-                { value: "table", label: t("view.table"), icon: <Table2 aria-hidden="true" size={14} /> },
+                {
+                  value: "chart",
+                  label: "",
+                  icon: (
+                    <>
+                      <ChartColumnBig aria-hidden="true" size={14} />
+                      <span className={switchText}>{t("view.chart")}</span>
+                    </>
+                  ),
+                },
+                {
+                  value: "table",
+                  label: "",
+                  icon: (
+                    <>
+                      <Table2 aria-hidden="true" size={14} />
+                      <span className={switchText}>{t("view.table")}</span>
+                    </>
+                  ),
+                },
               ]}
             />
           )}
         </div>
+        {description ? <p className={cn("col-span-2 text-body-sm", onPastel ? "text-fg-tertiary" : "text-fg-secondary")}>{description}</p> : null}
       </div>
 
-      {legend?.length && !empty && !asTable ? <ChartLegend items={legend} className="mb-3" /> : null}
+      {legend?.length && !empty && !asTable ? <ChartLegend items={legend} className="mb-2" /> : null}
 
       {empty ? (
         <EmptyState compact title={empty.title} description={empty.description} pet={empty.pet ?? "cream"} />
       ) : asTable ? (
-        <FigureDataTable caption={title} table={table} maxHeight={`${Math.max(height, 288)}px`} />
+        <FigureDataTable caption={title} table={table} maxHeight={`${Math.max(height, 240)}px`} />
       ) : chart ? (
         // Grows with the card when its grid row is taller (side-by-side cards stay level).
         <div style={{ minHeight: height }} className="relative w-full min-w-0 flex-1">

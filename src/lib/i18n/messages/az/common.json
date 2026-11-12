@@ -62,8 +62,7 @@
     "page": "Səhifə {{page}}",
     "pageOf": "Səhifə {{page}} / {{count}}",
     "previous": "Əvvəlki səhifə",
-    "next": "Növbəti səhifə",
-    "rowActions": "Əməliyyatlar"
+    "next": "Növbəti səhifə"
   },
   "delta": {
     "up": "{{value}} artım",
@@ -84,8 +83,7 @@
   },
   "money": {
     "pricedOnSite": "Qiymət yerində",
-    "from": "{{price}}-dan",
-    "notSet": "Qiymət təyin edilməyib"
+    "from": "{{price}}-dan"
   },
   "species": {
     "dog": "İt",
@@ -103,17 +101,13 @@
   },
   "a11y": {
     "skipToContent": "Məzmuna keç",
-    "loading": "Məzmun yüklənir",
     "required": "mütləqdir",
-    "optional": "istəyə görə",
     "closeDialog": "Pəncərəni bağla",
     "dismiss": "Bağla",
     "showPassword": "Şifrəni göstər",
     "hidePassword": "Şifrəni gizlət",
-    "chartSummary": "Qrafikin qısa təsviri",
     "newTab": "yeni vərəqdə açılır",
-    "toasts": "Bildirişlər",
-    "chartData": "Qrafikin məlumatları"
+    "toasts": "Bildirişlər"
   },
   "demo": {
     "badge": "Demo məlumatlar",

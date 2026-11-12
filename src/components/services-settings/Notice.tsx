@@ -35,8 +35,9 @@ export function Notice({
 }) {
   const { box, icon: Icon } = TONES[tone];
   return (
-    <div role={role} className={cn("flex flex-col gap-3 rounded-card p-4 sm:flex-row sm:items-center", box, className)}>
-      <div className="flex min-w-0 flex-1 items-start gap-3">
+    // The action sits beside the text whenever the text keeps at least 12rem (also on phones) and wraps under it otherwise.
+    <div role={role} className={cn("flex flex-wrap items-center gap-x-3 gap-y-2.5 rounded-card p-3.5 sm:p-4", box, className)}>
+      <div className="flex min-w-[min(100%,12rem)] flex-1 items-start gap-3">
         <span aria-hidden="true" className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-surface/80 text-fg">
           {icon ?? <Icon size={16} strokeWidth={2.2} />}
         </span>
@@ -45,7 +46,7 @@ export function Notice({
           {children ? <div className={cn("text-body-sm text-fg-tertiary", title && "mt-0.5")}>{children}</div> : null}
         </div>
       </div>
-      {action ? <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">{action}</div> : null}
+      {action ? <div className="flex shrink-0 flex-wrap gap-2">{action}</div> : null}
     </div>
   );
 }

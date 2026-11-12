@@ -4,7 +4,6 @@
     "description": "Opening hours, contact details and PetRide settings."
   },
   "title": "Settings",
-  "description": "Your profile, opening hours, team and how you work with PetRide — all in one place.",
   "leaveConfirm": "You have unsaved changes. If you leave this page, they'll be lost. Leave anyway?",
   "nav": {
     "label": "Settings sections",
@@ -93,16 +92,12 @@
   },
   "hours": {
     "title": "Opening hours",
-    "appTitle": "These hours show in the PetRide app",
-    "appBody": "Clients see your opening hours in the app and pick visit times around them. Keep them accurate.",
     "unconfirmedTitle": "Confirm your opening hours",
     "unconfirmedBody": "These are sample hours. Until you confirm them, the app doesn't show your opening hours to clients.",
     "confirm": "Confirm these hours",
     "saveAndConfirm": "Save and confirm",
     "weekTitle": "Weekly schedule",
-    "weekDescription": "Opening, closing and breaks for each day.",
     "alwaysOpen": "Open around the clock (24/7)",
-    "alwaysOpenHint": "Only turn this on if someone's really there at night.",
     "alwaysOpenOn": "The app will say “Open 24/7”. Your weekly schedule is kept — turn 24/7 off and it comes back.",
     "confirm247": {
       "title": "Are you really open 24/7?",

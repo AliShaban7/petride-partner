@@ -4,10 +4,6 @@
     "description": "Выручка, записи, услуги, загруженные часы и поездки PetRide."
   },
   "title": "Статистика",
-  "subtitle": {
-    "visits": "Выручка, записи, услуги и поездки PetRide за выбранный период.",
-    "orders": "Выручка, заказы, товары и склад за выбранный период."
-  },
   "loading": "Считаем цифры…",
   "toolbar": {
     "label": "Период и сравнение",
@@ -15,6 +11,7 @@
     "from": "Начало",
     "to": "Конец",
     "compare": "Сравнить с прошлым периодом",
+    "compareShort": "Сравнить",
     "range": "{{range}} · {{days}}",
     "comparedWith": "Сравниваем с периодом {{range}}",
     "noHistory": "За прошлый период данных пока нет, поэтому сравнения не будет.",
@@ -121,6 +118,8 @@
   "revenue": {
     "title": "Динамика выручки",
     "description": "{{granularity}} · с завершённых записей и заказов",
+    "descriptionVisits": "{{granularity}} · с завершённых записей",
+    "descriptionOrders": "{{granularity}} · с завершённых заказов",
     "summary": "Выручка за {{range}}: {{total}}. Больше всего — {{best}}, {{bestValue}}.",
     "summaryPrevious": "За прошлый период: {{total}}.",
     "emptyTitle": "За этот период выручки нет",
@@ -176,18 +175,20 @@
   },
   "topServices": {
     "title": "Итоги по услугам",
-    "description": "Записи, выручка и средний чек",
     "caption": "Итоги по услугам, {{range}}",
     "emptyTitle": "За этот период записей нет"
   },
   "topProducts": {
-    "title": "Хиты продаж",
     "description": "Топ-10 товаров по выручке",
     "caption": "Хиты продаж, {{range}}",
     "emptyTitle": "За этот период продаж нет"
   },
+  "productsPanel": {
+    "title": "Товары",
+    "top": "Хиты продаж",
+    "stock": "Склад"
+  },
   "stock": {
-    "title": "Оборачиваемость склада",
     "description": "На сколько дней хватит остатка при текущих продажах",
     "caption": "Оборачиваемость склада, {{range}}",
     "noSales": "Продаж нет",
@@ -200,7 +201,6 @@
   },
   "rating": {
     "title": "Рейтинг и отзывы",
-    "description": "Оценки клиентов в PetRide",
     "average": "Средняя оценка",
     "row": "{{stars}}: {{reviews}} ({{share}})",
     "summary": "Средняя оценка {{average}} из 5, {{reviews}}. Пять звёзд — {{share}}.",

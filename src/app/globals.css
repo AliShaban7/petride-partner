@@ -40,7 +40,7 @@
   --color-fg-tertiary: #3f4a48; /* body/labels on tinted & pastel panels (≥ 6.4:1) */
   --color-on-primary: #ffffff;
   --color-on-primary-muted: #d3e4dc; /* secondary text on primary-dark (8.9:1) */
-  --color-on-dark-muted: #a9b8b3; /* tertiary text on primary-dark (5.7:1) */
+  --color-on-dark-muted: #b8c7c2; /* tertiary text on primary-dark (6.7:1) and on the sidebar partner card (#1a5551, 4.9:1). */
 
   /* ---- Status (text on its bg — every pair ≥ 4.8:1) ----------------------------------------- */
   --color-success: #2e9070; /* fills / icons only */
@@ -120,10 +120,18 @@
   --text-h2--line-height: 1.75rem;
   --text-h1: 1.75rem; /* 28px */
   --text-h1--line-height: 2.125rem;
-  --text-kpi: 2.5rem; /* 40px KPI numbers */
+  --text-kpi: 2.5rem; /* 40px KPI numbers (KpiCard size="lg") */
   --text-kpi--line-height: 1;
-  --text-hero: clamp(2rem, 1.2rem + 3.2vw, 3.5rem); /* greeting headline */
-  --text-hero--line-height: 1.02;
+  --text-kpi-md: 2rem; /* 32px KPI numbers (KpiCard default) */
+  --text-kpi-md--line-height: 1;
+  --text-kpi-sm: 1.5rem; /* 24px KPI numbers (KpiCard size="sm", value and change on one line) */
+  --text-kpi-sm--line-height: 1;
+  --text-hero: clamp(1.75rem, 1.25rem + 1.4vw, 2.5rem); /* greeting headline: 28px on phones, 40px on desktops */
+  --text-hero--line-height: 1.05;
+
+  /* ---- Density ------------------------------------------------------------------------------- */
+  /* Vertical gap between the blocks of a page (header, KPI row, panels): space-y-section, gap-section. */
+  --spacing-section: 1rem;
 
   /* ---- Radii --------------------------------------------------------------------------------- */
   --radius-checkbox: 6px;
@@ -195,11 +203,12 @@
   }
 }
 
-/* Layout constants shared by the shell (not Tailwind theme values). */
+/* Layout constants shared by the shell (not Tailwind theme values; keep them compact, see AGENTS.md "Density"). */
 :root {
   --sidebar-w: 17rem;
   --sidebar-rail-w: 5rem;
-  --topbar-h: 4.5rem;
+  --topbar-h: 4rem; /* desktop / tablet top bar; also the sidebar logo row and the half-circle tab */
+  --mobile-topbar-h: 3.5rem; /* phone top bar (< 640px) */
   --tabbar-h: 4.25rem;
   --focus-ring: var(--color-primary);
   color-scheme: light;
@@ -256,6 +265,19 @@
 
 @utility safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/*
+ * A filter / toolbar row that stays under the top bar while the page scrolls, so nobody has to scroll
+ * back up to change a filter. Give it a background yourself (e.g. bg-bg/90 backdrop-blur-md).
+ */
+@utility sticky-toolbar {
+  position: sticky;
+  top: var(--mobile-topbar-h);
+  z-index: 20;
+  @media (width >= 40rem) {
+    top: var(--topbar-h);
+  }
 }
 
 /* Respect Reduce Motion: no looping animations, near-instant transitions. */

@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 
 import { ErrorState, Panel, Skeleton, SkeletonText } from "@/components/ui";
+import { cn } from "@/lib/cn";
 import type { QueryResult } from "@/lib/api/hooks";
 import { useT } from "@/lib/i18n/client";
 
@@ -31,7 +32,7 @@ export function SectionGate({ queries, title, children }: { queries: QueryResult
   if (queries.some((q) => q.data === undefined)) {
     return (
       <Panel title={title}>
-        <div aria-busy="true" className="space-y-5">
+        <div aria-busy="true" className="space-y-4">
           <span className="sr-only">{tc("states.loading")}</span>
           <Skeleton className="h-11 w-full" />
           <Skeleton className="h-11 w-full" />
@@ -55,11 +56,11 @@ export function ChoiceCard({
 }) {
   return (
     <div
-      className={
-        "relative flex min-h-full items-start gap-3 rounded-card border-2 p-4 transition-colors " +
-        (checked ? "border-primary bg-primary-selected" : "border-border bg-surface hover:border-control-border/50") +
-        (className ? ` ${className}` : "")
-      }
+      className={cn(
+        "relative flex min-h-full items-start gap-3 rounded-card border-2 p-4 transition-colors",
+        checked ? "border-primary bg-primary-selected" : "border-border bg-surface hover:border-control-border/50",
+        className,
+      )}
     >
       {children}
     </div>

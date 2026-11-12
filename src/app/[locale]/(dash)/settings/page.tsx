@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { Skeleton, SkeletonText } from "@/components/ui";
+import { Skeleton } from "@/components/ui";
 import { getT, localeFromParams } from "@/lib/i18n/server";
 
 import { SettingsView } from "./SettingsView";
@@ -18,9 +18,9 @@ export default function SettingsPage() {
   return (
     <Suspense
       fallback={
-        <div aria-busy="true" className="space-y-6">
-          <Skeleton className="h-10 w-48" />
-          <SkeletonText lines={2} className="max-w-xl" />
+        <div aria-busy="true" className="space-y-section">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-11 w-full max-w-3xl rounded-chip" />
           <Skeleton className="h-96 w-full rounded-panel" />
         </div>
       }

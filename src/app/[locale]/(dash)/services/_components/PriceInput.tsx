@@ -42,7 +42,7 @@ export function PriceInput({ value, onValueChange, locale, invalid, className, o
           }
           onBlur?.(e);
         }}
-        className={cn(controlClass, "tabular font-semibold", prefix ? "pl-8" : "pr-9", className)}
+        className={cn(controlClass, "tabular font-semibold lg:min-h-10", prefix ? "pl-8" : "pr-9", className)}
         {...rest}
       />
       {!prefix ? (

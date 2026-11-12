@@ -46,7 +46,8 @@ export function LanguageSwitcher({ tone = "light", className }: { tone?: "light"
         <button
           type="button"
           {...props}
-          aria-label={`${t("language.label")}: ${LOCALE_NAMES[locale]}`}
+          // The visible "AZ" / "RU" / "EN" stays part of the name (label-in-name; not in brackets, which checkers skip).
+          aria-label={`${t("language.label")}: ${LOCALE_NAMES[locale]} · ${LOCALE_SHORT[locale]}`}
           aria-busy={pending || undefined}
           className={cn(
             "inline-flex min-h-11 items-center gap-1.5 rounded-chip px-3 text-body-sm font-semibold transition-colors",

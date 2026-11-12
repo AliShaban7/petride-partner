@@ -61,7 +61,7 @@ export function FilesPanel({ petId, petName }: { petId: string; petName: string 
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-card border-2 border-dashed px-4 py-6 text-center transition-colors sm:flex-row sm:justify-between sm:text-left",
+          "flex flex-col items-center gap-3 rounded-card border-2 border-dashed p-4 text-center transition-colors sm:flex-row sm:justify-between sm:text-left",
           dragging ? "border-primary bg-primary-selected" : "border-border bg-surface-muted",
         )}
       >

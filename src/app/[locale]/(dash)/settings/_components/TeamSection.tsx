@@ -177,7 +177,7 @@ export function TeamSection() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <Panel
         title={t("team.title")}
         description={t("team.description")}

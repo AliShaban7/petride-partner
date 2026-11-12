@@ -33,7 +33,7 @@ const rulesOf = (pw: string): Rules => ({ length: pw.length >= 8, letter: /\p{L}
 /** Change password (mock) and devices signed in to the dashboard. */
 export function SecuritySection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <PasswordPanel />
       <SessionsPanel />
     </div>

@@ -101,7 +101,7 @@ export type ChartCardProps = {
   legend?: LegendItem[];
   /** Controls on the right of the header (period SegmentedControl…). */
   actions?: ReactNode;
-  /** Chart height in px (default 260). The width always follows the card. */
+  /** Chart height in px (default 220; 160–200 for small side charts). The width always follows the card. */
   height?: number;
   loading?: boolean;
   error?: unknown;
@@ -127,7 +127,7 @@ export function ChartCard({
   showSummary,
   legend,
   actions,
-  height = 260,
+  height = 220,
   loading,
   error,
   onRetry,
@@ -141,23 +141,22 @@ export function ChartCard({
   const titleId = useId();
   const summaryId = useId();
   return (
+    // A <figure> already has the "figure" role (named by the title); role="group" isn't allowed on it.
     <figure
-      role="group"
       aria-labelledby={titleId}
       aria-describedby={summaryId}
       aria-busy={loading || undefined}
-      className={cn("relative min-w-0 rounded-panel p-5 sm:p-6", TONE_CLASSES[tone], tone === "white" && "shadow-card", className)}
+      className={cn("relative min-w-0 rounded-panel p-4 lg:p-5", TONE_CLASSES[tone], tone === "white" && "shadow-card", className)}
     >
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 id={titleId} className="font-display text-h2 font-extrabold tracking-tight">
-            {title}
-          </h2>
-          {description ? <p className="mt-0.5 text-body-sm text-fg-secondary">{description}</p> : null}
-        </div>
-        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+      {/* Title and actions share a row; the description runs under both (phones: title → description → actions). */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
+        <h2 id={titleId} className="min-w-0 font-display text-h2 font-extrabold tracking-tight">
+          {title}
+        </h2>
+        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2 max-sm:order-last max-sm:mt-1.5">{actions}</div> : null}
+        {description ? <p className="basis-full text-body-sm text-fg-secondary">{description}</p> : null}
       </div>
-      {legend?.length && !loading && !error && !empty ? <ChartLegend items={legend} className="mb-3" /> : null}
+      {legend?.length && !loading && !error && !empty ? <ChartLegend items={legend} className="mb-2" /> : null}
       <div style={{ height }} className="w-full min-w-0">
         {loading ? (
           <Skeleton className="h-full w-full rounded-card" />
@@ -171,7 +170,7 @@ export function ChartCard({
           </ResponsiveContainer>
         )}
       </div>
-      <figcaption id={summaryId} className={showSummary ? "mt-3 text-meta text-fg-secondary" : "sr-only"}>
+      <figcaption id={summaryId} className={showSummary ? "mt-2 text-meta text-fg-secondary" : "sr-only"}>
         {summary}
       </figcaption>
     </figure>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Car } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Pagination, ResponsiveTable, StatusPill, Tag, type Column } from "@/components/ui";
@@ -12,8 +13,11 @@ import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 import { paginate } from "../_lib/directory";
 import { useMockParam } from "../_lib/url";
 
-/** Visit history (appointments), newest first. Rows open the appointment on the Appointments page. */
-export function VisitsTable({ rows, caption, showPet, now, pageSize = 8 }: { rows: Appointment[]; caption: string; showPet?: boolean; now: number; pageSize?: number }) {
+/**
+ * Visit history (appointments), newest first, paginated. Rows open the appointment on the
+ * Appointments page. Phones: a 3-line card (when + status, service, source · code + amount).
+ */
+export function VisitsTable({ rows, caption, showPet, now, pageSize = 6 }: { rows: Appointment[]; caption: string; showPet?: boolean; now: number; pageSize?: number }) {
   const t = useT("clients");
   const tc = useT("common");
   const ts = useT("status");
@@ -59,22 +63,41 @@ export function VisitsTable({ rows, caption, showPet, now, pageSize = 8 }: { row
     { id: "status", header: t("visits.status"), mobile: "badge", cell: (a) => <StatusPill kind="appointment" status={a.status} size="sm" /> },
     { id: "amount", header: t("visits.amount"), align: "end", cell: (a) => <span className="whitespace-nowrap tabular">{amount(a)}</span> },
   ];
+  const href = (a: Appointment) => localizedHref(locale, ROUTES.appointments, { id: a.id, ...linkQuery });
+  const mobileCard = (a: Appointment) => (
+    <div className="min-w-0">
+      <div className="flex items-start justify-between gap-3">
+        <Link href={href(a)} className="font-semibold text-fg underline-offset-4 hover:underline">
+          {formatDate(a.start, locale, today)}, <span className="tabular">{formatTime(a.start)}</span>
+        </Link>
+        <StatusPill kind="appointment" status={a.status} size="sm" className="shrink-0" />
+      </div>
+      <p className="mt-0.5 text-meta text-fg">
+        {showPet ? <span className="font-semibold">{a.petName} · </span> : null}
+        {a.serviceName}
+      </p>
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-meta text-fg-secondary">
+        <span className="flex flex-wrap items-center gap-1.5">
+          {a.withRide ? <Tag icon={<Car aria-hidden="true" size={12} />}>{t("pet.rideTag")}</Tag> : <span>{ts.dynamic(`source.${a.source}`)}</span>}
+          <span className="tabular">{a.code}</span>
+        </span>
+        <span className="whitespace-nowrap font-semibold text-fg tabular">
+          <span className="sr-only">{t("visits.amount")}: </span>
+          {amount(a)}
+        </span>
+      </div>
+    </div>
+  );
   return (
     <div className="space-y-3">
-      <ResponsiveTable
-        caption={caption}
-        columns={columns}
-        rows={paged.items}
-        getRowId={(a) => a.id}
-        rowHref={(a) => localizedHref(locale, ROUTES.appointments, { id: a.id, ...linkQuery })}
-      />
+      <ResponsiveTable caption={caption} columns={columns} rows={paged.items} getRowId={(a) => a.id} rowHref={href} mobileCard={mobileCard} />
       {paged.pageCount > 1 ? <Pagination page={paged.page} pageCount={paged.pageCount} total={paged.total} pageSize={pageSize} onPageChange={setPage} /> : null}
     </div>
   );
 }
 
-/** Shop orders of a client, newest first. Rows open the order on the Orders page. */
-export function OrdersTable({ rows, caption, now, pageSize = 8 }: { rows: Order[]; caption: string; now: number; pageSize?: number }) {
+/** Shop orders of a client, newest first, paginated. Rows open the order on the Orders page. Phones: a 2-line card. */
+export function OrdersTable({ rows, caption, now, pageSize = 6 }: { rows: Order[]; caption: string; now: number; pageSize?: number }) {
   const t = useT("clients");
   const ts = useT("status");
   const locale = useLocale();
@@ -90,15 +113,30 @@ export function OrdersTable({ rows, caption, now, pageSize = 8 }: { rows: Order[
     { id: "status", header: t("orders.status"), mobile: "badge", cell: (o) => <StatusPill kind="order" status={o.status} size="sm" /> },
     { id: "total", header: t("orders.total"), align: "end", cell: (o) => <span className="whitespace-nowrap font-semibold tabular">{formatMoney(o.totalAZN, locale)}</span> },
   ];
+  const href = (o: Order) => localizedHref(locale, ROUTES.orders, { id: o.id, ...linkQuery });
+  const mobileCard = (o: Order) => (
+    <div className="min-w-0">
+      <div className="flex items-start justify-between gap-3">
+        <Link href={href(o)} className="font-semibold text-fg tabular underline-offset-4 hover:underline">
+          {o.code}
+        </Link>
+        <StatusPill kind="order" status={o.status} size="sm" className="shrink-0" />
+      </div>
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-meta text-fg-secondary">
+        <span>
+          {formatDate(o.createdAt, locale, today)}, <span className="tabular">{formatTime(o.createdAt)}</span> · {t("orders.items")}: <span className="tabular">{formatNumber(o.itemsCount, locale)}</span> ·{" "}
+          {ts.dynamic(`fulfilment.${o.fulfilment}`)}
+        </span>
+        <span className="whitespace-nowrap font-semibold text-fg tabular">
+          <span className="sr-only">{t("orders.total")}: </span>
+          {formatMoney(o.totalAZN, locale)}
+        </span>
+      </div>
+    </div>
+  );
   return (
     <div className="space-y-3">
-      <ResponsiveTable
-        caption={caption}
-        columns={columns}
-        rows={paged.items}
-        getRowId={(o) => o.id}
-        rowHref={(o) => localizedHref(locale, ROUTES.orders, { id: o.id, ...linkQuery })}
-      />
+      <ResponsiveTable caption={caption} columns={columns} rows={paged.items} getRowId={(o) => o.id} rowHref={href} mobileCard={mobileCard} />
       {paged.pageCount > 1 ? <Pagination page={paged.page} pageCount={paged.pageCount} total={paged.total} pageSize={pageSize} onPageChange={setPage} /> : null}
     </div>
   );

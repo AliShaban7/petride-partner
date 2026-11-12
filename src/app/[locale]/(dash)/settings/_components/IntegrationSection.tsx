@@ -84,9 +84,9 @@ function IntegrationForm({ partner, extras, onDirtyChange }: { partner: PartnerP
   const minutes = (m: number) => (m === 0 ? t("petride.noBuffer") : formatDuration(m, locale));
 
   return (
-    <div className="space-y-6 @container">
-      <div className="grid gap-6 @min-[56rem]:grid-cols-[minmax(0,1fr)_20rem] @min-[56rem]:items-start">
-        <div className="min-w-0 space-y-6">
+    <div className="space-y-section @container">
+      <div className="grid gap-4 @min-[56rem]:grid-cols-[minmax(0,1fr)_20rem] @min-[56rem]:items-start">
+        <div className="min-w-0 space-y-section">
           {features.appointments ? (
             <Panel title={t("petride.requests.title")} description={t("petride.requests.description")} icon={<Inbox size={20} />}>
               <div className="space-y-5">

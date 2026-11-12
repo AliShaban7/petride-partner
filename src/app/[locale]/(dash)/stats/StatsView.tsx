@@ -15,8 +15,8 @@ import { ExportMenu } from "./_components/ExportMenu";
 import { KpiRow, KpiRowSkeleton } from "./_components/KpiRow";
 import { MixDonut } from "./_components/MixDonut";
 import { RatingPanel } from "./_components/RatingPanel";
-import { StatsToolbar } from "./_components/StatsToolbar";
-import { StockTurnoverTable, TopProductsTable, TopServicesTable } from "./_components/StatsTables";
+import { CustomRangeFields, PeriodControls, RangeLine } from "./_components/StatsToolbar";
+import { ProductsPanel, TopServicesTable } from "./_components/StatsTables";
 import { CancellationsChart, RevenueChart, RideShareChart, VolumeChart } from "./_components/TimeCharts";
 import { computeReport, prepareSource, type StatsReport } from "./_lib/engine";
 import { useToday } from "./_lib/labels";
@@ -29,16 +29,15 @@ type Pending = { query: string; from: string; requested: string[]; state: RangeS
 const stateKey = (s: RangeState | null) => (s ? `${s.range.kind}|${s.range.from}|${s.range.to}|${s.compare ? 1 : 0}` : "");
 
 /**
- * Statistics: period picker + comparison, KPI cards, charts (each with a Table view), top
- * services / products, stock turnover and CSV export. The clinic variant is about visits and
- * PetRide rides; the shop variant about orders, products and the PetRide courier.
+ * Statistics: period picker + comparison and CSV export on the title row, one row of KPI cards,
+ * charts in a 2–3 column grid (each with a Table view), top services / products, stock turnover.
+ * The clinic variant is about visits and PetRide rides; the shop variant about orders, products and the PetRide courier.
  */
 export function StatsView() {
   const t = useT("stats");
   const tc = useT("common");
   const session = useSession();
   const features = partnerFeatures(session);
-  const visits = features.appointments;
   const today = useToday();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -90,7 +89,7 @@ export function StatsView() {
   let body;
   if (source.error && !source.data) {
     body = (
-      <Card padding="lg">
+      <Card>
         <ErrorState error={source.error} onRetry={source.refetch} />
       </Card>
     );
@@ -98,7 +97,7 @@ export function StatsView() {
     body = <StatsSkeleton label={t("loading")} />;
   } else if (!report.hasData) {
     body = (
-      <Card padding="lg" className="animate-fade-up">
+      <Card className="animate-fade-up">
         <EmptyState
           title={t("empty.title")}
           description={t("empty.body")}
@@ -118,25 +117,33 @@ export function StatsView() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
+      {/* Period, comparison and export share the title's row; the dates on screen are the (small) description. */}
       <PageHeader
         title={t("title")}
-        description={visits ? t("subtitle.visits") : t("subtitle.orders")}
-        actions={<ExportMenu report={report?.hasData ? report : null} partnerName={session.partnerShortName} />}
+        description={
+          state && today ? <RangeLine range={state.range} previous={previousRange(state.range)} compare={state.compare} comparable={report?.comparable ?? true} /> : undefined
+        }
+        actions={
+          <>
+            {state && today ? (
+              <PeriodControls
+                range={state.range}
+                compare={state.compare}
+                today={today}
+                onRangeChange={(range) => navigate(range, state.compare)}
+                onCompareChange={(compare) => navigate(state.range, compare)}
+              />
+            ) : (
+              <Skeleton className="h-10 w-80 max-w-full rounded-chip" />
+            )}
+            <ExportMenu report={report?.hasData ? report : null} partnerName={session.partnerShortName} />
+          </>
+        }
       />
-      {state && today ? (
-        <StatsToolbar
-          range={state.range}
-          previous={previousRange(state.range)}
-          compare={state.compare}
-          comparable={report?.comparable ?? true}
-          today={today}
-          onRangeChange={(range) => navigate(range, state.compare)}
-          onCompareChange={(compare) => navigate(state.range, compare)}
-        />
-      ) : (
-        <Skeleton className="h-28 w-full rounded-panel" />
-      )}
+      {state && today && state.range.kind === "custom" ? (
+        <CustomRangeFields from={state.range.from} to={state.range.to} today={today} onApply={(range) => navigate(range, state.compare)} />
+      ) : null}
       {body}
     </div>
   );
@@ -145,47 +152,46 @@ export function StatsView() {
 function StatsContent({ report, deltaLabel, refreshing }: { report: StatsReport; deltaLabel: string; refreshing: boolean }) {
   const visits = report.features.appointments;
   const orders = report.features.orders;
+  // Desktop: revenue + mix side by side, the three time charts in one row, heatmap + rating, then
+  // the table (the shop's best sellers and stock turnover are two tabs of one panel). Each chart
+  // keeps its own Chart / Table switch.
   return (
-    <div className="space-y-4" aria-busy={refreshing || undefined}>
+    <div className="space-y-section" aria-busy={refreshing || undefined}>
       <KpiRow report={report} deltaLabel={deltaLabel} />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <RevenueChart report={report} index={0} />
         <MixDonut report={report} index={1} />
       </div>
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <VolumeChart report={report} index={2} />
-        <RatingPanel report={report} deltaLabel={deltaLabel} index={3} />
+        <RideShareChart report={report} index={3} />
+        <CancellationsChart report={report} index={4} className="md:col-span-2 xl:col-span-1" />
       </div>
-      <div className="grid gap-4 xl:grid-cols-2">
-        <RideShareChart report={report} index={4} />
-        <CancellationsChart report={report} index={5} />
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <BusyHeatmap report={report} index={5} />
+        <RatingPanel report={report} deltaLabel={deltaLabel} index={6} />
       </div>
-      <BusyHeatmap report={report} index={6} />
       {visits ? <TopServicesTable report={report} index={7} /> : null}
-      {orders ? (
-        <>
-          <TopProductsTable report={report} index={8} />
-          <StockTurnoverTable report={report} index={9} />
-        </>
-      ) : null}
+      {orders ? <ProductsPanel report={report} index={8} /> : null}
     </div>
   );
 }
 
 function StatsSkeleton({ label }: { label: string }) {
   return (
-    <div aria-busy="true" className="space-y-4">
+    <div aria-busy="true" className="space-y-section">
       <span className="sr-only" role="status">
         {label}
       </span>
       <KpiRowSkeleton />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <SkeletonCard className="h-90" />
-        <SkeletonCard className="h-90" />
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <SkeletonCard className="h-80" />
+        <SkeletonCard className="h-80" />
       </div>
-      <div className="grid gap-4 xl:grid-cols-2">
-        <SkeletonCard className="h-80" />
-        <SkeletonCard className="h-80" />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <SkeletonCard className="h-72" />
+        <SkeletonCard className="h-72" />
+        <SkeletonCard className="h-72 md:col-span-2 xl:col-span-1" />
       </div>
     </div>
   );

@@ -60,8 +60,9 @@ export const MixDonut = memo(function MixDonut({ report, index }: { report: Stat
       table={table}
       empty={total === 0 ? { title: t("mix.emptyTitle"), pet: "ginger" } : null}
       content={
-        <div className="grid items-center gap-5 sm:grid-cols-[minmax(0,13rem)_1fr] xl:grid-cols-1">
-          <div className="relative mx-auto aspect-square w-full max-w-52 xl:max-w-44">
+        // Donut beside its list at every width (the card is narrow on desktops); counts are in the Table view too.
+        <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-4 @min-[36rem]:grid-cols-[10rem_minmax(0,1fr)]">
+          <div className="relative aspect-square w-full">
             <ResponsiveContainer width="100%" height="100%" debounce={50}>
               <PieChart>
                 <Pie
@@ -82,17 +83,19 @@ export const MixDonut = memo(function MixDonut({ report, index }: { report: Stat
               </PieChart>
             </ResponsiveContainer>
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-h1 font-extrabold tabular">{num(total)}</span>
-              <span className="text-meta text-fg-secondary">{t("mix.total")}</span>
+              <span className="font-display text-title font-extrabold leading-none tabular @min-[36rem]:text-h1">{num(total)}</span>
+              <span className="text-caption text-fg-secondary">{t("mix.total")}</span>
             </div>
           </div>
-          <ul className="min-w-0 space-y-2">
+          <ul className="min-w-0 space-y-1.5">
             {rows.map((r) => (
-              <li key={r.id} className="flex items-center gap-2.5 text-body-sm">
+              <li key={r.id} className="flex items-center gap-2 text-body-sm">
                 <span aria-hidden="true" className="size-3 shrink-0 rounded-[4px]" style={{ background: r.color }} />
-                <span className="min-w-0 flex-1 truncate text-fg">{r.label}</span>
+                <span className="min-w-0 flex-1 truncate text-fg" title={r.label}>
+                  {r.label}
+                </span>
                 <span className="shrink-0 font-semibold text-fg tabular">{formatPercent(r.share, locale)}</span>
-                <span className="w-12 shrink-0 text-right text-meta text-fg-secondary tabular">{num(r.count)}</span>
+                <span className="hidden w-10 shrink-0 text-right text-meta text-fg-secondary tabular @min-[25rem]:inline">{num(r.count)}</span>
               </li>
             ))}
           </ul>

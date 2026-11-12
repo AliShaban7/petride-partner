@@ -79,7 +79,8 @@ export function Tabs({ tabs, value, onChange, label, idPrefix, variant = "underl
             onClick={() => onChange(tab.id)}
             onKeyDown={(e) => onKey(e, i)}
             className={cn(
-              "inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap px-3.5 text-body-sm font-semibold transition-colors",
+              // 44px on touch widths, 40px from 1024px (mouse).
+              "inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap px-3.5 text-body-sm font-semibold transition-colors lg:min-h-10 lg:px-3",
               variant === "underline"
                 ? cn("-mb-px border-b-2", selected ? "border-primary text-primary" : "border-transparent text-fg-secondary hover:text-fg")
                 : cn("rounded-chip", selected ? "bg-surface text-fg shadow-thumb" : "text-fg-secondary hover:text-fg"),

@@ -76,7 +76,7 @@ function NotificationsForm({ prefs, onDirtyChange }: { prefs: NotificationPrefs 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <Panel title={t("notifications.title")} description={t("notifications.description")} icon={<BellRing size={20} />}>
         <div aria-hidden="true" className="hidden grid-cols-[minmax(0,1fr)_7rem_7rem] gap-x-4 border-b border-border pb-2 text-meta font-semibold text-fg-secondary sm:grid">
           <span>{t("notifications.columns.event")}</span>

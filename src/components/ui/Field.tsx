@@ -30,7 +30,7 @@ export function Field({ label, hint, error, hideLabel, required, className, chil
   const describedBy = [errorId, hintId].filter(Boolean).join(" ") || undefined;
   const t = useT("common");
   return (
-    <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <label htmlFor={id} className={cn("text-body-sm font-semibold text-fg", hideLabel && "sr-only")}>
         {label}
         {required ? (
@@ -65,7 +65,7 @@ function mergeIds(...ids: (string | undefined)[]): string | undefined {
 }
 
 const control =
-  "w-full min-h-11 rounded-input border border-control-border/70 bg-surface px-3.5 text-body text-fg placeholder:text-fg-secondary/80 transition-[border-color,box-shadow] duration-150 hover:border-control-border focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-fg-secondary aria-[invalid=true]:border-error-text aria-[invalid=true]:ring-error-text/20";
+  "w-full min-h-11 lg:min-h-10 rounded-input border border-control-border/70 bg-surface px-3.5 text-body text-fg placeholder:text-fg-secondary/80 transition-[border-color,box-shadow] duration-150 hover:border-control-border focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-fg-secondary aria-[invalid=true]:border-error-text aria-[invalid=true]:ring-error-text/20";
 
 type ControlBase = { label: ReactNode; hint?: ReactNode; error?: ReactNode; hideLabel?: boolean; wrapperClassName?: string };
 
@@ -190,7 +190,8 @@ export function SearchField({ label, value, onValueChange, showLabel, wrapperCla
   const t = useT("common");
   const id = useId();
   return (
-    <div className={cn("flex min-w-0 flex-col gap-1.5", wrapperClassName)} role="search">
+    // A named search landmark, so two search boxes on one page (top bar + a list) stay distinguishable.
+    <div className={cn("flex min-w-0 flex-col gap-1.5", wrapperClassName)} role="search" aria-label={label}>
       <label htmlFor={id} className={cn("text-body-sm font-semibold", !showLabel && "sr-only")}>
         {label}
       </label>

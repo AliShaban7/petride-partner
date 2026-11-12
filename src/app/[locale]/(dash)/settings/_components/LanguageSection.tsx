@@ -27,7 +27,7 @@ export function LanguageSection({ confirmLeave }: { confirmLeave: () => boolean 
   const setEmailLocale = useExtrasMutation((partnerId, value: Locale) => extrasApi.updateEmailLocale(partnerId, value));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <Panel title={t("language.title")} description={t("language.description")} icon={<Languages size={20} />}>
         <fieldset aria-busy={pending || undefined}>
           <legend className="sr-only">{t("language.title")}</legend>

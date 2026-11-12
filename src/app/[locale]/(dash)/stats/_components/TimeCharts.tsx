@@ -15,7 +15,7 @@ import { StatsFigure, type FigureTable } from "./StatsFigure";
 /** Dashed grey for "previous period" everywhere on the page. */
 const PREVIOUS_COLOR = "var(--color-chart-axis)";
 
-type ChartProps = { report: StatsReport; index?: number };
+type ChartProps = { report: StatsReport; index?: number; className?: string };
 
 /** Shared helpers for the time-series charts (ticks, tooltip titles, table rows). */
 function useBuckets(report: StatsReport) {
@@ -100,11 +100,19 @@ export const RevenueChart = memo(function RevenueChart({ report, index }: ChartP
     <StatsFigure
       index={index}
       title={t("revenue.title")}
-      description={t("revenue.description", { granularity: b.granularity })}
+      // Say where the money comes from for this partner: visits, orders, or both.
+      description={t(
+        report.features.appointments && report.features.orders
+          ? "revenue.description"
+          : report.features.orders
+            ? "revenue.descriptionOrders"
+            : "revenue.descriptionVisits",
+        { granularity: b.granularity },
+      )}
       summary={summary}
       legend={legend}
       table={table}
-      height={280}
+      height={220}
       empty={total === 0 ? { title: t("revenue.emptyTitle"), description: t("revenue.emptyBody"), pet: "golden" } : null}
       chart={
         <ComposedChart data={data} margin={margin}>
@@ -201,11 +209,9 @@ export const VolumeChart = memo(function VolumeChart({ report, index }: ChartPro
     <StatsFigure
       index={index}
       title={visits ? t("volume.titleVisits") : t("volume.titleOrders")}
-      description={b.granularity}
       summary={summary}
       legend={series.map((s) => ({ label: s.name, color: s.color }))}
       table={table}
-      height={280}
       empty={total === 0 ? { title: visits ? t("volume.emptyVisits") : t("volume.emptyOrders"), description: t("volume.emptyBody") } : null}
       chart={
         <BarChart data={data} margin={margin} barCategoryGap={points.length > 20 ? "18%" : "28%"}>
@@ -323,7 +329,7 @@ export const RideShareChart = memo(function RideShareChart({ report, index }: Ch
 
 // ---- Cancellations & no-shows (stacked bars) --------------------------------------------------------
 
-export const CancellationsChart = memo(function CancellationsChart({ report, index }: ChartProps) {
+export const CancellationsChart = memo(function CancellationsChart({ report, index, className }: ChartProps) {
   const t = useT("stats");
   const locale = useLocale();
   const b = useBuckets(report);
@@ -360,6 +366,7 @@ export const CancellationsChart = memo(function CancellationsChart({ report, ind
   return (
     <StatsFigure
       index={index}
+      className={className}
       title={visits ? t("cancellations.titleVisits") : t("cancellations.titleOrders")}
       description={
         visits

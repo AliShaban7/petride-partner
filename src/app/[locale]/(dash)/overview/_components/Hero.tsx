@@ -12,16 +12,15 @@ import { greetingKey, useNow } from "./now";
 export type OverviewHeroProps = {
   /** Partner short name ("IDEA"). */
   name: string;
-  /** Summary sentences; null while loading (skeleton), [] when there is nothing to say (error). */
-  summary: string[] | null;
   actions?: ReactNode;
 };
 
 /**
- * The big playful greeting ("SABAHIN XEYİR, IDEA!") with today's date above it and a one-line
- * summary under it. Time-dependent text only appears after hydration (useNow is null on the server).
+ * The big playful greeting ("SABAHIN XEYİR, IDEA!") with today's date above it. No summary line:
+ * the KPI cards and the panels right under it already say how many visits, requests and rides
+ * there are. Time-dependent text only appears after hydration (useNow is null on the server).
  */
-export function OverviewHero({ name, summary, actions }: OverviewHeroProps) {
+export function OverviewHero({ name, actions }: OverviewHeroProps) {
   const t = useT("overview");
   const locale = useLocale();
   const now = useNow(60_000);
@@ -31,19 +30,7 @@ export function OverviewHero({ name, summary, actions }: OverviewHeroProps) {
       size="hero"
       eyebrow={now === null ? " " : formatWeekdayDate(now, locale)}
       title={<span className={cn("inline-block", now === null ? "invisible" : "animate-fade-up")}>{t(`greeting.${key}`, { name })}</span>}
-      description={summary === null ? <SummarySkeleton /> : summary.length ? summary.join(" ") : undefined}
       actions={actions}
     />
-  );
-}
-
-function SummarySkeleton() {
-  const t = useT("overview");
-  return (
-    <span className="inline-flex w-full max-w-xl flex-col gap-2 align-middle">
-      <span className="sr-only">{t("summary.loading")}</span>
-      <span aria-hidden="true" className="block h-4 w-full animate-skeleton rounded-tile bg-segment-track" />
-      <span aria-hidden="true" className="block h-4 w-3/5 animate-skeleton rounded-tile bg-segment-track" />
-    </span>
   );
 }

@@ -16,10 +16,11 @@ import { isLiveRide } from "./LiveRidesPanel";
 import { minutesLeft, useNow } from "./now";
 import { TimelineList, TimelineRow, TimelineSkeleton, type TimelineState } from "./Timeline";
 
-const VISIBLE_NEW = 4;
-/** Phones show fewer cards; the "View all (N)" link covers the rest. */
+/** Dashboard caps; "View all (N)" opens the full list. Phones show fewer new-order cards. */
+const VISIBLE_NEW = 3;
 const PHONE_VISIBLE = 2;
-const VISIBLE_TODAY = 8;
+/** Today's orders: the newest few that are past "new"; "Show all (N)" unfolds the whole day here. */
+const VISIBLE_TODAY = 4;
 
 /** Optimistic status wins while the refetch is on its way. */
 export function withOptimistic(order: Order, optimistic: Record<string, OrderStatus>): Order {
@@ -57,7 +58,6 @@ export function NewOrdersPanel({ query, optimistic, onStart, className }: NewOrd
   return (
     <Panel
       title={t("newOrders.title")}
-      description={t("newOrders.description")}
       icon={<ShoppingBag size={20} />}
       className={cn("flex flex-col", className)}
       bodyClassName="flex flex-1 flex-col"
@@ -83,7 +83,7 @@ export function NewOrdersPanel({ query, optimistic, onStart, className }: NewOrd
           empty={<EmptyState compact className="flex-1 justify-center" pet="golden" title={t("newOrders.emptyTitle")} description={t("newOrders.emptyBody")} />}
         >
           {() => (
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {orders.slice(0, VISIBLE_NEW).map((o, i) => (
                 <NewOrderCard
                   key={o.id}
@@ -103,6 +103,7 @@ export function NewOrdersPanel({ query, optimistic, onStart, className }: NewOrd
   );
 }
 
+/** Compact new-order card (container queries: the icon tile appears from 20rem, the button moves next to the text from 28rem). */
 function NewOrderCard({ order: o, index, onStart }: { order: Order; index: number; onStart: () => void }) {
   const t = useT("overview");
   const ts = useT("status");
@@ -111,45 +112,52 @@ function NewOrderCard({ order: o, index, onStart }: { order: Order; index: numbe
   const titleId = useId();
   const href = localizedHref(locale, ROUTES.orders, { id: o.id });
   const courier = o.fulfilment === "petride_courier";
+  const received = now === null ? null : formatRelative(o.createdAt, locale, new Date(now));
+  const itemList = o.items.map((item) => `${item.qty}× ${item.name}`).join(", ");
   return (
     <li
       data-order={o.id}
       className={cn(
-        "animate-fade-up rounded-card border border-border bg-surface p-4 transition-shadow duration-200 hover:shadow-card",
+        "@container animate-fade-up rounded-card border border-border bg-surface p-3 transition-shadow duration-200 hover:shadow-card",
         index >= PHONE_VISIBLE && "max-sm:hidden",
       )}
       style={{ animationDelay: `${index * 50}ms` }}
     >
-      <div className="flex gap-3">
-        <span aria-hidden="true" className="hidden size-12 shrink-0 items-center justify-center rounded-tile bg-pastel-peach text-fg sm:inline-flex">
-          <ShoppingBag size={22} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-            <h3 id={titleId} className="min-w-0 text-body font-semibold text-fg">
-              <Link href={href} className="rounded-sm underline-offset-2 hover:underline">
-                {o.code}
-              </Link>
-              <span className="font-normal text-fg-secondary"> · {o.clientName}</span>
-            </h3>
-            {now !== null ? <span className="text-meta text-fg-secondary">{formatRelative(o.createdAt, locale, new Date(now))}</span> : null}
+      <div className="flex flex-col gap-2.5 @md:flex-row @md:items-center @md:gap-4">
+        <div className="flex min-w-0 flex-1 gap-3">
+          <span aria-hidden="true" className="hidden size-10 shrink-0 items-center justify-center rounded-tile bg-pastel-peach text-fg @xs:inline-flex">
+            <ShoppingBag size={20} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline justify-between gap-2">
+              <h3 id={titleId} title={`${o.code} · ${o.clientName}`} className="min-w-0 truncate text-body font-semibold text-fg">
+                <Link href={href} className="rounded-sm underline-offset-2 hover:underline">
+                  {o.code}
+                </Link>
+                <span className="font-normal text-fg-secondary"> · {o.clientName}</span>
+              </h3>
+              {received ? <span className="shrink-0 whitespace-nowrap text-caption text-fg-secondary">{received}</span> : null}
+            </div>
+            {/* One line; the full item list is in the tooltip and in the order drawer (the code link). */}
+            <p title={itemList} className="truncate text-body-sm text-fg-secondary">
+              {t.plural("newOrders.items", o.itemsCount)} · <span className="font-semibold text-fg tabular">{formatMoney(o.totalAZN, locale)}</span>
+              <span> · {itemList}</span>
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              <Tag className="py-0.5" icon={courier ? <Car size={13} aria-hidden="true" /> : <Store size={13} aria-hidden="true" />}>
+                {ts(`fulfilment.${o.fulfilment}`)}
+              </Tag>
+              <StatusPill kind="payment" status={o.paid ? "paid" : "unpaid"} size="sm" />
+              {o.petNames.length ? <Tag className="py-0.5">{t("newOrders.forPets", { pets: o.petNames.join(", ") })}</Tag> : null}
+            </div>
+            {o.clientNote ? <p className="mt-1.5 line-clamp-2 rounded-tile bg-surface-muted px-2.5 py-1.5 text-meta text-fg-secondary">{o.clientNote}</p> : null}
           </div>
-          <p className="mt-1 text-body-sm text-fg-secondary">
-            {t.plural("newOrders.items", o.itemsCount)} · <span className="font-semibold text-fg tabular">{formatMoney(o.totalAZN, locale)}</span>
-          </p>
-          <p className="mt-0.5 line-clamp-2 text-meta text-fg-secondary">{o.items.map((item) => `${item.qty}× ${item.name}`).join(", ")}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <Tag icon={courier ? <Car size={14} aria-hidden="true" /> : <Store size={14} aria-hidden="true" />}>{ts(`fulfilment.${o.fulfilment}`)}</Tag>
-            <StatusPill kind="payment" status={o.paid ? "paid" : "unpaid"} size="sm" />
-            {o.petNames.length ? <Tag>{t("newOrders.forPets", { pets: o.petNames.join(", ") })}</Tag> : null}
-          </div>
-          {o.clientNote ? <p className="mt-2 line-clamp-2 rounded-tile bg-surface-muted px-3 py-2 text-body-sm text-fg-secondary">{o.clientNote}</p> : null}
         </div>
-      </div>
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <Button size="sm" data-primary-action="" aria-describedby={titleId} leftIcon={<PackageOpen size={16} aria-hidden="true" />} onClick={onStart}>
-          {t("newOrders.start")}
-        </Button>
+        <div className="flex flex-col @xs:flex-row @xs:justify-end @md:shrink-0">
+          <Button size="sm" data-primary-action="" aria-describedby={titleId} leftIcon={<PackageOpen size={16} aria-hidden="true" />} onClick={onStart}>
+            {t("newOrders.start")}
+          </Button>
+        </div>
       </div>
     </li>
   );
@@ -173,19 +181,21 @@ export type OrdersTodayPanelProps = {
   className?: string;
 };
 
-/** Today's orders, newest first, with the courier's ETA when one is on the way. */
+/**
+ * Today's orders, newest first, with the courier's ETA when one is on the way. Folded, it skips the
+ * orders that are still "new": those already sit in the New orders panel next to (phones: right above)
+ * this one, so listing them again would only repeat it. "Show all (N)" brings back the whole day.
+ */
 export function OrdersTodayPanel({ query, rides, optimistic, className }: OrdersTodayPanelProps) {
   const t = useT("overview");
   const tc = useT("common");
   const locale = useLocale();
   const [showAll, setShowAll] = useState(false);
   const orders = (query.data?.items ?? []).map((o) => withOptimistic(o, optimistic));
-  const counted = orders.filter((o) => o.status !== "cancelled").length;
 
   return (
     <Panel
       title={t("schedule.ordersTitle")}
-      description={query.data && counted > 0 ? t.plural("schedule.ordersCount", counted) : undefined}
       icon={<PackageOpen size={20} />}
       className={className}
       actions={
@@ -201,15 +211,17 @@ export function OrdersTodayPanel({ query, rides, optimistic, className }: Orders
         empty={<EmptyState compact pet="tabby" title={t("schedule.ordersEmptyTitle")} description={t("schedule.ordersEmptyBody")} />}
       >
         {() => {
-          const shown = showAll ? orders : orders.slice(0, VISIBLE_TODAY);
+          const pastNew = orders.filter((o) => o.status !== "new");
+          const folded = (pastNew.length > 0 ? pastNew : orders).slice(0, VISIBLE_TODAY);
+          const shown = showAll ? orders : folded;
           return (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <TimelineList label={t("schedule.ordersListLabel")}>
                 {shown.map((o, i) => (
                   <OrderRow key={o.id} order={o} rides={rides} index={i} />
                 ))}
               </TimelineList>
-              {orders.length > VISIBLE_TODAY ? (
+              {showAll || folded.length < orders.length ? (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -240,15 +252,15 @@ function OrderRow({ order: o, rides, index }: { order: Order; rides: readonly Ri
   const courier = o.fulfilment === "petride_courier";
   return (
     <TimelineRow href={localizedHref(locale, ROUTES.orders, { id: o.id })} time={o.createdAt} state={ORDER_STATE[o.status]} index={index}>
-      <p className="truncate font-semibold text-fg">
+      <p className="truncate text-body-sm font-semibold text-fg">
         {o.code} <span className="font-normal text-fg-tertiary">· {o.clientName}</span>
       </p>
       <p className="truncate text-meta text-fg-tertiary">
         {t.plural("newOrders.items", o.itemsCount)} · <span className="tabular">{formatMoney(o.totalAZN, locale)}</span>
       </p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
         <StatusPill kind="order" status={o.status} size="sm" />
-        <Tag tone="white" icon={courier ? <Car size={13} aria-hidden="true" /> : <Store size={13} aria-hidden="true" />}>
+        <Tag tone="white" className="py-0.5" icon={courier ? <Car size={13} aria-hidden="true" /> : <Store size={13} aria-hidden="true" />}>
           {liveRide ? t("schedule.courierLive", { eta: formatDuration(eta, locale) }) : ts(`fulfilment.${o.fulfilment}`)}
         </Tag>
       </div>

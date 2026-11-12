@@ -1,14 +1,16 @@
 "use client";
 
-import { BedDouble, CalendarCheck, Eye, HandCoins, Plus, Scissors, Stethoscope, Tag as TagIcon } from "lucide-react";
+import { ArrowRight, BedDouble, CalendarCheck, Eye, HandCoins, Plus, Scissors, Smartphone, Stethoscope, Tag as TagIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 
 import { EXTRAS_TAG, Notice, SaveBar, useDraft, useExtras, useUnsavedGuard } from "@/components/services-settings";
-import { Button, ConfirmDialog, EmptyState, ErrorState, KpiCard, PageHeader, Panel, SkeletonRows, useToast } from "@/components/ui";
+import { Button, ButtonLink, Card, ConfirmDialog, Drawer, EmptyState, ErrorState, KpiCard, PageHeader, SkeletonRows, useToast } from "@/components/ui";
+import { cn } from "@/lib/cn";
 import { errorCode, useApiMutation, useApiQuery } from "@/lib/api/hooks";
 import { useSession } from "@/lib/auth/client";
 import { formatNumber } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
+import { localizedHref, ROUTES } from "@/lib/i18n/navigation";
 
 import { AppPreview } from "./AppPreview";
 import { HoursCard } from "./HoursCard";
@@ -34,7 +36,7 @@ import {
   type ServicesDraft,
 } from "./model";
 import { ServiceDialog } from "./ServiceDialog";
-import { ServiceRow } from "./ServiceRow";
+import { SERVICE_ROW_COLS, ServiceRow } from "./ServiceRow";
 import { useSortable } from "./useSortable";
 
 const CAT_ICONS = { vet: Stethoscope, groom: Scissors, hotel: BedDouble } as const;
@@ -42,9 +44,10 @@ const CAT_ICONS = { vet: Stethoscope, groom: Scissors, hotel: BedDouble } as con
 type DialogState = { mode: "create" | "edit"; initial: ServiceDraft };
 
 /**
- * Services & prices for clinics, salons and hotels: KPIs, services grouped by category with inline
- * price / "show price in the app" / active editing and drag-to-reorder, the add/edit dialog, a
- * live app preview, the hours summary and a sticky save bar for the inline edits.
+ * Services & prices for clinics, salons and hotels: compact KPIs, one list of services grouped by
+ * category (one line per service on wide screens) with inline price / "show price in the app" /
+ * active editing and drag-to-reorder, the add/edit dialog, the live app preview and hours summary
+ * (beside the list from 1536px, in a drawer below that) and a sticky save bar for the inline edits.
  */
 export function ServicesEditor() {
   const t = useT("services");
@@ -71,6 +74,7 @@ export function ServicesEditor() {
   const [archiveTarget, setArchiveTarget] = useState<ServiceDraft | null>(null);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [announcement, setAnnouncement] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const save = useApiMutation((api, plan: SavePlan) => executePlan(api, plan), { invalidates: ["services", EXTRAS_TAG, "overview", "stats"] });
   const archive = useApiMutation((api, id: string) => api.archiveService(id), { invalidates: ["services", "overview", "stats"] });
@@ -197,22 +201,32 @@ export function ServicesEditor() {
 
   const error = servicesQ.error ?? extrasQ.error;
   const loading = !serverBase && !error;
+  const hoursUnconfirmed = partnerQ.data ? !partnerQ.data.hoursConfirmed : false;
+
+  const preview = draft ? <AppPreview draft={draft} partner={partnerQ.data} logo={extrasQ.data?.profile.logoDataUrl ?? null} /> : null;
+  const hoursCard = <HoursCard partner={partnerQ.data} extras={extrasQ.data} error={partnerQ.error} onRetry={partnerQ.refetch} />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
-          <Button leftIcon={<Plus aria-hidden="true" size={18} />} onClick={() => openCreate()} disabled={!draft}>
-            {t("add")}
-          </Button>
+          <>
+            {/* Below 1536px the app preview and hours open in a drawer; wider screens keep them beside the list. */}
+            <Button variant="outline" className="2xl:hidden" leftIcon={<Smartphone aria-hidden="true" size={18} />} onClick={() => setPreviewOpen(true)} disabled={!draft}>
+              {t("preview.open")}
+            </Button>
+            <Button leftIcon={<Plus aria-hidden="true" size={18} />} onClick={() => openCreate()} disabled={!draft}>
+              {t("add")}
+            </Button>
+          </>
         }
       />
 
       {/* KPIs: what the app shows right now (saved state). */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <KpiCard
+          size="sm"
           index={0}
           tone="mint"
           pet="golden"
@@ -224,6 +238,7 @@ export function ServicesEditor() {
           footnote={!base ? undefined : kpis.total - kpis.active > 0 ? t.plural("kpi.hidden", kpis.total - kpis.active) : t("kpi.allVisible")}
         />
         <KpiCard
+          size="sm"
           index={1}
           tone="lilac"
           pet="tabby"
@@ -232,9 +247,9 @@ export function ServicesEditor() {
           loading={!base && !error}
           value={base ? formatNumber(kpis.withPrice, locale) : "—"}
           unit={base ? t("kpi.ofTotal", { total: formatNumber(kpis.total, locale) }) : undefined}
-          footnote={base ? t("kpi.withPriceNote") : undefined}
         />
         <KpiCard
+          size="sm"
           index={2}
           tone="peach"
           pet="ginger"
@@ -242,9 +257,10 @@ export function ServicesEditor() {
           label={tc("money.pricedOnSite")}
           loading={!base && !error}
           value={base ? formatNumber(kpis.onSite, locale) : "—"}
-          footnote={!base ? undefined : kpis.onSite > 0 ? t("kpi.onSiteNote") : t("kpi.onSiteNone")}
+          footnote={base && kpis.onSite === 0 ? t("kpi.onSiteNone") : undefined}
         />
         <KpiCard
+          size="sm"
           index={3}
           tone="sand"
           pet="cream"
@@ -256,25 +272,42 @@ export function ServicesEditor() {
         />
       </div>
 
-      {base && kpis.onSite > 0 ? (
-        <Notice
-          tone="app"
-          title={t.plural("notice.onSite", kpis.onSite, { label: tc("money.pricedOnSite") })}
-          action={
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const first = ordered.find((i) => i.active && !i.showPrice);
-                if (first) focusPrice(first.key);
-              }}
+      {(base && kpis.onSite > 0) || hoursUnconfirmed ? (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {base && kpis.onSite > 0 ? (
+            <Notice
+              tone="app"
+              title={t.plural("notice.onSite", kpis.onSite, { label: tc("money.pricedOnSite") })}
+              action={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const first = ordered.find((i) => i.active && !i.showPrice);
+                    if (first) focusPrice(first.key);
+                  }}
+                >
+                  {t("notice.setPrice")}
+                </Button>
+              }
+            />
+          ) : null}
+          {/* Below 1536px the hours card lives in the drawer, so its "not confirmed" warning stays on the page. */}
+          {hoursUnconfirmed ? (
+            <Notice
+              tone="warning"
+              className="2xl:hidden"
+              title={t("hours.unconfirmedTitle")}
+              action={
+                <ButtonLink href={localizedHref(locale, ROUTES.settings, { tab: "hours" })} variant="outline" size="sm" rightIcon={<ArrowRight aria-hidden="true" size={16} />}>
+                  {t("hours.confirm")}
+                </ButtonLink>
+              }
             >
-              {t("notice.setPrice")}
-            </Button>
-          }
-        >
-          {t("notice.onSiteBody")}
-        </Notice>
+              {t("hours.unconfirmedBody")}
+            </Notice>
+          ) : null}
+        </div>
       ) : null}
 
       <p id={instructionsId} className="sr-only">
@@ -284,67 +317,81 @@ export function ServicesEditor() {
         {announcement}
       </p>
 
-      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:items-start">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 2xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:items-start">
+        <Card className="@container min-w-0 animate-fade-up">
           {error && !serverBase ? (
-            <Panel title={t("listTitle")}>
-              <ErrorState
-                error={error}
-                onRetry={() => {
-                  servicesQ.refetch();
-                  extrasQ.refetch();
-                }}
-              />
-            </Panel>
+            <ErrorState
+              error={error}
+              onRetry={() => {
+                servicesQ.refetch();
+                extrasQ.refetch();
+              }}
+            />
           ) : loading || !draft ? (
-            <Panel title={t("listTitle")}>
-              <div aria-busy="true">
-                <span className="sr-only">{tc("states.loading")}</span>
-                <SkeletonRows rows={5} />
-              </div>
-            </Panel>
+            <div aria-busy="true">
+              <span className="sr-only">{tc("states.loading")}</span>
+              <SkeletonRows rows={5} />
+            </div>
           ) : Object.keys(draft.items).length === 0 ? (
-            <Panel title={t("listTitle")}>
-              <EmptyState
-                title={t("empty.title")}
-                description={t("empty.body")}
-                pet="golden"
-                action={
-                  <Button leftIcon={<Plus aria-hidden="true" size={18} />} onClick={() => openCreate()}>
-                    {t("empty.action")}
-                  </Button>
-                }
-              />
-            </Panel>
+            <EmptyState
+              title={t("empty.title")}
+              description={t("empty.body")}
+              pet="golden"
+              action={
+                <Button leftIcon={<Plus aria-hidden="true" size={18} />} onClick={() => openCreate()}>
+                  {t("empty.action")}
+                </Button>
+              }
+            />
           ) : (
-            categories.map((category, i) => (
-              <CategoryPanel
-                key={category}
-                index={i}
-                category={category}
-                draft={draft}
-                changed={changed}
-                showErrors={showErrors}
-                instructionsId={instructionsId}
-                onReorder={(ids) => reorder(category, ids)}
-                onAnnounce={announceMove}
-                onChange={updateItem}
-                onAdd={() => openCreate(category)}
-                onEdit={(item) => setDialog({ mode: "edit", initial: item })}
-                onArchive={(item) => {
-                  setArchiveTarget(item);
-                  setArchiveOpen(true);
-                }}
-              />
-            ))
+            <>
+              {/* Column names once for every group (wide list only). */}
+              {/* nowrap: "В приложении" is wider than the switch column; it may run into the empty menu column. */}
+              <div aria-hidden="true" className={cn("hidden gap-x-3 whitespace-nowrap px-1 pb-1 text-meta font-semibold text-fg-secondary @min-[50rem]:grid", SERVICE_ROW_COLS)}>
+                <span />
+                <span>{t("columns.service")}</span>
+                <span>{t("columns.duration")}</span>
+                <span className="col-span-2">{t("columns.price")}</span>
+                <span>{t("columns.active")}</span>
+                <span />
+              </div>
+              <div className="space-y-4 @min-[50rem]:space-y-3">
+                {categories.map((category) => (
+                  <CategoryGroup
+                    key={category}
+                    category={category}
+                    draft={draft}
+                    changed={changed}
+                    showErrors={showErrors}
+                    instructionsId={instructionsId}
+                    onReorder={(ids) => reorder(category, ids)}
+                    onAnnounce={announceMove}
+                    onChange={updateItem}
+                    onAdd={() => openCreate(category)}
+                    onEdit={(item) => setDialog({ mode: "edit", initial: item })}
+                    onArchive={(item) => {
+                      setArchiveTarget(item);
+                      setArchiveOpen(true);
+                    }}
+                  />
+                ))}
+              </div>
+            </>
           )}
-        </div>
+        </Card>
 
-        <aside aria-label={t("asideLabel")} className="grid min-w-0 gap-6 md:grid-cols-2 2xl:sticky 2xl:top-[calc(var(--topbar-h)+1.5rem)] 2xl:grid-cols-1">
-          {draft ? <AppPreview draft={draft} partner={partnerQ.data} logo={extrasQ.data?.profile.logoDataUrl ?? null} /> : null}
-          <HoursCard partner={partnerQ.data} extras={extrasQ.data} error={partnerQ.error} onRetry={partnerQ.refetch} />
+        <aside aria-label={t("asideLabel")} className="hidden min-w-0 gap-4 2xl:sticky 2xl:top-[calc(var(--topbar-h)+1.5rem)] 2xl:grid">
+          {preview}
+          {hoursCard}
         </aside>
       </div>
+
+      <Drawer open={previewOpen} onClose={() => setPreviewOpen(false)} title={t("asideLabel")} size="sm">
+        <div className="space-y-4">
+          {preview}
+          {hoursCard}
+        </div>
+      </Drawer>
 
       <SaveBar
         visible={dirty}
@@ -388,8 +435,8 @@ export function ServicesEditor() {
   );
 }
 
-function CategoryPanel({
-  index,
+/** One category: a small heading row (name, counts, "Add") and its sortable rows. */
+function CategoryGroup({
   category,
   draft,
   changed,
@@ -402,7 +449,6 @@ function CategoryPanel({
   onEdit,
   onArchive,
 }: {
-  index: number;
   category: ServiceCat;
   draft: ServicesDraft;
   changed: Set<string>;
@@ -417,65 +463,57 @@ function CategoryPanel({
 }) {
   const t = useT("services");
   const locale = useLocale();
+  const headingId = `svc-cat-${category}`;
   const ids = draft.order[category];
   const items = ids.map((k) => draft.items[k]).filter(Boolean);
   const { listRef, draggingId, handleProps, moveBy } = useSortable({ ids, onReorder, onAnnounce });
   const Icon = CAT_ICONS[category];
   const active = items.filter((i) => i.active).length;
+  const title = t(`categories.${category}.title`);
 
   return (
-    <Panel
-      className="animate-fade-up"
-      bodyClassName="@container"
-      style={{ animationDelay: `${index * 70}ms` }}
-      icon={<Icon size={20} />}
-      title={t(`categories.${category}.title`)}
-      description={items.length ? t("categoryMeta", { count: t.plural("serviceCount", items.length), active: formatNumber(active, locale) }) : t(`categories.${category}.hint`)}
-      actions={
-        <Button variant="secondary" size="sm" leftIcon={<Plus aria-hidden="true" size={16} />} onClick={onAdd}>
+    <section aria-labelledby={headingId} className="min-w-0">
+      <div className="flex items-center justify-between gap-3 rounded-tile bg-surface-muted py-1 pl-3 pr-1">
+        {/* The heading is just the category; its counts sit beside it, outside the heading's name. */}
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+          <h2 id={headingId} className="flex items-center gap-2 text-body font-bold text-fg">
+            <Icon aria-hidden="true" size={16} className="shrink-0 text-primary-dark" />
+            {title}
+          </h2>
+          <span className="text-meta font-medium text-fg-secondary">
+            {items.length ? t("categoryMeta", { count: t.plural("serviceCount", items.length), active: formatNumber(active, locale) }) : t(`categories.${category}.hint`)}
+          </span>
+        </div>
+        <Button variant="ghost" size="sm" leftIcon={<Plus aria-hidden="true" size={16} />} onClick={onAdd} className="shrink-0">
           {t("addShort")}
-          <span className="sr-only">: {t(`categories.${category}.title`)}</span>
+          <span className="sr-only">: {title}</span>
         </Button>
-      }
-    >
+      </div>
       {items.length === 0 ? (
-        <p className="rounded-card bg-surface-muted px-4 py-6 text-center text-body-sm text-fg-secondary">{t("categoryEmpty")}</p>
+        <p className="px-3 py-3 text-body-sm text-fg-secondary">{t("categoryEmpty")}</p>
       ) : (
-        <>
-          <div
-            aria-hidden="true"
-            className="hidden grid-cols-[2.75rem_minmax(0,1fr)_6.5rem_12.5rem_9rem_2.75rem] gap-x-3 border-b border-border px-1 pb-2 text-meta font-semibold text-fg-secondary @min-[50rem]:grid"
-          >
-            <span />
-            <span>{t("columns.service")}</span>
-            <span>{t("columns.duration")}</span>
-            <span>{t("columns.price")}</span>
-            <span>{t("columns.active")}</span>
-            <span />
-          </div>
-          <ul ref={listRef} aria-label={t("listLabel", { category: t(`categories.${category}.title`) })} className="space-y-3 @min-[50rem]:space-y-0">
-            {items.map((item, i) => (
-              <ServiceRow
-                key={item.key}
-                item={item}
-                name={serviceName(item, locale) || t("dialog.namePlaceholder")}
-                changed={changed.has(item.key)}
-                error={priceError(item)}
-                showErrors={showErrors}
-                index={i}
-                total={items.length}
-                dragging={draggingId === item.key}
-                handleProps={handleProps(item.key)}
-                instructionsId={instructionsId}
-                onChange={(patch) => onChange(item.key, patch)}
-                onEdit={() => onEdit(item)}
-                onArchive={() => onArchive(item)}
-                onMove={(delta) => moveBy(item.key, delta)}
-              />
-            ))}
-          </ul>
-        </>
+        <ul ref={listRef} aria-label={t("listLabel", { category: title })} className="mt-2 space-y-2 @min-[50rem]:mt-0 @min-[50rem]:space-y-0">
+          {items.map((item, i) => (
+            <ServiceRow
+              key={item.key}
+              item={item}
+              name={serviceName(item, locale) || t("dialog.namePlaceholder")}
+              changed={changed.has(item.key)}
+              error={priceError(item)}
+              showErrors={showErrors}
+              index={i}
+              total={items.length}
+              dragging={draggingId === item.key}
+              handleProps={handleProps(item.key)}
+              instructionsId={instructionsId}
+              onChange={(patch) => onChange(item.key, patch)}
+              onEdit={() => onEdit(item)}
+              onArchive={() => onArchive(item)}
+              onMove={(delta) => moveBy(item.key, delta)}
+            />
+          ))}
+        </ul>
       )}
-    </Panel>
+    </section>
   );
 }

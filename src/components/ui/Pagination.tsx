@@ -35,7 +35,9 @@ export function Pagination({ page, pageCount, onPageChange, total, pageSize, cla
   if (pageCount <= 1 && !total) return null;
   const from = total && pageSize ? (page - 1) * pageSize + 1 : 0;
   const to = total && pageSize ? Math.min(total, page * pageSize) : 0;
-  const btn = "inline-flex size-10 items-center justify-center rounded-full text-body-sm font-semibold transition-colors";
+  // 40px (36px from 1024px); below 1024px an invisible ::after makes the hit area 44px.
+  const btn =
+    "relative inline-flex size-10 items-center justify-center rounded-full text-body-sm font-semibold transition-colors max-lg:after:absolute max-lg:after:-inset-0.5 max-lg:after:content-[''] lg:size-9";
   return (
     <nav aria-label={t("table.pagination")} className={cn("flex flex-wrap items-center justify-between gap-3", className)}>
       <p className="text-meta text-fg-secondary tabular" aria-live="polite">

@@ -18,7 +18,7 @@ export function ServicesView() {
 
   if (!features.appointments && !features.orders) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-section">
         <PageHeader title={t("title")} />
         <EmptyState title={t("unavailable.title")} description={t("unavailable.body")} pet="cream" />
       </div>
@@ -26,7 +26,7 @@ export function ServicesView() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {features.appointments ? <ServicesEditor /> : null}
       {features.orders ? <ProductsEditor headless={features.appointments} /> : null}
     </div>

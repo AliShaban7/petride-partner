@@ -16,7 +16,7 @@ import { ProductsSection } from "./ProductsSection";
 
 const SECTIONS_ID = "orders-section";
 
-/** Pet shop: today's numbers, then Orders (table / board) and Products & stock as two tabs. */
+/** Pet shop: Orders (table / board) and Products & stock as two tabs on the title row, today's numbers, the section. */
 export function ShopOrdersView() {
   const t = useT("orders");
   const tc = useT("common");
@@ -31,13 +31,32 @@ export function ShopOrdersView() {
   const soldOut = running.filter((p) => p.stock <= 0).length;
   const dash = "—";
 
+  // Each KPI is one dense line (value + change): the strip is a single row of four on desktops.
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
+    <div className="space-y-section">
+      {/* The Orders / Products switch sits on the title row (no description: the title says it). */}
+      <PageHeader
+        title={t("title")}
+        actions={
+          <Tabs
+            idPrefix={SECTIONS_ID}
+            variant="pills"
+            label={t("sections.label")}
+            value={section}
+            onChange={(id) => url.set({ section: id === "products" ? "products" : null })}
+            tabs={[
+              { id: "orders", label: t("sections.orders"), icon: <ShoppingBag size={16} aria-hidden="true" /> },
+              { id: "products", label: t("sections.products"), icon: <PackageOpen size={16} aria-hidden="true" />, count: running.length || undefined },
+            ]}
+            className="w-fit"
+          />
+        }
+      />
 
       <KpiStrip label={t("kpi.label")} className="sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           index={0}
+          size="sm"
           tone="mint"
           pet="golden"
           icon={<ShoppingBag size={18} />}
@@ -49,6 +68,7 @@ export function ShopOrdersView() {
         />
         <KpiCard
           index={1}
+          size="sm"
           tone="peach"
           pet="ginger"
           icon={<Wallet size={18} />}
@@ -60,6 +80,7 @@ export function ShopOrdersView() {
         />
         <KpiCard
           index={2}
+          size="sm"
           tone="lilac"
           pet="tabby"
           icon={<ShoppingBasket size={18} />}
@@ -71,6 +92,7 @@ export function ShopOrdersView() {
         />
         <KpiCard
           index={3}
+          size="sm"
           tone="sand"
           pet="cream"
           icon={<PackageOpen size={18} />}
@@ -82,25 +104,11 @@ export function ShopOrdersView() {
         />
       </KpiStrip>
 
-      <div className="space-y-4">
-        <Tabs
-          idPrefix={SECTIONS_ID}
-          variant="pills"
-          label={t("sections.label")}
-          value={section}
-          onChange={(id) => url.set({ section: id === "products" ? "products" : null })}
-          tabs={[
-            { id: "orders", label: t("sections.orders"), icon: <ShoppingBag size={16} aria-hidden="true" /> },
-            { id: "products", label: t("sections.products"), icon: <PackageOpen size={16} aria-hidden="true" />, count: running.length || undefined },
-          ]}
-          className="w-fit"
-        />
-        <TabPanel idPrefix={SECTIONS_ID} value={section}>
-          <Card padding="md" className="animate-fade-up">
-            {section === "orders" ? <OrdersSection /> : <ProductsSection />}
-          </Card>
-        </TabPanel>
-      </div>
+      <TabPanel idPrefix={SECTIONS_ID} value={section}>
+        <Card padding="md" className="animate-fade-up">
+          {section === "orders" ? <OrdersSection /> : <ProductsSection />}
+        </Card>
+      </TabPanel>
     </div>
   );
 }

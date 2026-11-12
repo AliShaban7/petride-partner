@@ -1,6 +1,25 @@
 "use client";
 
-import { BellRing, CalendarClock, CalendarPlus, Car, ClipboardList, FileText, HeartPulse, NotebookPen, ShoppingBag, Stethoscope, Syringe, UserRound, Wallet } from "lucide-react";
+import {
+  BellRing,
+  Cake,
+  CalendarClock,
+  CalendarPlus,
+  Car,
+  ClipboardList,
+  FileText,
+  HeartPulse,
+  Mars,
+  Microchip,
+  NotebookPen,
+  ShoppingBag,
+  Stethoscope,
+  Syringe,
+  UserRound,
+  Venus,
+  Wallet,
+  Weight,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -11,12 +30,10 @@ import {
   Avatar,
   Button,
   Card,
-  DetailList,
   EmptyState,
   PageHeader,
   Panel,
   SkeletonRows,
-  StatusPill,
   TabPanel,
   Tabs,
   Tag,
@@ -28,7 +45,7 @@ import { formatAge, formatDate, formatDateLong, formatDayLabel, formatMoney, for
 import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
 
-import { BackLink, CallLink, MiniStat, PetLinkRow } from "../../_components/bits";
+import { BackLink, CallLink, PetLinkRow, ProfileBand, type BandFact } from "../../_components/bits";
 import { FilesPanel } from "../../_components/FilesPanel";
 import { OrdersTable, VisitsTable } from "../../_components/HistoryTables";
 import { ReminderDialog } from "../../_components/MessageDialogs";
@@ -43,7 +60,11 @@ import { useMockParam, useQueryUpdater } from "../../_lib/url";
 
 type TabId = "visits" | "orders" | "health" | "notes" | "files";
 
-/** Pet profile: header with key facts, then Visits (or Orders for shops) / Health / Notes / Files. */
+/**
+ * Pet profile: one band with the header (breed, sex, age, weight, microchip on one wrapping line),
+ * actions and key facts; then the tabs (Visits or Orders for shops / Health / Notes / Files) on the
+ * left and the owner on the right on desktop.
+ */
 export function PetProfileView({ petId }: { petId: string }) {
   const t = useT("clients");
   const tc = useT("common");
@@ -75,9 +96,16 @@ export function PetProfileView({ petId }: { petId: string }) {
 
   if (!pet) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-2">
         <BackLink href={backHref}>{t("profile.backToClients")}</BackLink>
-        {petQ.error ? <ProfileError error={petQ.error} onRetry={petQ.refetch} backHref={backHref} kind="pet" /> : <ProfileSkeleton />}
+        {petQ.error ? (
+          <div className="space-y-section">
+            <PageHeader title={t("meta.petTitle")} />
+            <ProfileError error={petQ.error} onRetry={petQ.refetch} backHref={backHref} kind="pet" />
+          </div>
+        ) : (
+          <ProfileSkeleton title={t("meta.petTitle")} />
+        )}
       </div>
     );
   }
@@ -88,7 +116,6 @@ export function PetProfileView({ petId }: { petId: string }) {
   const spent = completed.reduce((sum, a) => sum + (a.amountAZN ?? 0), 0);
   const rides = completed.filter((a) => a.withRide).length;
   const dueVaccines = sortVaccines(pet.vaccines.filter((v) => v.status === "overdue" || v.status === "due_soon"));
-  const overdueCount = pet.vaccines.filter((v) => v.status === "overdue").length;
   // Most urgent vaccine: the first overdue / due-soon one, otherwise the next dose coming up.
   const nextVaccine = dueVaccines[0] ?? [...pet.vaccines].sort((a, b) => (a.nextDate ?? a.dueDate).localeCompare(b.nextDate ?? b.dueDate))[0];
   const owner = ownerQ.data?.client;
@@ -117,195 +144,196 @@ export function PetProfileView({ petId }: { petId: string }) {
   const openReminder = () => setReminderKey((k) => k + 1);
   const openBooking = () => setBookingKey((k) => k + 1);
 
-  return (
-    <div className="space-y-6">
-      <BackLink href={backHref}>{t("profile.backToClients")}</BackLink>
+  const facts: BandFact[] = [
+    {
+      id: "vaccines",
+      tone: healthTone,
+      pet: pawFor(pet),
+      icon: <HeartPulse size={14} />,
+      label: t("pet.vaccines"),
+      value: t.dynamic(`healthShort.${pet.healthStatus}`),
+      footnote: nextVaccine ? `${nextVaccine.name} · ${formatDate(nextVaccine.nextDate ?? nextVaccine.dueDate, locale, today)}` : t("health.allGood"),
+    },
+    ...(mode === "visits"
+      ? ([
+          {
+            id: "next",
+            tone: "lilac",
+            icon: <CalendarClock size={14} />,
+            label: t("pet.next"),
+            value: pet.nextAppointment ? formatDayLabel(pet.nextAppointment.start, locale, today) : "—",
+            footnote: pet.nextAppointment ? `${formatTime(pet.nextAppointment.start)} · ${pet.nextAppointment.serviceName}` : t("pet.noNext"),
+          },
+          {
+            id: "visits",
+            tone: "sky",
+            icon: <ClipboardList size={14} />,
+            label: t("pet.visitsLabel"),
+            value: formatNumber(pet.visitsCount, locale),
+            footnote: pet.lastVisitAt ? t("pet.lastVisitValue", { date: formatDate(pet.lastVisitAt, locale, today) }) : t("pet.noVisits"),
+          },
+          {
+            id: "spent",
+            tone: "sand",
+            icon: <Wallet size={14} />,
+            label: t("pet.spent"),
+            value: visitsQ.data ? formatMoney(spent, locale, { decimals: 0 }) : "…",
+            footnote: visitsQ.data ? (rides ? t.plural("pet.ridesFootnote", rides) : t("pet.noRides")) : undefined,
+          },
+        ] satisfies BandFact[])
+      : ([
+          { id: "age", tone: "lilac", icon: <Cake size={14} />, label: t("pet.age"), value: formatAge(pet.birthDate, locale, today), footnote: formatDateLong(pet.birthDate, locale) },
+          { id: "weight", tone: "sky", icon: <Weight size={14} />, label: t("pet.weight"), value: formatWeight(pet.weightKg, locale), footnote: tc.dynamic(`size.${pet.size}`) },
+          {
+            id: "orders",
+            tone: "sand",
+            icon: <ShoppingBag size={14} />,
+            label: t("owners.orders"),
+            value: owner ? formatNumber(owner.ordersCount, locale) : "…",
+            footnote: owner ? t("pet.ordersByOwner", { name: owner.fullName }) : undefined,
+          },
+        ] satisfies BandFact[])),
+  ];
+  // Phones: the first action keeps its text, the others become icon buttons (names stay for screen readers).
+  const remindFirst = dueVaccines.length > 0;
 
-      {/* ---- Header ---- */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-        <PetAvatar name={pet.name} species={pet.species} tint={pet.tint} photoUrl={pet.photoUrl} size="xl" className="animate-fade-up" />
-        <PageHeader
-          className="min-w-0 flex-1 sm:flex-col sm:items-start 2xl:flex-row 2xl:items-end"
-          eyebrow={`${pet.code} · ${tc.dynamic(`species.${pet.species}`)}`}
-          title={pet.name}
-          description={`${pet.breed} · ${tc.dynamic(`sex.${pet.sex}`)} · ${formatAge(pet.birthDate, locale, today)} · ${formatWeight(pet.weightKg, locale)}`}
+  return (
+    <div className="space-y-section">
+      <div className="space-y-1">
+        <BackLink href={backHref}>{t("profile.backToClients")}</BackLink>
+
+        <ProfileBand
+          avatar={<PetAvatar name={pet.name} species={pet.species} tint={pet.tint} photoUrl={pet.photoUrl} size="md" className="animate-fade-up" />}
+          header={
+            <PageHeader
+              eyebrow={`${pet.code} · ${tc.dynamic(`species.${pet.species}`)}`}
+              title={pet.name}
+            />
+          }
+          details={
+            // Everything about the pet the band's cells don't show (shops have age and weight there).
+            <>
+              <span>{pet.breed}</span>
+              <span className="inline-flex items-center gap-1">
+                {pet.sex === "f" ? <Venus aria-hidden="true" size={14} className="shrink-0" /> : <Mars aria-hidden="true" size={14} className="shrink-0" />}
+                <span className="sr-only">{t("pet.sexLabel")}: </span>
+                {tc.dynamic(`sex.${pet.sex}`)}, {pet.neutered ? t("pet.neutered") : t("pet.notNeutered")}
+              </span>
+              {mode === "visits" ? (
+                <>
+                  <span className="inline-flex items-center gap-1">
+                    <Cake aria-hidden="true" size={14} className="shrink-0" />
+                    <span className="sr-only">{t("pet.age")}: </span>
+                    {formatAge(pet.birthDate, locale, today)} ({formatDateLong(pet.birthDate, locale)})
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Weight aria-hidden="true" size={14} className="shrink-0" />
+                    <span className="sr-only">{t("pet.weightSize")}: </span>
+                    {formatWeight(pet.weightKg, locale)} · {tc.dynamic(`size.${pet.size}`)}
+                  </span>
+                </>
+              ) : null}
+              <span className="inline-flex items-center gap-1">
+                <Microchip aria-hidden="true" size={14} className="shrink-0" />
+                {t("pet.microchip")}: <span className="tabular">{pet.microchip ?? t("pet.noMicrochip")}</span>
+              </span>
+            </>
+          }
           actions={
             <>
-              {dueVaccines.length ? (
-                <Button variant="accent" leftIcon={<BellRing aria-hidden="true" size={18} />} onClick={openReminder}>
+              {remindFirst ? (
+                <Button variant="accent" leftIcon={<BellRing aria-hidden="true" size={18} />} onClick={openReminder} className="max-sm:flex-1">
                   {t("pet.remind")}
                 </Button>
               ) : null}
               {mode === "visits" ? (
-                <Button variant={dueVaccines.length ? "secondary" : "primary"} leftIcon={<CalendarPlus aria-hidden="true" size={18} />} onClick={openBooking} disabled={!ownerQ.data}>
-                  {t("owner.newAppointment")}
+                <Button
+                  variant={remindFirst ? "secondary" : "primary"}
+                  leftIcon={<CalendarPlus aria-hidden="true" size={18} />}
+                  onClick={openBooking}
+                  disabled={!ownerQ.data}
+                  className={remindFirst ? undefined : "max-sm:flex-1"}
+                >
+                  <span className={remindFirst ? "max-sm:sr-only" : undefined}>{t("owner.newAppointment")}</span>
                 </Button>
               ) : null}
-              {owner ? <CallLink phone={owner.phone} label={t("pet.callOwner")} /> : null}
+              {owner ? <CallLink phone={owner.phone} label={t("pet.callOwner")} compactOnPhone={remindFirst || mode === "visits"} /> : null}
             </>
           }
+          factsLabel={t("pet.keyFacts")}
+          facts={facts}
         />
       </div>
 
-      {/* ---- Key facts ---- */}
-      <section aria-label={t("pet.keyFacts")} className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        <MiniStat
-          index={0}
-          tone={healthTone}
-          pet={pawFor(pet)}
-          icon={<HeartPulse size={16} />}
-          label={t("pet.vaccines")}
-          value={<span className="text-title sm:text-h2">{t.dynamic(`healthShort.${pet.healthStatus}`)}</span>}
-          footnote={
-            nextVaccine
-              ? `${nextVaccine.name} · ${formatDate(nextVaccine.nextDate ?? nextVaccine.dueDate, locale, today)}`
-              : t("health.allGood")
-          }
-        />
-        {mode === "visits" ? (
-          <>
-            <MiniStat
-              index={1}
-              tone="lilac"
-              icon={<CalendarClock size={16} />}
-              label={t("pet.next")}
-              value={pet.nextAppointment ? formatDayLabel(pet.nextAppointment.start, locale, today) : "—"}
-              footnote={pet.nextAppointment ? `${formatTime(pet.nextAppointment.start)} · ${pet.nextAppointment.serviceName}` : t("pet.noNext")}
-            />
-            <MiniStat
-              index={2}
-              tone="sky"
-              icon={<ClipboardList size={16} />}
-              label={t("pet.visitsLabel")}
-              value={formatNumber(pet.visitsCount, locale)}
-              footnote={pet.lastVisitAt ? t("pet.lastVisitValue", { date: formatDate(pet.lastVisitAt, locale, today) }) : t("pet.noVisits")}
-            />
-            <MiniStat
-              index={3}
-              tone="sand"
-              icon={<Wallet size={16} />}
-              label={t("pet.spent")}
-              value={visitsQ.data ? formatMoney(spent, locale, { decimals: 0 }) : "…"}
-              footnote={visitsQ.data ? (rides ? t.plural("pet.ridesFootnote", rides) : t("pet.noRides")) : undefined}
-            />
-          </>
-        ) : (
-          <>
-            <MiniStat index={1} tone="lilac" icon={<UserRound size={16} />} label={t("pet.age")} value={formatAge(pet.birthDate, locale, today)} footnote={formatDateLong(pet.birthDate, locale)} />
-            <MiniStat index={2} tone="sky" icon={<ClipboardList size={16} />} label={t("pet.weight")} value={formatWeight(pet.weightKg, locale)} footnote={tc.dynamic(`size.${pet.size}`)} />
-            <MiniStat
-              index={3}
-              tone="sand"
-              icon={<ShoppingBag size={16} />}
-              label={t("owners.orders")}
-              value={owner ? formatNumber(owner.ordersCount, locale) : "…"}
-              footnote={owner ? t("pet.ordersByOwner", { name: owner.fullName }) : undefined}
-            />
-          </>
-        )}
-      </section>
+      {/* Two columns once the page area is ≥ 56rem (container query: at 1024px with the sidebar open they'd squeeze the tables). */}
+      <div className="@container">
+        <div className="grid items-start gap-4 @4xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          {/* ---- Tabs ---- */}
+          <Card padding="none" className="min-w-0 overflow-hidden">
+            <Tabs tabs={tabs} value={tab} onChange={(id) => update({ tab: id === tabIds[0] ? null : id })} label={t("petTabs.label", { pet: pet.shortName })} idPrefix="pet" className="px-2 pt-1 sm:px-4" />
+            <TabPanel idPrefix="pet" value={tab} className="p-4 lg:p-5">
+              {tab === "visits" ? (
+                <AsyncView
+                  query={visitsQ}
+                  loading={<SkeletonRows rows={5} />}
+                  compact
+                  empty={
+                    <EmptyState
+                      compact
+                      pet={pawFor(pet)}
+                      title={t("visits.emptyTitle")}
+                      description={t("visits.emptyBody", { pet: pet.shortName })}
+                      action={
+                        <Button variant="secondary" size="sm" onClick={openBooking} disabled={!ownerQ.data}>
+                          {t("owner.newAppointment")}
+                        </Button>
+                      }
+                    />
+                  }
+                >
+                  {(data) => <VisitsTable rows={data.items} caption={t("visits.caption", { pet: pet.shortName })} now={now} />}
+                </AsyncView>
+              ) : null}
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-6">
-        {/* ---- Tabs ---- */}
-        <Card padding="none" className="min-w-0 overflow-hidden">
-          <Tabs tabs={tabs} value={tab} onChange={(id) => update({ tab: id === tabIds[0] ? null : id })} label={t("petTabs.label", { pet: pet.shortName })} idPrefix="pet" className="px-3 pt-2 sm:px-5" />
-          <TabPanel idPrefix="pet" value={tab} className="p-4 sm:p-6">
-            {tab === "visits" ? (
-              <AsyncView
-                query={visitsQ}
-                loading={<SkeletonRows rows={5} />}
-                compact
-                empty={
-                  <EmptyState
-                    compact
-                    pet={pawFor(pet)}
-                    title={t("visits.emptyTitle")}
-                    description={t("visits.emptyBody", { pet: pet.shortName })}
-                    action={
-                      <Button variant="secondary" size="sm" onClick={openBooking} disabled={!ownerQ.data}>
-                        {t("owner.newAppointment")}
-                      </Button>
-                    }
-                  />
-                }
-              >
-                {(data) => <VisitsTable rows={data.items} caption={t("visits.caption", { pet: pet.shortName })} now={now} />}
-              </AsyncView>
-            ) : null}
+              {tab === "orders" ? (
+                <AsyncView
+                  query={ownerQ}
+                  loading={<SkeletonRows rows={5} />}
+                  compact
+                  isEmpty={(d) => d.orders.length === 0}
+                  empty={<EmptyState compact pet={pawFor(pet)} title={t("owner.noOrders")} description={t("pet.ordersEmptyBody")} />}
+                >
+                  {/* The band's Orders cell already says they're under the owner's name. */}
+                  {(d) => <OrdersTable rows={d.orders} caption={t("orders.caption", { name: d.client.fullName })} now={now} />}
+                </AsyncView>
+              ) : null}
 
-            {tab === "orders" ? (
-              <AsyncView
-                query={ownerQ}
-                loading={<SkeletonRows rows={5} />}
-                compact
-                isEmpty={(d) => d.orders.length === 0}
-                empty={<EmptyState compact pet={pawFor(pet)} title={t("owner.noOrders")} description={t("pet.ordersEmptyBody")} />}
-              >
-                {(d) => (
-                  <div className="space-y-3">
-                    <p className="text-meta text-fg-secondary">{t("pet.ordersByOwner", { name: d.client.fullName })}</p>
-                    <OrdersTable rows={d.orders} caption={t("orders.caption", { name: d.client.fullName })} now={now} />
-                  </div>
-                )}
-              </AsyncView>
-            ) : null}
-
-            {tab === "health" ? (
-              <div className="space-y-5">
-                <Card tone={pet.healthStatus === "overdue" ? "softPeach" : pet.healthStatus === "due_soon" ? "softSand" : "softMint"} padding="sm" className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0 space-y-1">
-                    <StatusPill kind="health" status={pet.healthStatus} />
-                    <p className="text-body-sm text-fg">
-                      {dueVaccines.length
-                        ? [
-                            overdueCount ? t.plural("health.overdueCount", overdueCount) : null,
-                            dueVaccines.length - overdueCount ? t.plural("health.soonCount", dueVaccines.length - overdueCount) : null,
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")
-                        : t("health.allGoodLong", { pet: pet.shortName })}
+              {tab === "health" ? (
+                // The band already shows the status, the tab badge the number due and the band's
+                // "Remind" button the action; the table's statuses say which ones.
+                <div className="space-y-3">
+                  {lastReminder ? (
+                    <p className="inline-flex items-center gap-1.5 text-meta text-fg-secondary">
+                      <BellRing aria-hidden="true" size={14} className="shrink-0" />
+                      {t("health.lastReminder", { when: formatRelative(lastReminder.at, locale, today), name: lastReminder.to })}
                     </p>
-                    {lastReminder ? (
-                      <p className="text-meta text-fg-tertiary">
-                        {t("health.lastReminder", { when: formatRelative(lastReminder.at, locale, today), name: lastReminder.to })}
-                      </p>
-                    ) : null}
-                  </div>
-                  {dueVaccines.length ? (
-                    <Button variant="primary" leftIcon={<BellRing aria-hidden="true" size={18} />} onClick={openReminder} className="shrink-0">
-                      {t("health.remindVia")}
-                    </Button>
                   ) : null}
-                </Card>
-                {pet.vaccines.length ? (
-                  <VaccinesTable vaccines={pet.vaccines} now={now} caption={t("health.caption", { pet: pet.shortName })} />
-                ) : (
-                  <EmptyState compact pet={pawFor(pet)} title={t("health.emptyTitle")} description={t("health.emptyBody")} />
-                )}
-                <p className="text-meta text-fg-secondary">{t("health.source")}</p>
-              </div>
-            ) : null}
+                  {pet.vaccines.length ? (
+                    <VaccinesTable vaccines={pet.vaccines} now={now} caption={t("health.caption", { pet: pet.shortName })} />
+                  ) : (
+                    <EmptyState compact pet={pawFor(pet)} title={t("health.emptyTitle")} description={t("health.emptyBody")} />
+                  )}
+                  <p className="text-meta text-fg-secondary">{t("health.source")}</p>
+                </div>
+              ) : null}
 
-            {tab === "notes" ? <NotesTab pet={pet} visits={visits} detail={ownerQ.data} loading={!ownerQ.data && !ownerQ.error} now={now} /> : null}
+              {tab === "notes" ? <NotesTab pet={pet} visits={visits} detail={ownerQ.data} loading={!ownerQ.data && !ownerQ.error} now={now} /> : null}
 
-            {tab === "files" ? <FilesPanel petId={pet.id} petName={pet.shortName} /> : null}
-          </TabPanel>
-        </Card>
+              {tab === "files" ? <FilesPanel petId={pet.id} petName={pet.shortName} /> : null}
+            </TabPanel>
+          </Card>
 
-        {/* ---- Side: about + owner ---- */}
-        <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-1">
-          <Panel title={t("pet.about")} icon={<ClipboardList size={20} />}>
-            <DetailList
-              items={[
-                { label: t("pet.speciesBreed"), value: `${tc.dynamic(`species.${pet.species}`)} · ${pet.breed}` },
-                { label: t("pet.birthDate"), value: `${formatDateLong(pet.birthDate, locale)} (${formatAge(pet.birthDate, locale, today)})` },
-                { label: t("pet.sexLabel"), value: `${tc.dynamic(`sex.${pet.sex}`)} · ${pet.neutered ? t("pet.neutered") : t("pet.notNeutered")}` },
-                { label: t("pet.weightSize"), value: `${formatWeight(pet.weightKg, locale)} · ${tc.dynamic(`size.${pet.size}`)}` },
-                { label: t("pet.microchip"), value: pet.microchip ?? t("pet.noMicrochip") },
-                { label: t("pet.code"), value: pet.code },
-              ]}
-            />
-          </Panel>
+          {/* ---- Side: the owner (the pet's own details are in the band) ---- */}
           <OwnerPanel detail={ownerQ.data} ownerError={ownerQ.error} onRetry={ownerQ.refetch} pet={pet} ownerHref={ownerHref} now={now} linkQuery={linkQuery} />
         </div>
       </div>
@@ -349,19 +377,30 @@ function OwnerPanel({
   const locale = useLocale();
   const others = detail?.pets.filter((p) => p.id !== pet.id) ?? [];
   return (
-    <Panel title={t("pet.owner")} icon={<UserRound size={20} />}>
+    <Panel
+      title={t("pet.owner")}
+      icon={<UserRound size={18} />}
+      actions={
+        <Link href={ownerHref} className="inline-flex min-h-11 items-center text-body-sm font-semibold text-primary underline-offset-4 hover:underline lg:min-h-9">
+          {t("pet.ownerProfile")}
+        </Link>
+      }
+    >
       {detail ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center gap-3">
             <Avatar name={detail.client.fullName} size="md" />
             <div className="min-w-0">
               <Link href={ownerHref} className="block truncate font-semibold text-fg underline-offset-4 hover:underline">
                 {detail.client.fullName}
               </Link>
-              <a href={phoneHref(detail.client.phone)} className="block text-body-sm tabular text-fg-secondary underline-offset-4 hover:underline">
-                {formatPhone(detail.client.phone)}
-              </a>
-              <p className="truncate text-meta text-fg-secondary">{detail.client.area}</p>
+              <p className="text-body-sm text-fg-secondary">
+                <a href={phoneHref(detail.client.phone)} className="tabular underline-offset-4 hover:underline">
+                  {formatPhone(detail.client.phone)}
+                </a>
+                {" · "}
+                {detail.client.area}
+              </p>
             </div>
           </div>
           {others.length ? (
@@ -376,9 +415,6 @@ function OwnerPanel({
               </ul>
             </div>
           ) : null}
-          <Link href={ownerHref} className="inline-flex min-h-11 items-center text-body-sm font-semibold text-primary underline-offset-4 hover:underline">
-            {t("pet.openOwner")}
-          </Link>
         </div>
       ) : ownerError ? (
         <div className="space-y-2">
@@ -405,13 +441,13 @@ function NotesTab({ pet, visits, detail, loading, now }: { pet: Pet; visits: App
   const appNotes = [...bookingNotes, ...rideNotes].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 12);
   const staffNotes = visits.filter((a) => a.staffNote).slice(0, 12);
   return (
-    <div className="space-y-6">
-      <section aria-labelledby="notes-app" className="space-y-3">
+    <div className="space-y-4">
+      <section aria-labelledby="notes-app" className="space-y-2">
         <h2 id="notes-app" className="font-display text-title font-extrabold">
           {t("notes.fromApp")}
         </h2>
         <div>
-          <p className="mb-2 text-meta font-semibold text-fg-secondary">{t("notes.travel")}</p>
+          <p className="mb-1.5 text-meta font-semibold text-fg-secondary">{t("notes.travel")}</p>
           {pet.travelNotes.length ? (
             <ul className="flex flex-wrap gap-2">
               {pet.travelNotes.map((n) => (
@@ -431,7 +467,7 @@ function NotesTab({ pet, visits, detail, loading, now }: { pet: Pet; visits: App
         ) : appNotes.length ? (
           <ul className="space-y-2">
             {appNotes.map((n) => (
-              <li key={n.id} className="rounded-card bg-surface-muted px-4 py-3">
+              <li key={n.id} className="rounded-card bg-surface-muted px-3.5 py-2.5">
                 <p className="text-meta text-fg-secondary">
                   {n.title} · {formatDate(n.at, locale, today)}
                 </p>
@@ -444,7 +480,7 @@ function NotesTab({ pet, visits, detail, loading, now }: { pet: Pet; visits: App
         )}
       </section>
 
-      <section aria-labelledby="notes-internal" className="space-y-3 border-t border-border pt-5">
+      <section aria-labelledby="notes-internal" className="space-y-2 border-t border-border pt-4">
         <h2 id="notes-internal" className="font-display text-title font-extrabold">
           {t("notes.internal")}
         </h2>
@@ -457,13 +493,13 @@ function NotesTab({ pet, visits, detail, loading, now }: { pet: Pet; visits: App
       </section>
 
       {staffNotes.length ? (
-        <section aria-labelledby="notes-visits" className="space-y-3 border-t border-border pt-5">
+        <section aria-labelledby="notes-visits" className="space-y-2 border-t border-border pt-4">
           <h2 id="notes-visits" className="font-display text-title font-extrabold">
             {t("notes.visitNotes")}
           </h2>
           <ul className="space-y-2">
             {staffNotes.map((a) => (
-              <li key={a.id} className="rounded-card border border-border px-4 py-3">
+              <li key={a.id} className="rounded-card border border-border px-3.5 py-2.5">
                 <p className="text-meta text-fg-secondary">
                   {a.serviceName} · {formatDate(a.start, locale, today)}
                 </p>

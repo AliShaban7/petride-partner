@@ -1,9 +1,9 @@
 "use client";
 
-import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight, List } from "lucide-react";
+import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight, List, SlidersHorizontal } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { Button, CountBadge, DateInput, IconButton, SearchField, SegmentedControl, Select, type SelectOption } from "@/components/ui";
+import { Button, CountBadge, DateInput, IconButton, Popover, SearchField, SegmentedControl, Select, type SelectOption } from "@/components/ui";
 import type { Service } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { useT } from "@/lib/i18n/client";
@@ -22,19 +22,36 @@ export type ToolbarProps = {
   /** Upcoming requests waiting for an answer (badge on the chip). */
   requests: number;
   categories: Service["category"][];
+  /** The section heading (h2): date range / day, with the number of appointments. */
+  heading: ReactNode;
+  headingId: string;
 };
 
-/** Filters: view switch, date range / calendar navigation, search, service, status chips. */
-export function Toolbar({ state, update, anchor, today, services, requests, categories }: ToolbarProps) {
+/** List / Week / Day switch (lives in the page header's actions, on the title row). */
+export function ViewSwitch({ value, onChange }: { value: ViewMode; onChange: (view: ViewMode) => void }) {
+  const t = useT("appointments");
+  // Icons from 640px only: on phones the switch and the "+" button then share one row (in ru the
+  // three labels with icons pushed "+" onto a row of its own).
+  const options: { value: ViewMode; label: string; icon: ReactNode }[] = [
+    { value: "list", label: t("views.list"), icon: <List aria-hidden="true" size={16} className="max-sm:hidden" /> },
+    { value: "week", label: t("views.week"), icon: <CalendarRange aria-hidden="true" size={16} className="max-sm:hidden" /> },
+    { value: "day", label: t("views.day"), icon: <CalendarDays aria-hidden="true" size={16} className="max-sm:hidden" /> },
+  ];
+  return <SegmentedControl label={t("views.label")} options={options} value={value} onChange={onChange} />;
+}
+
+/**
+ * The section's toolbar, as few rows as the width allows:
+ *   row 1: calendar navigation + heading, search, period (list, ≥ 640px) and a "Filters" popover
+ *          (service, go-to-date, and the period on phones);
+ *   row 2: status chips (the "Requests" chip carries the waiting count).
+ * Sticky under the top bar in the list view on desktops, so the filters stay at hand while scrolling.
+ */
+export function Toolbar({ state, update, anchor, today, services, requests, categories, heading, headingId }: ToolbarProps) {
   const t = useT("appointments");
   const tc = useT("common");
   const ts = useT("status");
-
-  const viewOptions: { value: ViewMode; label: string; icon: ReactNode }[] = [
-    { value: "list", label: t("views.list"), icon: <List aria-hidden="true" size={16} /> },
-    { value: "week", label: t("views.week"), icon: <CalendarRange aria-hidden="true" size={16} /> },
-    { value: "day", label: t("views.day"), icon: <CalendarDays aria-hidden="true" size={16} /> },
-  ];
+  const calendar = state.view !== "list";
 
   const serviceOptions: SelectOption[] = [
     ...categories.map((c) => ({ value: `cat:${c}`, label: t("filters.allInCategory", { category: ts.dynamic(`category.${c}`) }) })),
@@ -52,69 +69,92 @@ export function Toolbar({ state, update, anchor, today, services, requests, cate
     update({ status: has ? state.status.filter((c) => c !== chip) : STATUS_CHIPS.filter((c) => c === chip || state.status.includes(c)) });
   };
 
+  const setRange = (range: RangePreset) => {
+    if (range === "custom" && today) {
+      update({ range, from: state.from ?? toIsoDay(today), to: state.to ?? toIsoDay(startOfDay(today, 6)) });
+    } else update({ range });
+  };
+  const rangeSelect = (className?: string) => (
+    <Select
+      label={t("range.label")}
+      hideLabel={className !== undefined}
+      wrapperClassName={className}
+      value={state.range}
+      onChange={(e) => setRange(e.target.value as RangePreset)}
+      options={RANGE_PRESETS.map((p) => ({ value: p, label: t.dynamic(`range.${p}`) }))}
+    />
+  );
+
   return (
-    <div className="space-y-4 rounded-panel bg-surface p-4 shadow-card sm:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <SegmentedControl label={t("views.label")} options={viewOptions} value={state.view} onChange={(view) => update({ view })} />
-
-        {state.view === "list" ? null : (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              className="min-h-11"
-              onClick={() => update({ date: undefined })}
-            >
-              {t("nav.today")}
-            </Button>
-            <IconButton label={state.view === "week" ? t("nav.prevWeek") : t("nav.prevDay")} icon={<ChevronLeft size={20} />} variant="outline" onClick={() => step(-1)} />
-            <IconButton label={state.view === "week" ? t("nav.nextWeek") : t("nav.nextDay")} icon={<ChevronRight size={20} />} variant="outline" onClick={() => step(1)} />
-            <DateInput
-              kind="date"
-              label={t("nav.goTo")}
-              hideLabel
-              wrapperClassName="hidden w-[10.5rem] sm:flex"
-              value={anchor ? toIsoDay(anchor) : ""}
-              onChange={(e) => {
-                if (parseIsoDay(e.target.value) !== null) update({ date: e.target.value });
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      <div
-        className={cn(
-          "grid grid-cols-2 gap-2 sm:gap-3",
-          state.view === "list" ? "lg:grid-cols-[minmax(0,1fr)_13rem_16rem]" : "lg:grid-cols-[minmax(0,1fr)_18rem]",
-        )}
-      >
-        <div className="col-span-2 min-w-0 lg:col-span-1">
-          <DebouncedSearch value={state.q} onCommit={(q) => update({ q })} label={t("filters.searchLabel")} placeholder={t("filters.search")} />
+    <div
+      className={cn(
+        "space-y-3 rounded-t-panel border-b border-border bg-surface px-3 py-3 sm:px-4 lg:px-5",
+        // Sticky only where the page itself scrolls (the list); the calendars scroll inside their own box.
+        !calendar && "lg:sticky-toolbar",
+      )}
+    >
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
+        <div className="flex min-w-0 basis-full items-center gap-1.5 sm:flex-1 sm:basis-auto">
+          {calendar ? (
+            <>
+              <Button variant="outline" size="sm" className="shrink-0" onClick={() => update({ date: undefined })}>
+                {t("nav.today")}
+              </Button>
+              {/* Phones step through days with the day strip (and a swipe) instead. */}
+              <IconButton
+                label={state.view === "week" ? t("nav.prevWeek") : t("nav.prevDay")}
+                icon={<ChevronLeft size={18} />}
+                variant="outline"
+                size="sm"
+                className="max-sm:hidden"
+                onClick={() => step(-1)}
+              />
+              <IconButton
+                label={state.view === "week" ? t("nav.nextWeek") : t("nav.nextDay")}
+                icon={<ChevronRight size={18} />}
+                variant="outline"
+                size="sm"
+                className="max-sm:hidden"
+                onClick={() => step(1)}
+              />
+            </>
+          ) : null}
+          <h2 id={headingId} className={cn("min-w-0 font-display text-title font-extrabold tracking-tight text-fg", calendar && "ml-1.5")}>
+            {heading}
+          </h2>
         </div>
-        {state.view === "list" ? (
-          <Select
-            label={t("range.label")}
-            hideLabel
-            value={state.range}
-            onChange={(e) => {
-              const range = e.target.value as RangePreset;
-              if (range === "custom" && today) {
-                update({ range, from: state.from ?? toIsoDay(today), to: state.to ?? toIsoDay(startOfDay(today, 6)) });
-              } else update({ range });
-            }}
-            options={RANGE_PRESETS.map((p) => ({ value: p, label: t.dynamic(`range.${p}`) }))}
+
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none sm:gap-3">
+          <DebouncedSearch
+            value={state.q}
+            onCommit={(q) => update({ q })}
+            label={t("filters.searchLabel")}
+            placeholder={t("filters.search")}
+            className="min-w-0 flex-1 sm:w-56 sm:flex-none xl:w-72"
           />
-        ) : null}
-        <Select
-          label={t("filters.service")}
-          hideLabel
-          wrapperClassName={state.view === "list" ? undefined : "col-span-2 lg:col-span-1"}
-          value={state.service}
-          onChange={(e) => update({ service: e.target.value })}
-          placeholder={t("filters.allServices")}
-          options={serviceOptions}
-        />
+          {calendar ? null : rangeSelect("hidden w-48 sm:flex xl:w-52")}
+          <FiltersPopover label={tc("actions.filter")} count={state.service ? 1 : 0}>
+            {calendar ? (
+              <DateInput
+                kind="date"
+                label={t("nav.goTo")}
+                value={anchor ? toIsoDay(anchor) : ""}
+                onChange={(e) => {
+                  if (parseIsoDay(e.target.value) !== null) update({ date: e.target.value });
+                }}
+              />
+            ) : (
+              <div className="sm:hidden">{rangeSelect()}</div>
+            )}
+            <Select
+              label={t("filters.service")}
+              value={state.service}
+              onChange={(e) => update({ service: e.target.value })}
+              placeholder={t("filters.allServices")}
+              options={serviceOptions}
+            />
+          </FiltersPopover>
+        </div>
       </div>
 
       {state.view === "list" && state.range === "custom" ? (
@@ -124,7 +164,7 @@ export function Toolbar({ state, update, anchor, today, services, requests, cate
         </div>
       ) : null}
 
-      <div role="group" aria-label={t("filters.status")} className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 py-0.5">
+      <div role="group" aria-label={t("filters.status")} className="scrollbar-none relative -mx-1 flex gap-2 overflow-x-auto px-1 py-0.5">
         <Chip pressed={state.status.length === 0} onClick={() => update({ status: [] })}>
           {t("filters.all")}
         </Chip>
@@ -143,7 +183,7 @@ export function Toolbar({ state, update, anchor, today, services, requests, cate
           <Button
             variant="ghost"
             size="sm"
-            className="min-h-10 shrink-0 text-primary"
+            className="shrink-0 text-primary"
             onClick={() => update({ status: [], service: "", q: "", range: undefined, from: undefined, to: undefined })}
           >
             {tc("actions.reset")}
@@ -154,6 +194,26 @@ export function Toolbar({ state, update, anchor, today, services, requests, cate
   );
 }
 
+/** "Filters" button with a popover for the less used filters; the badge counts the ones set inside. */
+function FiltersPopover({ label, count, children }: { label: string; count: number; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      label={label}
+      trigger={(p) => (
+        <Button {...p} variant="outline" className="shrink-0 max-sm:px-3" leftIcon={<SlidersHorizontal size={18} aria-hidden="true" />}>
+          <span className="max-sm:sr-only">{label}</span>
+          <CountBadge count={count} />
+        </Button>
+      )}
+    >
+      <div className="space-y-3 p-4">{children}</div>
+    </Popover>
+  );
+}
+
 function Chip({ pressed, onClick, children }: { pressed: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
@@ -161,7 +221,8 @@ function Chip({ pressed, onClick, children }: { pressed: boolean; onClick: () =>
       aria-pressed={pressed}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-chip border px-3.5 text-body-sm font-semibold transition-colors duration-150",
+        // 44px on touch widths, 36px from 1024px (mouse).
+        "inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-chip border px-3.5 text-body-sm font-semibold transition-colors duration-150 lg:min-h-9 lg:px-3",
         pressed ? "border-primary bg-primary text-on-primary" : "border-border bg-surface text-fg hover:border-control-border/60 hover:bg-surface-muted",
       )}
     >
@@ -171,7 +232,19 @@ function Chip({ pressed, onClick, children }: { pressed: boolean; onClick: () =>
 }
 
 /** Search box that writes to the URL 300 ms after the last keystroke. */
-function DebouncedSearch({ value, onCommit, label, placeholder }: { value: string; onCommit: (q: string) => void; label: string; placeholder: string }) {
+function DebouncedSearch({
+  value,
+  onCommit,
+  label,
+  placeholder,
+  className,
+}: {
+  value: string;
+  onCommit: (q: string) => void;
+  label: string;
+  placeholder: string;
+  className?: string;
+}) {
   const [draft, setDraft] = useState(value);
   const [seen, setSeen] = useState(value);
   const [written, setWritten] = useState(value);
@@ -194,5 +267,5 @@ function DebouncedSearch({ value, onCommit, label, placeholder }: { value: strin
       next ? 300 : 0,
     );
   };
-  return <SearchField label={label} placeholder={placeholder} value={draft} onValueChange={change} />;
+  return <SearchField label={label} placeholder={placeholder} value={draft} onValueChange={change} wrapperClassName={className} />;
 }

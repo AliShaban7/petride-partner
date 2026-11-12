@@ -72,7 +72,7 @@ export function Sidebar({
             <PawMark size={28} />
           </span>
           <span className={cn("min-w-0 items-baseline gap-1.5", fullOnly)} aria-hidden="true">
-            <span className="font-display text-[1.375rem] font-extrabold leading-none tracking-tight">PetRide</span>
+            <span className="font-display text-[1.375rem] font-extrabold leading-none tracking-tight">PetRide</span>{" "}
             <span className="rounded-chip bg-accent px-2 py-0.5 text-caption font-bold text-fg">{t("partnerLabel")}</span>
           </span>
         </Link>

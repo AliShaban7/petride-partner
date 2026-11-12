@@ -12,7 +12,7 @@ import { BottomTabBar } from "./BottomTabBar";
 import { MoreSheet } from "./MoreSheet";
 import { getNavItems, isActive } from "./nav";
 import { Sidebar } from "./Sidebar";
-import { MobileTopBar, TopBar } from "./TopBar";
+import { MobileNewBadge, MobileTopBar, TopBar } from "./TopBar";
 import { useShellCounts } from "./useShellCounts";
 
 // Desktop "collapsed" preference in localStorage, read through useSyncExternalStore (no flash, no effect).
@@ -96,12 +96,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className={cn("flex min-h-dvh min-w-0 flex-col transition-[padding] duration-300", collapsed ? "sm:pl-[var(--sidebar-rail-w)]" : "sm:pl-[var(--sidebar-rail-w)] lg:pl-[var(--sidebar-w)]")}>
         <TopBar counts={counts} />
-        <MobileTopBar title={title} counts={counts} />
+        <MobileTopBar title={title} />
         <main
           id="main"
           tabIndex={-1}
-          className="mx-auto w-full min-w-0 max-w-[1440px] flex-1 px-4 pb-[calc(var(--tabbar-h)+2rem+env(safe-area-inset-bottom))] pt-5 outline-none sm:px-6 sm:pb-12 sm:pt-8 lg:px-8"
+          className="mx-auto w-full min-w-0 max-w-[1440px] flex-1 px-4 pb-[calc(var(--tabbar-h)+1.25rem+env(safe-area-inset-bottom))] pt-4 outline-none sm:px-6 sm:pb-8 sm:pt-5 lg:px-8 lg:pt-6"
         >
+          <MobileNewBadge counts={counts} path={path} />
           {children}
         </main>
       </div>

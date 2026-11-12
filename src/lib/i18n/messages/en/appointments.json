@@ -4,17 +4,11 @@
     "description": "Requests, appointments and rides from the PetRide app."
   },
   "title": "Appointments",
-  "description": "Answer requests, move times and check pets in.",
   "newAppointment": "New appointment",
   "gated": {
     "title": "Shops don't take appointments",
     "body": "Your pet shop gets orders instead. You'll find them under Orders.",
     "action": "Go to orders"
-  },
-  "pendingBanner": {
-    "text_one": "{{count}} new request is waiting for your answer",
-    "text_other": "{{count}} new requests are waiting for your answer",
-    "action": "See requests"
   },
   "results_one": "{{count}} appointment",
   "results_other": "{{count}} appointments",

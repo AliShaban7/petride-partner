@@ -40,13 +40,13 @@ export function ProfileMenu() {
         <button
           type="button"
           {...props}
-          aria-label={`${t("topbar.profile")}: ${session.userName}`}
           className="inline-flex min-h-11 items-center gap-2 rounded-chip p-1 pr-1 transition-colors hover:bg-surface-muted sm:pr-3"
         >
+          {/* Named by its content ("Profile menu: IDEA Admin"), so the visible user name is part of the name (label-in-name). */}
           <Avatar name={session.partnerShortName} size="sm" tint="peach" />
-          <span aria-hidden="true" className="hidden max-w-36 truncate text-body-sm font-semibold text-fg xl:inline">
-            {session.userName}
-          </span>
+          <span className="sr-only">{t("topbar.profile")}: </span>
+          <span className="sr-only xl:hidden">{session.userName}</span>
+          <span className="hidden max-w-36 truncate text-body-sm font-semibold text-fg xl:inline-block">{session.userName}</span>
         </button>
       )}
     />

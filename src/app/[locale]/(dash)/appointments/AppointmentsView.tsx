@@ -1,14 +1,14 @@
 "use client";
 
-import { CalendarDays, Plus, ShoppingBag } from "lucide-react";
+import { Plus, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { CornerPaw } from "@/components/illustrations";
 import { partnerFeatures, useShellCounts } from "@/components/shell";
-import { AsyncView, Button, ButtonLink, Card, EmptyState, ErrorState, PageHeader, Panel, ResponsiveTable, type Column } from "@/components/ui";
+import { AsyncView, Button, ButtonLink, Card, EmptyState, ErrorState, IconButton, PageHeader, ResponsiveTable, type Column } from "@/components/ui";
 import { useApiQuery } from "@/lib/api/hooks";
 import type { Appointment, AppointmentQuery, AppointmentStatus } from "@/lib/api/types";
 import { useSession } from "@/lib/auth/client";
+import { cn } from "@/lib/cn";
 import { formatDate, formatDayLabel, formatDayMonth, formatWeekdayDate } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { ROUTES, localizedHref } from "@/lib/i18n/navigation";
@@ -20,7 +20,7 @@ import { DaySummary } from "./_components/DaySummary";
 import { DayTimeline } from "./_components/DayTimeline";
 import { CompleteDialog, NoShowDialog, ReasonDialog, RescheduleDialog } from "./_components/dialogs";
 import { NewAppointmentDialog, type NewAppointmentPrefill } from "./_components/NewAppointmentDialog";
-import { Toolbar } from "./_components/Toolbar";
+import { Toolbar, ViewSwitch } from "./_components/Toolbar";
 import { WeekCalendar } from "./_components/WeekCalendar";
 import { HOUR, ceilToQuarter, parseIsoDay, rangeFor, startOfDay, startOfWeek, toIsoDay, weekDays } from "./_lib/time";
 import { useAppointmentActions, type ActionKind } from "./_lib/useAppointmentActions";
@@ -35,6 +35,7 @@ type DialogState =
 /** Calendar views hide cancelled / declined unless the status filter asks for them. */
 const CALENDAR_DEFAULT: AppointmentStatus[] = ["requested", "confirmed", "checked_in", "completed", "no_show"];
 const iso = (ms: number | undefined) => (ms === undefined ? undefined : new Date(ms).toISOString());
+const HEADING_ID = "appointments-heading";
 
 /** Appointments: requests, list / week / day views, details drawer and every action on a visit. */
 export function AppointmentsView() {
@@ -48,9 +49,9 @@ function NoAppointments() {
   const t = useT("appointments");
   const locale = useLocale();
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <PageHeader title={t("title")} />
-      <Card padding="lg">
+      <Card padding="md">
         <EmptyState
           pet="tabby"
           title={t("gated.title")}
@@ -100,7 +101,8 @@ function Appointments() {
     to: iso(range.to),
     sort: state.sort,
     page: state.page,
-    pageSize: 20,
+    // 12 rows a page, like every other list (clients, orders, products, rides): a page fits a laptop screen.
+    pageSize: 12,
   };
   const list = useApiQuery(["appointments", "list", listQuery], (api) => api.listAppointments(listQuery), {
     enabled: ready && state.view === "list",
@@ -142,155 +144,174 @@ function Appointments() {
   const goDay = (day: number) => update({ date: day === today ? undefined : toIsoDay(day) });
 
   // ---- Headings ----------------------------------------------------------------------------------------
+  // One h2 for the section, in the toolbar row: the range (list), the week or the day, plus the count.
   const todayDate = ready ? new Date(now) : undefined;
-  let heading = t("title");
-  let subheading: string | undefined;
+  let headingText = t("title");
+  let count: number | undefined;
   if (ready) {
     if (state.view === "list") {
-      heading =
+      headingText =
         state.range === "custom"
           ? [state.from, state.to].filter(Boolean).sort().map((d) => formatDate(d as string, locale, todayDate)).join(" – ") || t("range.custom")
           : t.dynamic(`range.${state.range}`);
-      subheading = list.data ? t.plural("results", list.data.total) : undefined;
+      count = list.data?.total;
     } else if (state.view === "week") {
-      heading = `${formatDayMonth(days[0], locale)} – ${formatDayMonth(days[6], locale)}`;
-      subheading = calendar.data ? t.plural("results", calendar.data.total) : undefined;
+      headingText = `${formatDayMonth(days[0], locale)} – ${formatDayMonth(days[6], locale)}`;
+      count = calendar.data ? calendar.data.total : undefined;
     } else {
+      // No count here: the day strip and the summary tiles already show it.
       const label = formatDayLabel(anchor, locale, todayDate);
-      heading = label === formatDate(anchor, locale, todayDate) ? formatWeekdayDate(anchor, locale) : `${label} · ${formatWeekdayDate(anchor, locale)}`;
-      subheading = calendar.data ? t.plural("results", dayCounts.get(anchor) ?? 0) : undefined;
+      headingText = label === formatDate(anchor, locale, todayDate) ? formatWeekdayDate(anchor, locale) : `${label} · ${formatWeekdayDate(anchor, locale)}`;
     }
   }
+  const countText =
+    count === undefined ? null : (
+      <span className={cn("whitespace-nowrap font-sans font-semibold text-fg-secondary", state.view === "list" ? "text-body-sm" : "text-meta")}>
+        <span className="sr-only">, </span>
+        {t.plural("results", count)}
+      </span>
+    );
+  const heading = (
+    <span className="flex flex-wrap items-baseline gap-x-2">
+      {/* In the list the period select shows the range from 640px: there only the count stays visible. */}
+      <span className={cn(state.view === "list" && count !== undefined && "sm:sr-only")}>{headingText}</span>
+      {countText}
+    </span>
+  );
 
   const hiddenNote = state.status.length ? undefined : t("calendar.hiddenCancelled");
   const filtered = Boolean(state.status.length || state.service || state.q);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
+      {/* No description and no "N requests waiting" banner: the top bar and the Requests chip already show the count. */}
       <PageHeader
         title={t("title")}
         eyebrow={ready ? formatWeekdayDate(now, locale) : undefined}
-        description={t("description")}
         actions={
-          <Button leftIcon={<Plus size={18} aria-hidden="true" />} onClick={() => setDialog({ kind: "new" })} disabled={!ready}>
-            {t("newAppointment")}
-          </Button>
+          <>
+            <ViewSwitch value={state.view} onChange={(view) => update({ view })} />
+            <Button className="max-sm:hidden" leftIcon={<Plus size={18} aria-hidden="true" />} onClick={() => setDialog({ kind: "new" })} disabled={!ready}>
+              {t("newAppointment")}
+            </Button>
+            <IconButton className="sm:hidden" variant="primary" label={t("newAppointment")} icon={<Plus size={20} />} onClick={() => setDialog({ kind: "new" })} disabled={!ready} />
+          </>
         }
       />
 
-      {requests > 0 && !(state.status.length === 1 && state.status[0] === "requested") ? (
-        <Card tone="softPeach" padding="sm" className="group flex animate-fade-up flex-wrap items-center justify-between gap-3 overflow-hidden pr-24">
-          <p className="font-semibold text-fg">{t.plural("pendingBanner.text", requests)}</p>
-          <Button variant="accent" size="sm" className="relative z-10" onClick={() => update({ status: ["requested"], view: "list", range: undefined, page: 1 })}>
-            {t("pendingBanner.action")}
-          </Button>
-          <CornerPaw pet="ginger" width={44} reach={48} />
-        </Card>
-      ) : null}
-
-      <Toolbar state={state} update={update} anchor={anchor} today={today} services={services.data} requests={requests} categories={categories} />
-
-      <Panel
-        title={heading}
-        description={subheading}
-        icon={<CalendarDays size={20} />}
-        className="max-sm:px-3 max-sm:py-4"
-        aria-busy={list.isRefreshing || calendar.isRefreshing || undefined}
-      >
-        {state.view === "list" ? (
-          !ready ? (
-            <ListSkeleton />
-          ) : (
-            <AsyncView
-              query={list}
-              loading={<ListSkeleton />}
-              empty={
-                <EmptyState
-                  pet="golden"
-                  title={filtered ? t("list.noResultsTitle") : t("list.emptyTitle")}
-                  description={filtered ? t("list.noResultsBody") : t("list.emptyBody")}
-                  action={
-                    filtered ? (
-                      <Button variant="secondary" onClick={() => update({ status: [], service: "", q: "" })}>
-                        {t("list.clearFilters")}
-                      </Button>
-                    ) : (
-                      <Button variant="secondary" leftIcon={<Plus size={16} aria-hidden="true" />} onClick={() => setDialog({ kind: "new" })}>
-                        {t("newAppointment")}
-                      </Button>
-                    )
-                  }
-                />
-              }
-            >
-              {(data) => (
-                <AppointmentsList
-                  data={data}
-                  merge={actions.merge}
-                  isPending={actions.isPending}
-                  now={now}
-                  selectedId={state.id}
-                  sort={state.sort}
-                  onSortChange={(sort) => update({ sort })}
-                  onPageChange={(page) => update({ page })}
-                  onOpen={open}
-                  onAction={handleAction}
-                />
-              )}
-            </AsyncView>
-          )
-        ) : calendar.error && !calendar.data ? (
-          <ErrorState error={calendar.error} onRetry={calendar.refetch} />
-        ) : (
-          <>
-            {state.view === "week" ? (
-              <div className="hidden sm:block">
-                {calendar.data && calendar.data.total === 0 ? (
-                  <p className="mb-3 rounded-card bg-surface-muted px-4 py-3 text-body-sm text-fg">{filtered ? t("list.noResultsBody") : t("calendar.emptyWeek")}</p>
-                ) : null}
-                <WeekCalendar
-                  days={days}
-                  appointments={calendarItems}
-                  now={now}
-                  hours={hours}
-                  loading={!calendar.data}
-                  onOpen={open}
-                  onCreateAt={(start) => setDialog({ kind: "new", prefill: { start } })}
-                />
-                {hiddenNote ? <p className="mt-2 text-meta text-fg-secondary">{hiddenNote}</p> : null}
-              </div>
-            ) : null}
-            <div className={state.view === "week" ? "space-y-4 sm:hidden" : "grid gap-6 lg:grid-cols-[minmax(0,1fr)_17rem] xl:grid-cols-[minmax(0,1fr)_19rem]"}>
-              <div className="min-w-0 space-y-4">
-                {days.length ? (
-                  <DayChips
-                    days={days}
-                    selected={anchor}
-                    today={today}
-                    counts={calendar.data ? dayCounts : undefined}
-                    onSelect={goDay}
-                    onWeek={(dir) => goDay(startOfWeek(anchor, dir))}
+      <section aria-labelledby={HEADING_ID} aria-busy={list.isRefreshing || calendar.isRefreshing || undefined} className="relative min-w-0 rounded-panel bg-surface shadow-card">
+        <Toolbar
+          state={state}
+          update={update}
+          anchor={anchor}
+          today={today}
+          services={services.data}
+          requests={requests}
+          categories={categories}
+          heading={heading}
+          headingId={HEADING_ID}
+        />
+        <div className="min-w-0 p-3 sm:p-4 lg:px-5 lg:pb-5">
+          {state.view === "list" ? (
+            !ready ? (
+              <ListSkeleton />
+            ) : (
+              <AsyncView
+                query={list}
+                loading={<ListSkeleton />}
+                empty={
+                  <EmptyState
+                    pet="golden"
+                    title={filtered ? t("list.noResultsTitle") : t("list.emptyTitle")}
+                    description={filtered ? t("list.noResultsBody") : t("list.emptyBody")}
+                    action={
+                      filtered ? (
+                        <Button variant="secondary" onClick={() => update({ status: [], service: "", q: "" })}>
+                          {t("list.clearFilters")}
+                        </Button>
+                      ) : (
+                        <Button variant="secondary" leftIcon={<Plus size={16} aria-hidden="true" />} onClick={() => setDialog({ kind: "new" })}>
+                          {t("newAppointment")}
+                        </Button>
+                      )
+                    }
                   />
-                ) : null}
-                <DayTimeline
-                  day={anchor}
-                  appointments={calendarItems}
-                  now={now}
-                  hours={hours}
-                  loading={!calendar.data}
-                  isPending={actions.isPending}
-                  onOpen={open}
-                  onAction={handleAction}
-                  onCreate={() => setDialog({ kind: "new", prefill: { start: anchor < today ? anchor + 10 * HOUR : Math.max(anchor + 10 * HOUR, ceilToQuarter(now)) } })}
-                  onSwipe={(dir) => goDay(startOfDay(anchor, dir))}
-                  footnote={hiddenNote}
-                />
+                }
+              >
+                {(data) => (
+                  <AppointmentsList
+                    data={data}
+                    merge={actions.merge}
+                    isPending={actions.isPending}
+                    now={now}
+                    selectedId={state.id}
+                    sort={state.sort}
+                    onSortChange={(sort) => update({ sort })}
+                    onPageChange={(page) => update({ page })}
+                    onOpen={open}
+                    onAction={handleAction}
+                  />
+                )}
+              </AsyncView>
+            )
+          ) : calendar.error && !calendar.data ? (
+            <ErrorState error={calendar.error} onRetry={calendar.refetch} />
+          ) : (
+            <>
+              {state.view === "week" ? (
+                <div className="hidden sm:block">
+                  <WeekCalendar
+                    notice={calendar.data && calendar.data.total === 0 ? (filtered ? t("list.noResultsBody") : t("calendar.emptyWeek")) : undefined}
+                    days={days}
+                    appointments={calendarItems}
+                    now={now}
+                    hours={hours}
+                    loading={!calendar.data}
+                    onOpen={open}
+                    onCreateAt={(start) => setDialog({ kind: "new", prefill: { start } })}
+                    footnote={hiddenNote}
+                  />
+                </div>
+              ) : null}
+              <div className={state.view === "week" ? "space-y-3 sm:hidden" : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_17rem] xl:grid-cols-[minmax(0,1fr)_19rem]"}>
+                <div className="min-w-0 space-y-3">
+                  {days.length ? (
+                    <DayChips
+                      days={days}
+                      selected={anchor}
+                      today={today}
+                      counts={calendar.data ? dayCounts : undefined}
+                      onSelect={goDay}
+                      onWeek={(dir) => goDay(startOfWeek(anchor, dir))}
+                    />
+                  ) : null}
+                  <DayTimeline
+                    day={anchor}
+                    appointments={calendarItems}
+                    now={now}
+                    hours={hours}
+                    loading={!calendar.data}
+                    isPending={actions.isPending}
+                    onOpen={open}
+                    onAction={handleAction}
+                    onCreate={() => setDialog({ kind: "new", prefill: { start: anchor < today ? anchor + 10 * HOUR : Math.max(anchor + 10 * HOUR, ceilToQuarter(now)) } })}
+                    onSwipe={(dir) => goDay(startOfDay(anchor, dir))}
+                    footnote={hiddenNote}
+                    // Desktop day view: the day scrolls inside its own box (the page fits the screen), next to the summary.
+                    // The bottom edge fades out over the box's own padding, a hint that more is below.
+                    className={
+                      state.view === "day"
+                        ? "lg:-mx-1 lg:max-h-[max(22rem,calc(100dvh-27rem))] lg:overflow-y-auto lg:overscroll-contain lg:px-1 lg:pb-6 lg:pt-1 lg:[mask-image:linear-gradient(to_bottom,var(--color-fg)_calc(100%-1.5rem),transparent)]"
+                        : undefined
+                    }
+                  />
+                </div>
+                {state.view === "day" && calendar.data ? <DaySummary day={anchor} today={today} appointments={calendarItems} partner={partner.data} onOpen={open} /> : null}
               </div>
-              {state.view === "day" && calendar.data ? <DaySummary day={anchor} appointments={calendarItems} partner={partner.data} onOpen={open} /> : null}
-            </div>
-          </>
-        )}
-      </Panel>
+            </>
+          )}
+        </div>
+      </section>
 
       <AppointmentDrawer id={state.id} now={now} actions={actions} onClose={() => update({ id: undefined })} onAction={handleAction} />
 

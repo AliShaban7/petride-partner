@@ -6,7 +6,6 @@
     "ridesDescription": "PetRide rides that bring pets to you and take them home."
   },
   "title": "Orders",
-  "description": "Orders from the PetRide app. Pack them, hand them to the courier, follow the delivery.",
   "sections": {
     "label": "Sections",
     "orders": "Orders",
@@ -72,7 +71,6 @@
     "toPickedUp": "Hand over",
     "toDelivered": "Mark delivered",
     "cancel": "Cancel order",
-    "moveTo": "Move",
     "moveToLabel": "Move order {{code}} to another column",
     "receipt": "Receipt",
     "print": "Print",
@@ -91,7 +89,7 @@
   },
   "board": {
     "label": "Order board",
-    "hint": "Drag cards between columns, or press “Move”.",
+    "hint": "Drag cards between columns, or press the arrows button on a card.",
     "empty": "Nothing here yet",
     "dropHere": "Drop here",
     "count_one": "{{count}} order",
@@ -105,10 +103,6 @@
       "cancelled": "Cancelled"
     },
     "hints": {
-      "new": "Take a look and start preparing",
-      "preparing": "You're packing these",
-      "ready": "Waiting for the courier or customer",
-      "on_the_way": "The PetRide courier is on the way",
       "done": "Handed over today",
       "cancelled": "Cancelled today"
     }
@@ -170,10 +164,7 @@
     },
     "courier": "PetRide courier",
     "courierNotBooked": "When you mark the order ready, we'll call a PetRide courier for you.",
-    "courierEta": "{{eta}} to go",
     "courierDoneHint": "The courier has delivered it. Mark it delivered to close the order.",
-    "driver": "Driver",
-    "car": "Car",
     "driverPending": "No driver assigned yet",
     "rideProgress": "Courier's route"
   },
@@ -190,8 +181,6 @@
     "demo": "Demo data. Not an official payment document."
   },
   "products": {
-    "title": "Products & stock",
-    "description": "Change prices and stock here. The app updates right away.",
     "caption": "Products and stock levels",
     "searchLabel": "Search products",
     "search": "Name or SKU",
@@ -224,13 +213,13 @@
     "invalidStock": "Stock must be a whole number, 0 or more.",
     "priceSaved": "{{name}}: price updated",
     "stockSaved": "{{name}}: stock updated",
+    "savedBody": "Customers see the new number in the app right away.",
     "lowAt": "Counts as running low at {{count}} pcs or fewer",
     "emptyTitle": "No products found",
     "emptyBody": "Change the search or filters."
   },
   "rides": {
     "title": "PetRide rides",
-    "description": "Rides that bring pets to you and take them home. Status and arrival times update live.",
     "kpi": {
       "label": "Ride numbers",
       "live": "On the road now",
@@ -275,7 +264,6 @@
     },
     "drawer": {
       "title": "{{pets}} · {{direction}}",
-      "client": "Customer",
       "pickup": "Pick-up",
       "arrive": "Arrival",
       "from": "From",

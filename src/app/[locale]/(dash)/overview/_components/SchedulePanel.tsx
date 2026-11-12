@@ -3,7 +3,7 @@
 import { ArrowRight, CalendarDays, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-import { AsyncView, Avatar, Button, ButtonLink, EmptyState, Panel, StatusPill, Tag } from "@/components/ui";
+import { AsyncView, Button, ButtonLink, EmptyState, Panel, StatusPill, Tag } from "@/components/ui";
 import type { QueryResult } from "@/lib/api/hooks";
 import type { Appointment, AppointmentStatus, Paged, Ride } from "@/lib/api/types";
 import { formatDuration } from "@/lib/format";
@@ -14,7 +14,10 @@ import { isLiveRide } from "./LiveRidesPanel";
 import { minutesLeft, useNow } from "./now";
 import { NowMarker, TimelineList, TimelineRow, TimelineSkeleton, type TimelineState } from "./Timeline";
 
-const VISIBLE = 8;
+/** Dashboard cap: what's on now and next. "Show all (N)" unfolds the whole day here; "View all" opens the day view. */
+const VISIBLE = 4;
+/** Folded, at most this many "on now" rows while there are still visits to come. */
+const NOW_VISIBLE = 2;
 const OPEN: readonly AppointmentStatus[] = ["requested", "confirmed", "checked_in"];
 
 export type SchedulePanelProps = {
@@ -28,26 +31,31 @@ export type SchedulePanelProps = {
   className?: string;
 };
 
-/** Today's appointments as a vertical timeline with a "Now" line. Earlier, finished visits fold away. */
+/**
+ * Today's appointments as a vertical timeline with a "Now" line. Folded, it shows only what's on now
+ * and next (finished visits drop out); "Show all (N)" unfolds the whole day in time order.
+ */
 export function SchedulePanel({ query, dayStart, rides, optimistic, className }: SchedulePanelProps) {
   const t = useT("overview");
   const tc = useT("common");
   const locale = useLocale();
   const now = useNow(30_000);
-  const [showEarlier, setShowEarlier] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   const items = todaysAppointments(query.data?.items ?? [], dayStart, optimistic);
-  const counted = items.filter((a) => a.status !== "cancelled").length;
 
   return (
     <Panel
       title={t("schedule.title")}
-      description={query.data && counted > 0 ? t.plural("schedule.count", counted) : undefined}
       icon={<CalendarDays size={20} />}
       className={className}
       actions={
-        <ButtonLink href={localizedHref(locale, ROUTES.appointments)} variant="ghost" size="sm" rightIcon={<ArrowRight size={16} aria-hidden="true" />}>
+        <ButtonLink
+          href={localizedHref(locale, ROUTES.appointments, { view: "day" })}
+          variant="ghost"
+          size="sm"
+          rightIcon={<ArrowRight size={16} aria-hidden="true" />}
+        >
           {tc("actions.viewAll")}
         </ButtonLink>
       }
@@ -64,33 +72,28 @@ export function SchedulePanel({ query, dayStart, rides, optimistic, className }:
           const start = (a: Appointment) => new Date(a.start).getTime();
           const past = now === null ? [] : items.filter((a) => end(a) <= now && !OPEN.includes(a.status));
           const rest = items.filter((a) => !past.includes(a));
-          const visibleRest = showAll ? rest : rest.slice(0, VISIBLE);
-          const shown = showEarlier ? [...past, ...visibleRest] : visibleRest;
+          // Folded: "on now" (started, still running or still open) and "next" (not started yet). Long stays
+          // that began in the morning (day care, hotel) would otherwise fill the card and hide who's coming
+          // next, so at most two "now" rows are kept (the latest to start) unless there is little left to come.
+          const started = now === null ? [] : rest.filter((a) => start(a) <= now);
+          const upcoming = rest.filter((a) => !started.includes(a));
+          const nowCount = Math.min(started.length, Math.max(NOW_VISIBLE, VISIBLE - upcoming.length));
+          const folded = [...started.slice(started.length - nowCount), ...upcoming.slice(0, VISIBLE - nowCount)];
+          // Late in the day (nothing left) the last visits stay visible instead of an empty card.
+          const shown = showAll ? items : folded.length > 0 ? folded : past.slice(-VISIBLE);
+          const hidden = items.length - shown.length;
           const markerAt = now === null ? -1 : shown.findIndex((a) => start(a) > now);
           const rows: ReactNode[] = [];
           shown.forEach((a, i) => {
             if (i === markerAt && now !== null) rows.push(<NowMarker key="now" now={now} />);
             rows.push(<ScheduleRow key={a.id} appointment={a} rides={rides} now={now} index={i} past={past.includes(a)} />);
           });
-          if (markerAt === -1 && now !== null && rest.length === visibleRest.length) {
-            rows.push(<NowMarker key="now" now={now} />);
-          }
+          // Everything shown has started (nothing left to come): the line goes last.
+          if (markerAt === -1 && now !== null) rows.push(<NowMarker key="now" now={now} />);
           return (
-            <div className="space-y-2">
-              {past.length > 0 ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-expanded={showEarlier}
-                  rightIcon={showEarlier ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
-                  onClick={() => setShowEarlier((v) => !v)}
-                  className="text-fg-secondary"
-                >
-                  {showEarlier ? t("schedule.hideEarlier") : t("schedule.earlier", { count: past.length })}
-                </Button>
-              ) : null}
+            <div className="space-y-1">
               <TimelineList label={t("schedule.listLabel")}>{rows}</TimelineList>
-              {rest.length > VISIBLE ? (
+              {hidden > 0 || showAll ? (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -99,7 +102,7 @@ export function SchedulePanel({ query, dayStart, rides, optimistic, className }:
                   onClick={() => setShowAll((v) => !v)}
                   className="text-fg-secondary"
                 >
-                  {showAll ? t("schedule.showLess") : t("schedule.showAll", { count: rest.length })}
+                  {showAll ? t("schedule.showLess") : t("schedule.showAll", { count: items.length })}
                 </Button>
               ) : null}
             </div>
@@ -130,7 +133,9 @@ function ScheduleRow({
   const current = now !== null && startMs <= now && now < endMs && a.status !== "cancelled";
   const state: TimelineState = past || a.status === "cancelled" || a.status === "no_show" ? "past" : a.status === "requested" ? "attention" : current || a.status === "checked_in" ? "current" : "upcoming";
 
-  const badge = rideBadge(a, rides, now, (key, eta) => (key === "rideLive" ? t("schedule.rideLive", { eta: formatDuration(eta ?? 0, locale) }) : t(`schedule.${key}`)));
+  const ride = rideBadge(a, rides, now);
+  const etaText = ride?.key === "rideLive" ? formatDuration(ride.eta ?? 0, locale) : "";
+  const badge = ride ? (ride.key === "rideLive" ? t("schedule.rideLive", { eta: etaText }) : t(`schedule.${ride.key}`)) : null;
 
   return (
     <TimelineRow
@@ -140,22 +145,27 @@ function ScheduleRow({
       state={state}
       index={index}
     >
-      <div className="flex items-start gap-3">
-        <Avatar name={a.petName} species={a.petSpecies} tint={a.petTint} size="sm" shape="tile" className="hidden sm:inline-flex" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-fg">
-            {a.petName} <span className="font-normal text-fg-tertiary">· {a.clientName}</span>
-          </p>
-          <p className="truncate text-meta text-fg-tertiary">{a.serviceName}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <StatusPill kind="appointment" status={a.status} size="sm" />
-            {badge ? (
-              <Tag tone="white" icon={<Car size={13} aria-hidden="true" />}>
-                {badge}
-              </Tag>
-            ) : null}
-          </div>
-        </div>
+      <p className="truncate text-body-sm font-semibold text-fg">
+        {a.petName} <span className="font-normal text-fg-tertiary">· {a.clientName}</span>
+      </p>
+      <p className="truncate text-meta text-fg-tertiary">{a.serviceName}</p>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        <StatusPill kind="appointment" status={a.status} size="sm" />
+        {badge ? (
+          <Tag tone="white" className="py-0.5" icon={<Car size={13} aria-hidden="true" />}>
+            {ride?.key === "rideLive" ? (
+              // On the way: the car icon plus the ETA ("25 dəq") keeps it on the status pill's line in a narrow column.
+              <span title={badge}>
+                <span className="sr-only">{badge}</span>
+                <span aria-hidden="true" className="tabular">
+                  {etaText}
+                </span>
+              </span>
+            ) : (
+              badge
+            )}
+          </Tag>
+        ) : null}
       </div>
     </TimelineRow>
   );
@@ -166,7 +176,7 @@ function ScheduleRow({
  * earlier days left out), with optimistic statuses applied and declined requests dropped. The
  * non-cancelled ones match the "today" KPI exactly.
  */
-export function todaysAppointments(list: readonly Appointment[], dayStart: number | null, optimistic: Record<string, AppointmentStatus>): Appointment[] {
+function todaysAppointments(list: readonly Appointment[], dayStart: number | null, optimistic: Record<string, AppointmentStatus>): Appointment[] {
   return list
     .filter((a) => dayStart === null || new Date(a.start).getTime() >= dayStart)
     .map((a) => (optimistic[a.id] && a.status === "requested" ? { ...a, status: optimistic[a.id] } : a))
@@ -175,17 +185,17 @@ export function todaysAppointments(list: readonly Appointment[], dayStart: numbe
 
 type BadgeKey = "rideLive" | "rideArrived" | "rideBooked" | "rideHome";
 
-/** What the PetRide ride of an appointment is doing, in one short label (null = no ride). */
-function rideBadge(a: Appointment, rides: readonly Ride[] | undefined, now: number | null, label: (key: BadgeKey, eta?: number) => string): string | null {
+/** What the PetRide ride of an appointment is doing (null = no ride); `eta` in minutes for a ride on its way in. */
+function rideBadge(a: Appointment, rides: readonly Ride[] | undefined, now: number | null): { key: BadgeKey; eta?: number } | null {
   if (!a.withRide || a.status === "cancelled") return null;
   const find = (direction: Ride["direction"]) => rides?.find((r) => r.appointmentId === a.id && r.direction === direction);
   const inbound = find("to_partner") ?? a.ride;
   const back = find("from_partner") ?? a.returnRide;
-  if (back && isLiveRide(back)) return label("rideHome");
+  if (back && isLiveRide(back)) return { key: "rideHome" };
   if (inbound && isLiveRide(inbound)) {
     const eta = now === null ? (inbound.etaMin ?? 0) : Math.max(0, minutesLeft(inbound.arriveAt, now));
-    return label("rideLive", eta);
+    return { key: "rideLive", eta };
   }
-  if (inbound?.status === "completed" || a.status === "checked_in" || a.status === "completed") return label("rideArrived");
-  return label("rideBooked");
+  if (inbound?.status === "completed" || a.status === "checked_in" || a.status === "completed") return { key: "rideArrived" };
+  return { key: "rideBooked" };
 }
